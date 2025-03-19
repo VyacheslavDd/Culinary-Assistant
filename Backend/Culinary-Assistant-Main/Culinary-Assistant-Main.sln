@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Main", "
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4B8BA4C3-3098-43E1-BB99-E50C1BAF4149}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Main.Tests", "Culinary-Assistant-Main.Tests\Culinary-Assistant-Main.Tests.csproj", "{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{4B8BA4C3-3098-43E1-BB99-E50C1BAF4149}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B8BA4C3-3098-43E1-BB99-E50C1BAF4149}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B8BA4C3-3098-43E1-BB99-E50C1BAF4149}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
