@@ -1,0 +1,17 @@
+version: '3.4'
+
+networks:
+  culinary-network:
+    driver: bridge
+
+services:
+  culinary-assistant-main:
+    networks:
+        - culinary-network
+    image: culinaryassistantmain:latest
+    container_name: CulinaryAssistantMain
+    ports:
+        - "5000:5000"
+    build:
+      context: .
+      dockerfile: Culinary-Assistant-Main/Dockerfile
