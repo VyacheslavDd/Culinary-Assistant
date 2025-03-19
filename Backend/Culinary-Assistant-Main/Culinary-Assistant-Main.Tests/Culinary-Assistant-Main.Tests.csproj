@@ -19,6 +19,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Culinary-Assistant-Main.Domain\Culinary-Assistant-Main.Domain.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant-Main.Infrastructure\Culinary-Assistant-Main.Infrastructure.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant-Main.Services\Culinary-Assistant-Main.Services.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant-Main\Culinary-Assistant-Main.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant.Core\Culinary-Assistant.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
