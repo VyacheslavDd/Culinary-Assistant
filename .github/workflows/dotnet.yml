@@ -1,0 +1,28 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "main", "Slava" ]
+  pull_request:
+    branches: [ "main", "Slava" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: .NET Tests
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.sln
+    - name: Build
+      run: dotnet build --no-restore Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.sln
+    - name: Test
+      run: dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.Tests/Culinary-Assistant-Main.Tests.csproj
