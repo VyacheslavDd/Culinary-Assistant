@@ -9,5 +9,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 {
 	public class User : Entity<Guid>
 	{
+		public string Login { get; private set; }
 	}
 }

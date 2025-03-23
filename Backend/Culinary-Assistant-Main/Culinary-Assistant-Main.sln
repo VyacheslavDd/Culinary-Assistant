@@ -9,13 +9,17 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Main.Tests", "Culinary-Assistant-Main.Tests\Culinary-Assistant-Main.Tests.csproj", "{1134E6AF-CC4A-44D2-81BB-C8E16EB727D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Main.Domain", "Culinary-Assistant-Main.Domain\Culinary-Assistant-Main.Domain.csproj", "{45A6B630-48F7-4CD5-8B5E-6DE25C490F6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Main.Domain", "Culinary-Assistant-Main.Domain\Culinary-Assistant-Main.Domain.csproj", "{45A6B630-48F7-4CD5-8B5E-6DE25C490F6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Main.Services", "Culinary-Assistant-Main.Services\Culinary-Assistant-Main.Services.csproj", "{16D328E7-8C74-4F09-825D-2886E1D697EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Main.Services", "Culinary-Assistant-Main.Services\Culinary-Assistant-Main.Services.csproj", "{16D328E7-8C74-4F09-825D-2886E1D697EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Main.Infrastructure", "Culinary-Assistant-Main.Infrastructure\Culinary-Assistant-Main.Infrastructure.csproj", "{77E5AAB2-8079-4488-BD45-320C0D7A024E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Main.Infrastructure", "Culinary-Assistant-Main.Infrastructure\Culinary-Assistant-Main.Infrastructure.csproj", "{77E5AAB2-8079-4488-BD45-320C0D7A024E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant.Core", "Culinary-Assistant.Core\Culinary-Assistant.Core.csproj", "{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant.Core", "Culinary-Assistant.Core\Culinary-Assistant.Core.csproj", "{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Images", "Culinary-Assistant-Images\Culinary-Assistant-Images.csproj", "{A9D23496-9143-466C-87E2-BB36C47F631B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Images.Services", "Culinary-Assistant-Images.Services\Culinary-Assistant-Images.Services.csproj", "{E3E129FA-F8EE-4171-9F13-2B6054AA6365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +55,14 @@ Global
 		{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9D23496-9143-466C-87E2-BB36C47F631B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9D23496-9143-466C-87E2-BB36C47F631B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9D23496-9143-466C-87E2-BB36C47F631B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9D23496-9143-466C-87E2-BB36C47F631B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
