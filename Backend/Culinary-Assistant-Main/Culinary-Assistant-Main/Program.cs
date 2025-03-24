@@ -3,9 +3,14 @@ using Culinary_Assistant.Core.Constants;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.Middlewares;
 using Culinary_Assistant_Main.Infrastructure;
+using Culinary_Assistant_Main.Infrastructure.Mappers;
 using Culinary_Assistant_Main.Infrastructure.Startups;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,16 +20,25 @@ builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection(Con
 
 builder.Host.AddSerilog();
 builder.Services.AddDbContext<CulinaryAppContext>();
+builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
+builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
 builder.Services.AddCustomServices();
 builder.Services.AddProblemDetails();
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(config =>
+{
+	config.SerializerSettings.Converters.Add(new StringEnumConverter(typeof(CamelCaseNamingStrategy)));
+	config.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+	config.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
 	var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
 	var xmlFilePath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 	setup.IncludeXmlComments(xmlFilePath);
+	setup.SupportNonNullableReferenceTypes();
 });
+builder.Services.AddSwaggerGenNewtonsoftSupport();
 
 var app = builder.Build();
 

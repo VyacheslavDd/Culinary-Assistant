@@ -9,5 +9,6 @@ namespace Culinary_Assistant.Core.Const
 	public static class BucketConstants
 	{
 		public const string ReceiptsImagesBucketName = "receiptpictures";
+		public const string UserProfilePicturesBucketName = "userpictures";
 	}
 }

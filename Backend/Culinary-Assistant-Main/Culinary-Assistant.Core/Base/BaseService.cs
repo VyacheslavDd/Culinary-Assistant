@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Core.Base
 {
-	public abstract class BaseService<T, TDTO>(IRepository<T> repository, ILogger logger) : IService<T, TDTO> where T : Entity<Guid>
+	public abstract class BaseService<T, TCreateDTO, TUpdateDTO>(IRepository<T> repository, ILogger logger) : IService<T, TCreateDTO, TUpdateDTO> where T : Entity<Guid>
 	{
 		private readonly Func<Guid, Expression<Func<T, bool>>> _idSelectorExpression = (Guid id) => e => e.Id == id;
 		protected readonly IRepository<T> _repository = repository;
@@ -25,14 +25,14 @@ namespace Core.Base
 			return await _repository.GetAll().ToListAsync(cancellationToken);
 		}
 
-		public abstract Task<Result<Guid>> CreateAsync(TDTO entity, bool autoSave = true);
+		public abstract Task<Result<Guid>> CreateAsync(TCreateDTO entityCreateRequest, bool autoSave = true);
 
 		public virtual async Task SaveChangesAsync()
 		{
 			await _repository.SaveChangesAsync();
 		}
 
-		public virtual Task<Result> NotBulkUpdateAsync(Guid entityId, TDTO updateRequest)
+		public virtual Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest)
 		{
 			return Task.FromResult(Result.Success());
 		}

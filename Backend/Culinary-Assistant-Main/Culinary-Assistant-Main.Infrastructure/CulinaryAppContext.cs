@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.Options;
 using Culinary_Assistant_Main.Domain.Models;
+using Culinary_Assistant_Main.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
@@ -21,6 +22,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.HasDefaultSchema("MainAppSchema");
+			new UserModelConfiguration().Configure(modelBuilder.Entity<User>());
 			base.OnModelCreating(modelBuilder);
 		}
 
