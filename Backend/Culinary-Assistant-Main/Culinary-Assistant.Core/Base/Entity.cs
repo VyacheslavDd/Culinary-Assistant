@@ -9,6 +9,11 @@ namespace Core.Base
 {
 	public abstract class Entity<T> where T : struct
 	{
-		public T Id { get; set; }
+		public T Id { get; private set; }
+
+		public override string ToString()
+		{
+			return $"{typeof(T).Name}: {Id}";
+		}
 	}
 }
