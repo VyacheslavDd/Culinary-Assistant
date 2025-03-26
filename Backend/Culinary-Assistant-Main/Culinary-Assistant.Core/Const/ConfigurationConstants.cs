@@ -11,5 +11,6 @@ namespace Culinary_Assistant.Core.Constants
 		public const string PostgreSQL = "PostgreSQL";
 		public const string Minio = "Minio";
 		public const string RabbitMQ = "RabbitMQ";
+		public const string MinioLocalHost = "MinioLocalHost";
 	}
 }

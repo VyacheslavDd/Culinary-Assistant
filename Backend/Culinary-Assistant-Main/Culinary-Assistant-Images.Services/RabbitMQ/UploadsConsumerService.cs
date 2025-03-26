@@ -36,8 +36,8 @@ namespace Culinary_Assistant_Images.Services.RabbitMQ
 		{
 			using var scope =  _serviceScopeFactory.CreateScope();
 			var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
-			var filesData = JsonSerializer.Deserialize<List<SerializableFormFile>>(Encoding.UTF8.GetString(e.Body.ToArray()));
-			await fileService.UploadFilesAsync(BucketConstants.ReceiptsImagesBucketName, filesData);
+			var filesData = JsonSerializer.Deserialize<UploadFilesData>(Encoding.UTF8.GetString(e.Body.ToArray()));
+			await fileService.UploadFilesAsync(filesData.BucketName, filesData.SerializableFormFiles);
 		}
 	}
 }

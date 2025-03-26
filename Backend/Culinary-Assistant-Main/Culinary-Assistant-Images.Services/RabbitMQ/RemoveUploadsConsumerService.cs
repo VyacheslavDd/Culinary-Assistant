@@ -3,6 +3,7 @@ using Culinary_Assistant.Core.Base;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.ProducerServices;
+using Culinary_Assistant.Core.Shared.Serializable;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -34,8 +35,8 @@ namespace Culinary_Assistant_Images.Services.RabbitMQ
 		{
 			using var scope = _serviceScopeFactory.CreateScope();
 			var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
-			var urlsData = JsonSerializer.Deserialize<List<string>>(Encoding.UTF8.GetString(e.Body.ToArray()));
-			await fileService.DeleteFilesAsync(BucketConstants.ReceiptsImagesBucketName, urlsData);
+			var filesData = JsonSerializer.Deserialize<RemoveFilesData>(Encoding.UTF8.GetString(e.Body.ToArray()));
+			await fileService.DeleteFilesAsync(filesData.BucketName, filesData.ImagesUrls);
 		}
 	}
 }

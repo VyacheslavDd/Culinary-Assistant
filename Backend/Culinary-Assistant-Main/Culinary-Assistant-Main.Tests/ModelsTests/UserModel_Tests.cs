@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant_Main.Domain.Models;
+﻿using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant_Main.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,13 +16,13 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[SetUp]
 		public void CreateTestUser()
 		{
-			_user = User.Create("test", "test@test.ru", "xd").Value;
+			_user = User.Create(new UserInDTO("test", "test@test.ru", "xd")).Value;
 		}
 
 		[Test]
 		public void CreateUser_WorksCorrectly_WithCorrectLoginAndEmail()
 		{
-			var result = User.Create("login334", "hey@mail.ru", "xd");
+			var result = User.Create(new UserInDTO("login334", "hey@mail.ru", "xd"));
 			Assert.Multiple(() =>
 			{
 				Assert.That(result.IsSuccess, Is.True);
@@ -33,7 +34,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void CreateUser_WorksCorrectly_WithCorrectLoginAndPhone()
 		{
-			var result = User.Create("login334", "89930159670", "xd");
+			var result = User.Create(new UserInDTO("login334", "89930159670", "xd"));
 			Assert.Multiple(() =>
 			{
 				Assert.That(result.IsSuccess, Is.True);
@@ -45,14 +46,14 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void CreateUser_ReturnsFailure_WithWrongLogin()
 		{
-			var result = User.Create("h", "hey@mail,ru", "xd");
+			var result = User.Create(new UserInDTO("h", "hey@mail.ru", "xd"));
 			Assert.That(result.IsFailure, Is.True);
 		}
 
 		[Test]
 		public void CreateUser_ReturnsFailure_WithBothWrongEmailAndPhone()
 		{
-			var result = User.Create("login", "wtf", "xd");
+			var result = User.Create(new UserInDTO("login", "wtf", "xd"));
 			Assert.That(result.IsFailure, Is.True);
 		}
 
@@ -123,6 +124,17 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 			var hashBefore = _user.PasswordHash;
 			_user.SetPassword("password");
 			Assert.That(_user.PasswordHash, Is.Not.EqualTo(hashBefore));
+		}
+
+		[Test]
+		public void AddReceipt_Works()
+		{
+			var collectionBeforeCount = _user.Receipts.Count;
+			_user.AddReceipt(new Receipt());
+			var nextCollection = _user.Receipts;
+			Assert.That(nextCollection, Has.Count.EqualTo(1));
+			Assert.That(collectionBeforeCount, Is.Not.EqualTo(nextCollection.Count));
+
 		}
 	}
 }

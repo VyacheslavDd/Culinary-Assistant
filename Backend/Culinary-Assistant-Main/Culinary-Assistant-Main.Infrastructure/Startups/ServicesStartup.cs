@@ -1,4 +1,6 @@
-﻿using Culinary_Assistant_Main.Services.RabbitMQ.Images;
+﻿
+using Culinary_Assistant_Main.Services.Files;
+using Culinary_Assistant_Main.Services.RabbitMQ.Images;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,8 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 	{
 		public static IServiceCollection AddCustomServices(this IServiceCollection services)
 		{
-			services.AddScoped<IImageMessagesProducerService, ImageMessagesProducerService>();
+			services.AddScoped<IFileService, FileService>();
+			services.AddScoped<IFileMessagesProducerService, FileMessagesProducerService>();
 			return services;
 		}
 	}

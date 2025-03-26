@@ -1,5 +1,6 @@
 ﻿using Core.Base;
 using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.ValueTypes;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,21 @@ namespace Culinary_Assistant_Main.Domain.Models
 {
 	public class User : Core.Base.Entity<Guid>
 	{
+		private readonly List<Receipt> _receipts = [];
+
 		public Login Login { get; private set; }
 		public Phone Phone { get; private set; }
 		public Email Email { get; private set; }
 		public string? ProfilePictureUrl { get; private set; }
 		public string PasswordHash { get; private set; }
+		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 
-		public static Result<User> Create(string login, string phoneOrEmail, string password)
+		public static Result<User> Create(UserInDTO userInDTO)
 		{
-			var loginObject = Login.Create(login);
+			var loginObject = Login.Create(userInDTO.Login);
 			if (loginObject.IsFailure) return Result.Failure<User>(loginObject.Error);
-			var phone = Phone.Create(phoneOrEmail);
-			var email = Email.Create(phoneOrEmail);
+			var phone = Phone.Create(userInDTO.EmailOrPhone);
+			var email = Email.Create(userInDTO.EmailOrPhone);
 			if (phone.IsFailure && email.IsFailure) return Result.Failure<User>($"{phone.Error} {email.Error}");
 			var user = new User
 			{
@@ -37,7 +41,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			{
 				user.Email = email.Value;
 			}
-			user.SetPassword(password);
+			user.SetPassword(userInDTO.Password);
 			return Result.Success(user);
 		}
 
@@ -73,6 +77,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 			if (result.IsFailure) return Result.Failure(result.Error);
 			Email = result.Value;
 			return Result.Success();
+		}
+
+		public void AddReceipt(Receipt receipt)
+		{
+			_receipts.Add(receipt);
 		}
 	}
 }

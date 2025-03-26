@@ -18,6 +18,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 		private readonly ConnectionOptions _connectionOptions = connectionOptions.Value;
 
 		public virtual DbSet<User> Users { get; set; }
+		public virtual DbSet<Receipt> Receipts { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
