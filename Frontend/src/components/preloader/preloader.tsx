@@ -1,7 +1,7 @@
-import './preloader.scss';
+import styles from './preloader.module.scss';
 
 export const Preloader = () => (
-    <div className='preloader'>
-        <div className='preloader_circle' />
+    <div className={styles.preloader}>
+        <div className={styles.preloader_circle} />
     </div>
 );

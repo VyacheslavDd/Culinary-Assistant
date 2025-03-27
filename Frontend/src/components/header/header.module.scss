@@ -1,0 +1,43 @@
+.header {
+    width: 100%;
+    display: flex;
+    padding: 1.25rem 5.5rem 0.93rem 6.5rem;
+    background-color: var(--crimson);
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    font-family: 'TildaSans';
+    font-weight: 500;
+    color: #fff;
+    font-size: 1.25rem;
+}
+
+.logo {
+    width: 7.5rem;
+    height: auto;
+    cursor: pointer;
+}
+
+.menu {
+    display: flex;
+    gap: 1.5rem;
+    list-style-type: none;
+
+    .a {
+        text-decoration: none;
+        color: #fff;
+        cursor: pointer;
+    }
+}
+
+.button {
+    cursor: pointer;
+    color: #fff;
+    font-family: 'Bree CYR';
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 0.5rem 2.625rem;
+    background-color: var(--blue);
+    border: none;
+    border-radius: 1.25rem;
+}
