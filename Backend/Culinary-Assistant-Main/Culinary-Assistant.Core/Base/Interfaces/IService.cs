@@ -5,6 +5,7 @@ namespace Core.Base.Interfaces
 {
 	public interface IService<T, TCreateDTO, TUpdateDTO>
 	{
+		IQueryable<T> GetAll();
 		Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default);
 		Task<T?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default);
 		abstract Task<Result<Guid>> CreateAsync(TCreateDTO entityCreateRequest, bool autoSave=true);

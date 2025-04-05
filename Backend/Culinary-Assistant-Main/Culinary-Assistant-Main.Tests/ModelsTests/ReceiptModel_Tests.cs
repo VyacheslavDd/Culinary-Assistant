@@ -28,15 +28,23 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void SetTitle_WorksCorrectly()
 		{
-			_receipt.SetTitle("updated");
-			Assert.That(_receipt.Title, Is.EqualTo("updated"));
+			var res = _receipt.SetTitle("updated");
+			Assert.Multiple(() =>
+			{
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(_receipt.Title.Value, Is.EqualTo("updated"));
+			});
 		}
 
 		[Test]
 		public void SetDescription_WorksCorrectly()
 		{
-			_receipt.SetDescription("updated");
-			Assert.That(_receipt.Description, Is.EqualTo("updated"));
+			var res = _receipt.SetDescription("updated");
+			Assert.Multiple(() =>
+			{
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(_receipt.Description.Value, Is.EqualTo("updated"));
+			});
 		}
 
 		[Test]
@@ -50,7 +58,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		public void SetTags_WorksCorrectly()
 		{
 			_receipt.SetTags([Tag.Vegetarian, Tag.Lean]);
-			Assert.That(_receipt.Tags, Is.EqualTo("0|1"));
+			Assert.That(_receipt.Tags, Is.EqualTo("1|2"));
 		}
 
 		[Test]
@@ -63,8 +71,12 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void SetCookingTime_WorksCorrectly()
 		{
-			_receipt.SetCookingTime(2);
-			Assert.That(_receipt.CookingTime, Is.EqualTo(2));
+			var res = _receipt.SetCookingTime(2);
+			Assert.Multiple(() =>
+			{
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(_receipt.CookingTime, Is.EqualTo(2));
+			});
 		}
 
 		[Test]
@@ -102,6 +114,70 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 			List<CookingStep> cookingSteps = [new CookingStep(1, "1")];
 			_receipt.SetCookingSteps(cookingSteps);
 			Assert.That(_receipt.CookingSteps, Is.EqualTo("[{\"Step\":1,\"Description\":\"1\"}]"));
+		}
+
+		[Test]
+		public void SetNutrients_WorksCorrectly()
+		{
+			var nutrientsResult = _receipt.SetNutrients(200, 20, 23, 17);
+			Assert.Multiple(() =>
+			{
+				Assert.That(nutrientsResult.IsSuccess, Is.True);
+				Assert.That(_receipt.Nutrients.Calories, Is.EqualTo(200));
+				Assert.That(_receipt.Nutrients.Proteins, Is.EqualTo(20));
+				Assert.That(_receipt.Nutrients.Fats, Is.EqualTo(23));
+				Assert.That(_receipt.Nutrients.Carbohydrates, Is.EqualTo(17));
+			});
+		}
+
+		[Test]
+		public void AddView_WorksCorrectly()
+		{
+			var popularityBefore = _receipt.Popularity;
+			_receipt.AddView();
+			Assert.Multiple(() =>
+			{
+				Assert.That(popularityBefore, Is.EqualTo(0));
+				Assert.That(_receipt.Popularity, Is.EqualTo(1));
+			});
+		}
+
+		[Test]
+		public void CannotSet_LongTitle()
+		{
+			var result = _receipt.SetTitle("longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1longtitle1");
+			Assert.That(result.IsFailure, Is.True);
+		}
+
+		[Test]
+		public void CannotSet_NegativeNutrients()
+		{
+			var negativeProteinsResult = _receipt.SetNutrients(200, -1, 10, 15);
+			var negativeCaloriesResult = _receipt.SetNutrients(-1, 5, 10, 15);
+			var negativeFatsResult = _receipt.SetNutrients(200, 5, -1, 15);
+			var negativeCarbohydratesResult = _receipt.SetNutrients(200, 5, 10, -1);
+			Assert.Multiple(() =>
+			{
+				Assert.That(negativeCaloriesResult.IsFailure, Is.True);
+				Assert.That(negativeProteinsResult.IsFailure, Is.True);
+				Assert.That(negativeFatsResult.IsFailure, Is.True);
+				Assert.That(negativeCarbohydratesResult.IsFailure, Is.True);
+			});
+		}
+
+		[Test]
+		public void CannotSet_NegativeCookingTime()
+		{
+			var res = _receipt.SetCookingTime(-30);
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
+		public void CannotSet_IncorrectSteps()
+		{
+			var steps = new List<CookingStep>() { new(1, "1"), new(3, "2") };
+			var res = _receipt.SetCookingSteps(steps);
+			Assert.That(res.IsFailure, Is.True);
 		}
 	}
 }

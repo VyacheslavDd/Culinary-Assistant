@@ -20,6 +20,11 @@ namespace Core.Base
 		protected readonly ILogger _logger = logger;
 		protected readonly string _entityTypeName = typeof(T).Name;
 
+		public IQueryable<T> GetAll()
+		{
+			return _repository.GetAll();
+		}
+
 		public virtual async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
 			return await _repository.GetAll().ToListAsync(cancellationToken);
@@ -32,14 +37,16 @@ namespace Core.Base
 			await _repository.SaveChangesAsync();
 		}
 
-		public virtual Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest)
+		public virtual async Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest)
 		{
-			return Task.FromResult(Result.Success());
+			await SaveChangesAsync();
+			return Result.Success();
 		}
 
 		public virtual async Task<Result> NotBulkDeleteAsync(Guid entityId)
 		{
-			return await _repository.NotBulkDeleteAsync(_idSelectorExpression(entityId));
+			var response = await _repository.NotBulkDeleteAsync(_idSelectorExpression(entityId));
+			return response;
 		}
 
 		public virtual async Task<T?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)

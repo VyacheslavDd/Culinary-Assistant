@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Culinary_Assistant.Core.Enums
+namespace Culinary_Assistant_Main.Services.Seed
 {
-	public enum CookingDifficulty
+	public interface ISeedService
 	{
-		Any,
-		Easy,
-		Medium,
-		Hard
+		Task CreateAdministratorUserAsync();
 	}
 }

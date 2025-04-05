@@ -5,6 +5,7 @@ using Culinary_Assistant.Core.Shared.Middlewares;
 using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Mappers;
 using Culinary_Assistant_Main.Infrastructure.Startups;
+using Culinary_Assistant_Main.Services.Seed;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ builder.Host.AddSerilog();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
 builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
+builder.Services.AddDomain();
 builder.Services.AddCustomServices();
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers().AddNewtonsoftJson(config =>
@@ -58,7 +60,9 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
 	var dbContext = scope.ServiceProvider.GetRequiredService<CulinaryAppContext>();
-	dbContext.Database.Migrate();
+	await dbContext.Database.MigrateAsync();
+	var seedService = scope.ServiceProvider.GetRequiredService<ISeedService>();
+	await seedService.CreateAdministratorUserAsync();
 }
 
 app.Run();

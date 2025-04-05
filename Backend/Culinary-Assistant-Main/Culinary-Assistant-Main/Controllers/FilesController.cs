@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO;
+using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Services.Files;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
@@ -15,9 +16,9 @@ namespace Culinary_Assistant_Main.Controllers
 		private readonly IFileService _fileService = fileService;
 
 		/// <summary>
-		/// Загрузить файлы и получить ссылки на них
+		/// Загрузить файлы для рецепта и получить ссылки на них
 		/// </summary>
-		/// <param name="filesDTO">Название сущности и файлы</param>
+		/// <param name="filesDTO">Полное название сущности и файлы</param>
 		/// <returns>Возвращает сгенерированные ссылки на ресурсы</returns>
 		/// <response code="200">Результат с успешно загруженными файлами</response>
 		/// <response code="500">Ошибка сервера</response>

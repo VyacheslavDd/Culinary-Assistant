@@ -15,6 +15,8 @@ namespace Core.Base.Interfaces
 		Task<T?> GetBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
 		IQueryable<T> GetAllBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
 		IQueryable<T> GetAllWithInclude<TProperty>(Expression<Func<T, TProperty>> includeExpression);
+		Task LoadReferenceAsync<TProperty>(T entity, Expression<Func<T, TProperty?>> referenceExpression) where TProperty: class;
+		Task LoadCollectionAsync<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> collectionExpression) where TProperty: class;
 		Task<Guid> AddAsync(T entity, bool autoSave=true);
 		Task<int> BulkDeleteAsync(Expression<Func<T, bool>> selector);
 		Task<Result> NotBulkDeleteAsync(Expression<Func<T, bool>> selector);

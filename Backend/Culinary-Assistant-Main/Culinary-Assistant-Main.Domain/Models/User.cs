@@ -28,7 +28,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			if (loginObject.IsFailure) return Result.Failure<User>(loginObject.Error);
 			var phone = Phone.Create(userInDTO.EmailOrPhone);
 			var email = Email.Create(userInDTO.EmailOrPhone);
-			if (phone.IsFailure && email.IsFailure) return Result.Failure<User>($"{phone.Error} {email.Error}");
+			if (phone.IsFailure && email.IsFailure) return Result.Failure<User>($"{phone.Error} \n {email.Error}");
 			var user = new User
 			{
 				Login = loginObject.Value

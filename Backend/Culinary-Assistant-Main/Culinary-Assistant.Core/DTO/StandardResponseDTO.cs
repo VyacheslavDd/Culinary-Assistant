@@ -4,13 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Culinary_Assistant.Core.Enums
+namespace Culinary_Assistant.Core.DTO
 {
-	public enum CookingDifficulty
-	{
-		Any,
-		Easy,
-		Medium,
-		Hard
-	}
+	public record StandardResponseDTO<TDTO>(TDTO Data);
 }

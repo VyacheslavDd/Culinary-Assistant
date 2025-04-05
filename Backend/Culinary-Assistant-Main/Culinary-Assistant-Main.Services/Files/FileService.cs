@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.Constants;
 using Culinary_Assistant.Core.DTO;
+using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
 using Microsoft.Extensions.Configuration;
@@ -16,11 +17,11 @@ namespace Culinary_Assistant_Main.Services.Files
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly string _minioLocalHost = configuration[ConfigurationConstants.MinioLocalHost]!;
 
-		public async Task<List<string>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO)
+		public async Task<List<PictureUrl>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO)
 		{
 			var uniqueFileNames = filesDTO.Files.Select(f => FileUtils.GenerateUniqueNameForFileName(f.FileName)).ToList();
 			await _fileMessagesProducerService.SendUploadImagesMessagesAsync(filesDTO.Files, uniqueFileNames, bucketName, filesDTO.EntityInfo);
-			return uniqueFileNames.Select(fileName => $"{_minioLocalHost}/{bucketName}/{fileName}").ToList();
+			return uniqueFileNames.Select(fileName => new PictureUrl($"{_minioLocalHost}/{bucketName}/{fileName}")).ToList();
 		}
 	}
 }

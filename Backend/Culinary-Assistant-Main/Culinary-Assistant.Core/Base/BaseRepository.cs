@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Minio.DataModel.Notification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,16 @@ namespace Core.Base
 		public virtual async Task SaveChangesAsync()
 		{
 			await _dbContext.SaveChangesAsync();
+		}
+
+		public async Task LoadReferenceAsync<TProperty>(T entity, Expression<Func<T, TProperty?>> referenceExpression) where TProperty: class
+		{
+			await _dbSet.Entry(entity).Reference(referenceExpression).LoadAsync();
+		}
+
+		public async Task LoadCollectionAsync<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> collectionExpression) where TProperty : class
+		{
+			await _dbSet.Entry(entity).Collection(collectionExpression).LoadAsync();
 		}
 	}
 }

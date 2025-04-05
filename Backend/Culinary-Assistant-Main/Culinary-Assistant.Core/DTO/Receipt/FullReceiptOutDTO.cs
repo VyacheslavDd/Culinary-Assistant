@@ -18,6 +18,9 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 		public List<CookingStep> CookingSteps { get; set; }
 		public int Calories { get; set; }
 		public int CookingTime { get; set; }
+		public int Proteins { get; set; }
+		public int Fats { get; set; }
+		public int Carbohydrates { get; set; }
 		public List<Tag> Tags { get; set; }
 		public Category Category { get; set; }
 		public CookingDifficulty CookingDifficulty { get; set; }

@@ -24,6 +24,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 		{
 			modelBuilder.HasDefaultSchema("MainAppSchema");
 			new UserModelConfiguration().Configure(modelBuilder.Entity<User>());
+			new ReceiptModelConfiguration().Configure(modelBuilder.Entity<Receipt>());
 			base.OnModelCreating(modelBuilder);
 		}
 

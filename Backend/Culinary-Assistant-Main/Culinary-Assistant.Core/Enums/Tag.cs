@@ -8,6 +8,7 @@ namespace Culinary_Assistant.Core.Enums
 {
 	public enum Tag
 	{
+		Any,
 		Vegetarian,
 		Lean
 	}
