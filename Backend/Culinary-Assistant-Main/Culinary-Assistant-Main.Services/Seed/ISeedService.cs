@@ -8,6 +8,6 @@ namespace Culinary_Assistant_Main.Services.Seed
 {
 	public interface ISeedService
 	{
-		Task CreateAdministratorUserAsync();
+		Task<Guid> CreateAdministratorUserAsync();
 	}
 }

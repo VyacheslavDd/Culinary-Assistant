@@ -3,6 +3,7 @@ using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.ServicesResponses;
+using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Services.Receipts;
 using Microsoft.AspNetCore.Mvc;
 

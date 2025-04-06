@@ -16,19 +16,20 @@ namespace Culinary_Assistant_Main.Services.Seed
 		private readonly IUsersRepository _usersRepository = usersRepository;
 		private readonly ILogger _logger = logger;
 
-		public async Task CreateAdministratorUserAsync()
+		public async Task<Guid> CreateAdministratorUserAsync()
 		{
 			var adminLogin = "Culinary_Perfecto";
-			var doesAdminExists = await _usersRepository.GetBySelectorAsync(u => u.Login.Value == adminLogin);
-			if (doesAdminExists != null)
+			var existingAdmin = await _usersRepository.GetBySelectorAsync(u => u.Login.Value == adminLogin);
+			if (existingAdmin != null)
 			{
 				_logger.Information("Администратор уже создан. Дополнительных действий не требуется");
-				return;
+				return existingAdmin.Id;
 			}
 			var userDTO = new UserInDTO(adminLogin, "admin@admin.ru", "Culinar_scr");
 			var adminUser = User.Create(userDTO);
 			var adminGuid = await _usersRepository.AddAsync(adminUser.Value);
 			_logger.Information("Администратор создан: {guid}", adminGuid);
+			return adminGuid;
 		}
 	}
 }
