@@ -11,6 +11,6 @@ namespace Culinary_Assistant_Main.Services.Files
 {
 	public interface IFileService
 	{
-		Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO);
+		Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, string entityName, FilesDTO filesDTO);
 	}
 }

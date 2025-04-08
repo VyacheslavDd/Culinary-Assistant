@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO
 {
-	public record FilesDTO(string EntityInfo, List<IFormFile> Files);
+	public record FilesDTO(List<IFormFile> Files);
 }

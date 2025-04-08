@@ -2,6 +2,7 @@
 using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -16,10 +17,10 @@ namespace Culinary_Assistant_Main.Services.Files
 	{
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 
-		public async Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO)
+		public async Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, string entityName, FilesDTO filesDTO)
 		{
 			var uniqueFileNames = filesDTO.Files.Select(f => FileUtils.GenerateUniqueNameForFileName(f.FileName)).ToList();
-			await _fileMessagesProducerService.SendUploadImagesMessagesAsync(filesDTO.Files, uniqueFileNames, bucketName, filesDTO.EntityInfo);
+			await _fileMessagesProducerService.SendUploadImagesMessagesAsync(filesDTO.Files, uniqueFileNames, bucketName, entityName);
 			return uniqueFileNames.Select(fileName => new FilePath($"{bucketName}/{fileName}")).ToList();
 		}
 	}

@@ -13,9 +13,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Validators
 	{
 		public FilesDTOValidator()
 		{
-			RuleFor(f => f.EntityInfo).NotNull().NotEmpty().WithMessage("Название сущности не может быть пустым")
-				.MinimumLength(1).WithMessage("Название должно быть от 1 символа")
-				.MaximumLength(100).WithMessage("Название должно быть не более 100 символов");
 			RuleFor(f => f.Files).NotNull().WithMessage("Отправляемые файлы не должны быть null").
 				Must(files => files.Count <= MiscellaneousConstants.MaxFilesCount).WithMessage("Количество файлов не должно превышать 30").
 				ForEach(f =>

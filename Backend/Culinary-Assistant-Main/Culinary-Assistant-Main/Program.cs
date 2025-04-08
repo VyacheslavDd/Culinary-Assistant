@@ -20,6 +20,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<ConnectionOptions>(builder.Configuration.GetSection(ConfigurationConstants.PostgreSQL));
 builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection(ConfigurationConstants.RabbitMQ));
 
+builder.Services.AddCors(setup =>
+{
+	setup.AddPolicy(ConfigurationConstants.FrontendPolicy, config =>
+	{
+		config
+	   .WithOrigins(builder.Configuration[ConfigurationConstants.FrontendHost]!)
+	   .AllowAnyHeader()
+	   .AllowAnyMethod()
+	   .AllowCredentials();
+	});
+});
+
 builder.Host.AddSerilog();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
@@ -51,6 +63,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseCors(ConfigurationConstants.FrontendPolicy);
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();

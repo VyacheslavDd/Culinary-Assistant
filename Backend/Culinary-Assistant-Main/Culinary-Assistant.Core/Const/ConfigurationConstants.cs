@@ -12,5 +12,8 @@ namespace Culinary_Assistant.Core.Constants
 		public const string Minio = "Minio";
 		public const string RabbitMQ = "RabbitMQ";
 		public const string MinioLocalHost = "MinioLocalHost";
+		public const string FrontendHost = "FrontendHost";
+
+		public const string FrontendPolicy = "FrontendPolicy";
 	}
 }
