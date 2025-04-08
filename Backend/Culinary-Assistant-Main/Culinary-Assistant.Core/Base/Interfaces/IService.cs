@@ -11,7 +11,7 @@ namespace Core.Base.Interfaces
 		abstract Task<Result<Guid>> CreateAsync(TCreateDTO entityCreateRequest, bool autoSave=true);
 		Task SaveChangesAsync();
 		Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest);
-		Task<Result> NotBulkDeleteAsync(Guid entityId);
+		Task<Result<string>> NotBulkDeleteAsync(Guid entityId);
 		Task<Result<string>> BulkDeleteAsync(Guid entityId);
 	}
 }

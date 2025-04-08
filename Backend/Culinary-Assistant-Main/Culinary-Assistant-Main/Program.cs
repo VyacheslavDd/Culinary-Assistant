@@ -1,3 +1,4 @@
+using Core.Minio;
 using Core.Serilog;
 using Culinary_Assistant.Core.Constants;
 using Culinary_Assistant.Core.Options;
@@ -22,6 +23,7 @@ builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection(Con
 builder.Host.AddSerilog();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
+builder.Services.UseMinioWithoutFileService(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
 builder.Services.AddDomain();
 builder.Services.AddCustomServices();

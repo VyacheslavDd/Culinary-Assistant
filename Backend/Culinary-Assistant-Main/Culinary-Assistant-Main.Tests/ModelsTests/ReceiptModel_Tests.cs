@@ -20,7 +20,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		{
 			List<Ingredient> ingredients = [new Ingredient("Ingredient 1", 1, Measure.Gram)];
 			List<CookingStep> steps = [new CookingStep(1, "Chill")];
-			List<PictureUrl> pictureUrls = [new PictureUrl("http://picture.com")];
+			List<FilePath> pictureUrls = [new FilePath("http://picture.com")];
 			var receiptInDTO = new ReceiptInDTO("Receipt", "Description Receipt", [], Category.Soups, CookingDifficulty.Easy, 60, ingredients, steps, pictureUrls, Guid.Empty);
 			_receipt = Receipt.Create(receiptInDTO).Value;
 		}
@@ -90,7 +90,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void SetPictures_WorksCorrectly()
 		{
-			List<PictureUrl> pictures = [new PictureUrl("url1"), new PictureUrl("url2"), new PictureUrl("url3")];
+			List<FilePath> pictures = [new FilePath("url1"), new FilePath("url2"), new FilePath("url3")];
 			_receipt.SetPictures(pictures);
 			Assert.Multiple(() =>
 			{
@@ -177,6 +177,30 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		{
 			var steps = new List<CookingStep>() { new(1, "1"), new(3, "2") };
 			var res = _receipt.SetCookingSteps(steps);
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
+		public void CannotSet_EmptyIngredientsList()
+		{
+			var ingredients = new List<Ingredient>();
+			var res = _receipt.SetIngredients(ingredients);
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
+		public void CannotSet_EmptyCookingStepsList()
+		{
+			var cookingSteps = new List<CookingStep>();
+			var res = _receipt.SetCookingSteps(cookingSteps);
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
+		public void CannotSet_EmptyPicturesList()
+		{
+			var pictures = new List<FilePath>();
+			var res = _receipt.SetPictures(pictures);
 			Assert.That(res.IsFailure, Is.True);
 		}
 	}

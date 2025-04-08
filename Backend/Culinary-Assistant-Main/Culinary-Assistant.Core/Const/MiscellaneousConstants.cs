@@ -9,6 +9,7 @@ namespace Culinary_Assistant.Core.Const
 	public static class MiscellaneousConstants
 	{
 		public const char ValuesSeparator = '|';
+		public const char PathSeparator = '/';
 		public const int MaxFilesCount = 30;
 		public const int FilesByMessage = 3;
 		public const int FileMaxSize = 16777216;

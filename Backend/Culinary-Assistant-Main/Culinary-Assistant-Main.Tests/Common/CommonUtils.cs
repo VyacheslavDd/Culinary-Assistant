@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Minio;
+using Moq;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ namespace Culinary_Assistant_Main.Tests.Common
 		public static ILogger MockLogger()
 		{
 			var loggerMock = new Mock<ILogger>();
-			loggerMock.Setup(l => l.Information(It.IsAny<string>()));
+			loggerMock.Setup(l => l.Information(It.IsAny<string>(), It.IsAny<object[]>()));
+			loggerMock.Setup(l => l.Error(It.IsAny<string>(), It.IsAny<object[]>()));
 			return loggerMock.Object;
 		}
 	}

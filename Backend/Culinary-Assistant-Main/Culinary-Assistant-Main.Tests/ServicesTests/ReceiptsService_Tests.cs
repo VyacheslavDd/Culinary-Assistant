@@ -13,6 +13,11 @@ using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Microsoft.EntityFrameworkCore;
+using Culinary_Assistant_Main.Services.RabbitMQ.Images;
+using Moq;
+using Microsoft.Extensions.Options;
+using Culinary_Assistant.Core.Options;
+using Minio;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -26,12 +31,12 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		private readonly Func<Guid, ReceiptInDTO> _getFineReceiptInDTO = (Guid userId) => new("Пища", "Описание", [Tag.Vegetarian], Category.Any, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", 3, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
 					[new CookingStep(1, "Один"), new CookingStep(2, "Два")],
-					[new PictureUrl("https://placehold.co/600x400")], userId);
+					[new FilePath("https://placehold.co/600x400")], userId);
 
 		private readonly Func<Guid, ReceiptInDTO> _getWrongReceiptInDTO = (Guid userId) => new("", "Описание", [Tag.Vegetarian], Category.Any, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", -30, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
 					[new CookingStep(4, "Один"), new CookingStep(2, "Два")],
-					[new PictureUrl("https://placehold.co/600x400")], userId);
+					[new FilePath("https://placehold.co/600x400")], userId);
 
 		[SetUp]
 		public async Task SetUp()
@@ -43,7 +48,12 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var seedService = new SeedService(usersRepository, logger);
 			_userId = await seedService.CreateAdministratorUserAsync();
 			var usersService = new UsersService(usersRepository, logger);
-			_receiptsService = new ReceiptsService(usersService, receiptsRepository, logger);
+			var rabbitMqOptionsMock = new Mock<IOptions<RabbitMQOptions>>();
+			rabbitMqOptionsMock.Setup(o => o.Value).Returns(new RabbitMQOptions() { HostName = "" });
+			var producerService = new Mock<IFileMessagesProducerService>();
+			producerService.Setup(ps => ps.SendRemoveImagesMessageAsync(It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
+			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
+			_receiptsService = new ReceiptsService(usersService, producerService.Object, minioClientFactoryMock.Object, receiptsRepository, logger);
 		}
 
 		[TearDown]
@@ -203,6 +213,33 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var receipt = await _receiptsService.GetByGuidAsync(new Guid("01960773-8d6d-7f2c-b9db-f1bc5b4859a4"));
 			Assert.That(receipt, Is.Null);
+		}
+
+		[Test]
+		public async Task DeleteAsync_WorksCorrectly_When_HasEntitiesToRemove()
+		{
+			await AddReceiptsToDbContextAsync();
+			var receipt = (await _receiptsService.GetAllAsync())[0];
+			var res = await _receiptsService.NotBulkDeleteAsync(receipt.Id);
+			var receipts = await _receiptsService.GetAllAsync();
+			Assert.Multiple(() =>
+			{
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(res.Value, Does.Contain("1"));
+				Assert.That(receipts, Has.Count.EqualTo(2));
+			});
+		}
+
+		[Test]
+		public async Task DeleteAsync_WorksCorrectly_When_HasNoEntitiesToRemove()
+		{
+			await AddReceiptsToDbContextAsync();
+			var res = await _receiptsService.NotBulkDeleteAsync(Guid.Empty);
+			Assert.Multiple(() =>
+			{
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(res.Value, Does.Contain("0"));
+			});
 		}
 
 		private async Task AddReceiptsToDbContextAsync()

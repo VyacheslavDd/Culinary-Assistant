@@ -50,7 +50,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 				.ForMember(fr => fr.Tags, opt => opt.MapFrom(r => Miscellaneous.GetTagsFromString(r.Tags)))
 				.ForMember(fr => fr.Ingredients, opt => opt.MapFrom(r => JsonSerializer.Deserialize<List<Ingredient>>(r.Ingredients, _jsonSerializerOptions)))
 				.ForMember(fr => fr.CookingSteps, opt => opt.MapFrom(r => JsonSerializer.Deserialize<List<CookingStep>>(r.CookingSteps, _jsonSerializerOptions)))
-				.ForMember(fr => fr.PicturesUrls, opt => opt.MapFrom(r => JsonSerializer.Deserialize<List<PictureUrl>>(r.PicturesUrls, _jsonSerializerOptions)))
+				.ForMember(fr => fr.PicturesUrls, opt => opt.MapFrom(r => JsonSerializer.Deserialize<List<FilePath>>(r.PicturesUrls, _jsonSerializerOptions)))
 				.ForPath(fr => fr.User.Id, opt => opt.MapFrom(r => r.User == null ? Guid.Empty : r.User.Id))
 				.ForPath(fr => fr.User.Login, opt => opt.MapFrom(r => r.User == null ? "DELETED" : r.User.Login.Value))
 				.ForPath(fr => fr.User.PictureUrl, opt => opt.MapFrom(r => r.User == null ? "" : r.User.ProfilePictureUrl));

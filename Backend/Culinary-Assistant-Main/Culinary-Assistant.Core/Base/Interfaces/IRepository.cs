@@ -19,7 +19,7 @@ namespace Core.Base.Interfaces
 		Task LoadCollectionAsync<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> collectionExpression) where TProperty: class;
 		Task<Guid> AddAsync(T entity, bool autoSave=true);
 		Task<int> BulkDeleteAsync(Expression<Func<T, bool>> selector);
-		Task<Result> NotBulkDeleteAsync(Expression<Func<T, bool>> selector);
+		Task<Result<string>> NotBulkDeleteAsync(Expression<Func<T, bool>> selector);
 		Task SaveChangesAsync();
 	}
 }

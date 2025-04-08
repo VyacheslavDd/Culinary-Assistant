@@ -98,8 +98,6 @@ services:
       done;
       /usr/bin/mc alias set myminio http://minio:9000 culinaryadmin culinarypassword;
       /usr/bin/mc mb --ignore-existing myminio/receiptpictures;
-      /usr/bin/mc anonymous set public myminio/receiptpictures;
       /usr/bin/mc mb --ignore-existing myminio/userpictures;
-      /usr/bin/mc anonymous set public myminio/userpictures;
       exit 0;
       "

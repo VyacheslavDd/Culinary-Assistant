@@ -35,19 +35,19 @@ namespace Culinary_Assistant_Main.Domain.Models
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
 		{
-			var results = Miscellaneous.CreateResultList(5);
+			var results = Miscellaneous.CreateResultList(6);
 			var receipt = new Receipt();
 			results[0] = receipt.SetTitle(receiptInDTO.Title);
 			results[1] = receipt.SetDescription(receiptInDTO.Description);
 			results[2] = receipt.SetCookingTime(receiptInDTO.CookingTime);
 			results[3] = receipt.SetCookingSteps(receiptInDTO.CookingSteps);
 			results[4] = receipt.SetIngredients(receiptInDTO.Ingredients);
+			results[5] = receipt.SetPictures(receiptInDTO.PicturesUrls);
 			if (results.Any(r => r.IsFailure))
 				return Result.Failure<Receipt>(Miscellaneous.ResultFailureWithAllFailuresFromResultList(results).Error);
 			receipt.SetCategory(receiptInDTO.Category);
 			receipt.SetCookingDifficulty(receiptInDTO.CookingDifficulty);
 			receipt.SetTags(receiptInDTO.Tags);
-			receipt.SetPictures(receiptInDTO.PicturesUrls);
 			receipt.SetUserId(receiptInDTO.UserId);
 			return Result.Success(receipt);
 		}
@@ -93,6 +93,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 
 		public Result SetIngredients(List<Ingredient> ingredients)
 		{
+			if (ingredients.Count == 0) return Result.Failure("Должны присутствовать ингредиенты");
 			foreach (var ingredient in ingredients) { 
 				if (string.IsNullOrWhiteSpace(ingredient.Name))
 					return Result.Failure("Название ингредиента не может быть пустым");
@@ -105,6 +106,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 
 		public Result SetCookingSteps(List<CookingStep> cookingSteps)
 		{
+			if (cookingSteps.Count == 0) return Result.Failure("Последовательность шагов не может быть пустой");
 			var currentStep = 1;
 			foreach (var step in cookingSteps)
 			{
@@ -118,10 +120,12 @@ namespace Culinary_Assistant_Main.Domain.Models
 			return Result.Success();
 		}
 
-		public void SetPictures(List<PictureUrl> picturesUrls)
+		public Result SetPictures(List<FilePath> picturesUrls)
 		{
+			if (picturesUrls.Count == 0) return Result.Failure("Должна присутствовать хотя бы обложка у рецепта");
 			MainPictureUrl = picturesUrls[0].Url;
 			PicturesUrls = JsonSerializer.Serialize(picturesUrls);
+			return Result.Success();
 		}
 
 		public void SetUserId(Guid userId)

@@ -10,5 +10,7 @@ namespace Culinary_Assistant.Core.Const
 	{
 		public const string ReceiptsImagesBucketName = "receiptpictures";
 		public const string UserProfilePicturesBucketName = "userpictures";
+
+		public const int PresignedUrlExpiryTimeInSeconds = 3600;
 	}
 }

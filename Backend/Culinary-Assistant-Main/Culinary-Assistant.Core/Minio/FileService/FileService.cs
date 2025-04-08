@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant.Core.Shared.Serializable;
+﻿using Culinary_Assistant.Core.Const;
+using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -23,8 +24,8 @@ namespace Core.Minio.Service
 			using var client = _minioClientFactory.CreateClient();
 			var bucketExistsArgs = new BucketExistsArgs().WithBucket(bucketName);
 			var bucketExists = await client.BucketExistsAsync(bucketExistsArgs);
+			var fileNames = filePaths.Select(f => f.Split(MiscellaneousConstants.PathSeparator).Last());
 			if (!bucketExists) return;
-			var fileNames = filePaths.Select(f => f.Split('/').Last());
 			foreach ( var fileName in fileNames)
 			{
 				var removeObjectArgs = new RemoveObjectArgs().WithBucket(bucketName).WithObject(fileName);

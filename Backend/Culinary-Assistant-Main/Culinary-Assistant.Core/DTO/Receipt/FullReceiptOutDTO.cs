@@ -26,7 +26,7 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 		public CookingDifficulty CookingDifficulty { get; set; }
 		public int Popularity { get; set; }
 		public string MainPictureUrl { get; set; }
-		public List<PictureUrl> PicturesUrls { get; set; }
+		public List<FilePath> PicturesUrls { get; set; }
 		public ShortUserOutDTO User { get; set; }
 	}
 }

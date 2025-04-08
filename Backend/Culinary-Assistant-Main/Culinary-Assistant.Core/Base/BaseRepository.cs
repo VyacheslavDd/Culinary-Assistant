@@ -50,13 +50,13 @@ namespace Core.Base
 			return await _dbSet.Where(selector).ExecuteDeleteAsync();
 		}
 
-		public virtual async Task<Result> NotBulkDeleteAsync(Expression<Func<T, bool>> selector)
+		public virtual async Task<Result<string>> NotBulkDeleteAsync(Expression<Func<T, bool>> selector)
 		{
 			var entities = await _dbSet.Where(selector).ToListAsync();
-			if (entities.Count == 0) return Result.Failure("Отсутствуют сущности для удаления");
+			if (entities.Count == 0) return Result.Success("Удалено строк: 0");
 			_dbSet.RemoveRange(entities);
 			await SaveChangesAsync();
-			return Result.Success();
+			return Result.Success($"Удалено строк: {entities.Count}");
 		}
 
 		public virtual async Task SaveChangesAsync()

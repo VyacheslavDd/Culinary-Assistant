@@ -10,5 +10,5 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 {
 	public record UpdateReceiptDTO(string? Title = null, string? Description = null, List<Tag>? Tags = null, Category? Category = null,
 		CookingDifficulty? CookingDifficulty = null, int? CookingTime = null, List<Ingredient>? Ingredients = null,
-		List<CookingStep>? CookingSteps = null, List<PictureUrl>? PicturesUrls = null);
+		List<CookingStep>? CookingSteps = null, List<FilePath>? PicturesUrls = null);
 }

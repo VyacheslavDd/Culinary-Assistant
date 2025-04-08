@@ -3,9 +3,11 @@ using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.ServicesResponses;
+using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Services.Receipts;
 using Microsoft.AspNetCore.Mvc;
+using Minio;
 
 namespace Culinary_Assistant_Main.Controllers
 {
@@ -31,6 +33,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var receipts = await _receiptsService.GetAllAsync(receiptsFilter, cancellationToken);
 			if (receipts.EntitiesCount == 0) return NoContent();
 			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Data);
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(mappedReceipts, cancellationToken);
 			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.EntitiesCount, receipts.PagesCount);
 			return Ok(mappedResponse);
 		}
@@ -50,6 +53,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var receipt = await _receiptsService.GetByGuidAsync(id, cancellationToken);
 			if (receipt == null) return NotFound();
 			var mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
+			await _receiptsService.SetPresignedUrlForReceiptAsync(mappedReceipt, cancellationToken);
 			return Ok(mappedReceipt);
 		}
 
@@ -97,7 +101,7 @@ namespace Culinary_Assistant_Main.Controllers
 		[Route("{id}")]
 		public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
 		{
-			var response = await _receiptsService.BulkDeleteAsync(id);
+			var response = await _receiptsService.NotBulkDeleteAsync(id);
 			if (response.IsFailure) return BadRequest(response.Error);
 			return Ok(response.Value);
 		}

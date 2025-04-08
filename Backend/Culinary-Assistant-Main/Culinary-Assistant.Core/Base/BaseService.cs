@@ -43,7 +43,7 @@ namespace Core.Base
 			return Result.Success();
 		}
 
-		public virtual async Task<Result> NotBulkDeleteAsync(Guid entityId)
+		public virtual async Task<Result<string>> NotBulkDeleteAsync(Guid entityId)
 		{
 			var response = await _repository.NotBulkDeleteAsync(_idSelectorExpression(entityId));
 			return response;

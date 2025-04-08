@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.Shared.Serializable
 {
-	public record PictureUrl(string Url);
+	public record FilePath(string Url);
 }

@@ -12,16 +12,15 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.Files
 {
-	public class FileService(IFileMessagesProducerService fileMessagesProducerService, IConfiguration configuration) : IFileService
+	public class FileService(IFileMessagesProducerService fileMessagesProducerService) : IFileService
 	{
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
-		private readonly string _minioLocalHost = configuration[ConfigurationConstants.MinioLocalHost]!;
 
-		public async Task<List<PictureUrl>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO)
+		public async Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO)
 		{
 			var uniqueFileNames = filesDTO.Files.Select(f => FileUtils.GenerateUniqueNameForFileName(f.FileName)).ToList();
 			await _fileMessagesProducerService.SendUploadImagesMessagesAsync(filesDTO.Files, uniqueFileNames, bucketName, filesDTO.EntityInfo);
-			return uniqueFileNames.Select(fileName => new PictureUrl($"{_minioLocalHost}/{bucketName}/{fileName}")).ToList();
+			return uniqueFileNames.Select(fileName => new FilePath($"{bucketName}/{fileName}")).ToList();
 		}
 	}
 }
