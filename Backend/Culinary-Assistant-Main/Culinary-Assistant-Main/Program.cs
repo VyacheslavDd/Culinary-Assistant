@@ -6,6 +6,7 @@ using Culinary_Assistant.Core.Shared.Middlewares;
 using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Mappers;
 using Culinary_Assistant_Main.Infrastructure.Startups;
+using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Seed;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -19,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ConnectionOptions>(builder.Configuration.GetSection(ConfigurationConstants.PostgreSQL));
 builder.Services.Configure<RabbitMQOptions>(builder.Configuration.GetSection(ConfigurationConstants.RabbitMQ));
+builder.Services.Configure<ElasticSearchOptions>(builder.Configuration.GetSection(ConfigurationConstants.ElasticSearchOptions));
 
 builder.Services.AddCors(setup =>
 {
@@ -79,6 +81,8 @@ using (var scope = app.Services.CreateScope())
 	await dbContext.Database.MigrateAsync();
 	var seedService = scope.ServiceProvider.GetRequiredService<ISeedService>();
 	await seedService.CreateAdministratorUserAsync();
+	var elasticReceiptsService = scope.ServiceProvider.GetRequiredService<IElasticReceiptsService>();
+	await elasticReceiptsService.CreateReceiptsIndexAsync();
 }
 
 app.Run();

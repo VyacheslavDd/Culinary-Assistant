@@ -19,6 +19,8 @@ services:
     depends_on:
         culinarydb:
            condition: service_healthy
+        elasticsearch:
+           condition: service_healthy
 
   culinary-assistant-images:
     networks:
@@ -27,7 +29,8 @@ services:
     container_name: CulinaryAssistantImages
     restart: always
     depends_on:
-        - rabbitmq
+        rabbitmq:
+            condition: service_healthy
     ports:
         - "5002:5002"
     build:
@@ -65,6 +68,11 @@ services:
     image: rabbitmq:management
     volumes:
         - "./volumes/rabbitmq:/var/lib/rabbitmq"
+    healthcheck:
+        test: rabbitmq-diagnostics -q ping
+        interval: 5s
+        timeout: 5s
+        retries: 40
 
   minio:
     networks:
@@ -93,6 +101,26 @@ services:
     ports:
         - "80:80"
 
+  elasticsearch:
+    networks:
+        - culinary-network
+    container_name: ElasticSearch
+    image: elasticsearch:7.17.9
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - ingest.geoip.downloader.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - "./volumes/elasticsearch:/usr/share/elasticsearch/data"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   miniobucketscreator:
     container_name: BucketsCreator

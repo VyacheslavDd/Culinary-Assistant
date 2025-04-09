@@ -20,6 +20,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IFileService, FileService>();
 			services.AddScoped<IFileMessagesProducerService, FileMessagesProducerService>();
 			services.AddScoped<IUsersService, UsersService>();
+			services.AddScoped<IElasticReceiptsService, ElasticReceiptsService>();
 			services.AddScoped<IReceiptsService, ReceiptsService>();
 			services.AddScoped<ISeedService, SeedService>();
 			return services;

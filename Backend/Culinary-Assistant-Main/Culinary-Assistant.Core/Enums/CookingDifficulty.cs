@@ -8,7 +8,6 @@ namespace Culinary_Assistant.Core.Enums
 {
 	public enum CookingDifficulty
 	{
-		Any,
 		Easy,
 		Medium,
 		Hard

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Culinary_Assistant.Core.Enums
+namespace Culinary_Assistant.Core.Options
 {
-	public enum Tag
+	public class ElasticSearchOptions
 	{
-		Vegetarian,
-		Lean
+		public string Url { get; set; }
 	}
 }

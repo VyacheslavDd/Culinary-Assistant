@@ -99,6 +99,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 					return Result.Failure("Название ингредиента не может быть пустым");
 				if (ingredient.NumericValue <= 0)
 					return Result.Failure("Количество ингредиента должно быть больше 0");
+				if (ingredient.Measure == Measure.None)
+					return Result.Failure("Мера не должна быть None");
 			}
 			Ingredients = JsonSerializer.Serialize(ingredients);
 			return Result.Success();

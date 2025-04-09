@@ -31,10 +31,11 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> GetAllAsync([FromQuery] ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
 		{
 			var receipts = await _receiptsService.GetAllAsync(receiptsFilter, cancellationToken);
-			if (receipts.EntitiesCount == 0) return NoContent();
-			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Data);
+			if (receipts.IsFailure) return StatusCode(500, receipts.Error);
+			if (receipts.Value.EntitiesCount == 0) return NoContent();
+			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Value.Data);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(mappedReceipts, cancellationToken);
-			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.EntitiesCount, receipts.PagesCount);
+			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.Value.EntitiesCount, receipts.Value.PagesCount);
 			return Ok(mappedResponse);
 		}
 

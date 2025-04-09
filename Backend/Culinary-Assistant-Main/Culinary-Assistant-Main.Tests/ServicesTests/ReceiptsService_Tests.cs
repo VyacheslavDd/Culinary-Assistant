@@ -18,6 +18,7 @@ using Moq;
 using Microsoft.Extensions.Options;
 using Culinary_Assistant.Core.Options;
 using Minio;
+using Elastic.Clients.Elasticsearch;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -28,12 +29,12 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		private Guid _userId;
 		private IReceiptsService _receiptsService;
 
-		private readonly Func<Guid, ReceiptInDTO> _getFineReceiptInDTO = (Guid userId) => new("Пища", "Описание", [Tag.Vegetarian], Category.Any, CookingDifficulty.Easy,
+		private readonly Func<Guid, ReceiptInDTO> _getFineReceiptInDTO = (Guid userId) => new("Пища", "Описание", [Tag.Vegetarian], Category.Dinner, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", 3, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
 					[new CookingStep(1, "Один"), new CookingStep(2, "Два")],
 					[new FilePath("https://placehold.co/600x400")], userId);
 
-		private readonly Func<Guid, ReceiptInDTO> _getWrongReceiptInDTO = (Guid userId) => new("", "Описание", [Tag.Vegetarian], Category.Any, CookingDifficulty.Easy,
+		private readonly Func<Guid, ReceiptInDTO> _getWrongReceiptInDTO = (Guid userId) => new("", "Описание", [Tag.Vegetarian], Category.Breakfast, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", -30, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
 					[new CookingStep(4, "Один"), new CookingStep(2, "Два")],
 					[new FilePath("https://placehold.co/600x400")], userId);
@@ -53,7 +54,10 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var producerService = new Mock<IFileMessagesProducerService>();
 			producerService.Setup(ps => ps.SendRemoveImagesMessageAsync(It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
-			_receiptsService = new ReceiptsService(usersService, producerService.Object, minioClientFactoryMock.Object, receiptsRepository, logger);
+			var elasticServiceMock = new Mock<IElasticReceiptsService>();
+			elasticServiceMock.Setup(esm => esm.GetReceiptIdsBySearchParametersAsync(It.IsAny<ReceiptsFilterForElasticSearch>()))
+				.Returns(Task.FromResult(CSharpFunctionalExtensions.Result.Success<List<Guid>>([Guid.Empty])));
+			_receiptsService = new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, minioClientFactoryMock.Object, receiptsRepository, logger);
 		}
 
 		[TearDown]
@@ -85,8 +89,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var receipts = await _receiptsService.GetAllAsync(filter);
 			Assert.Multiple(() =>
 			{
-				Assert.That(receipts.EntitiesCount, Is.EqualTo(9));
-				Assert.That(receipts.PagesCount, Is.EqualTo(5));
+				Assert.That(receipts.Value.EntitiesCount, Is.EqualTo(9));
+				Assert.That(receipts.Value.PagesCount, Is.EqualTo(5));
 			});
 		}
 
@@ -95,13 +99,6 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Limit: 1, Page: 3));
 			Assert.That(receipts.Data[0].Title.Value, Is.EqualTo("Название"));
-		}
-
-		[Test]
-		public async Task GetAllAsync_ByTitle_WorksCorrectly()
-		{
-			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SearchByTitle: "а"));
-			Assert.That(receipts.Data.Select(r => r.Title.Value), Is.EquivalentTo(new List<string> { "Название", "Салат" }));
 		}
 
 		[Test]
@@ -254,7 +251,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			await AddReceiptsToDbContextAsync();
 			var receipts = await _receiptsService.GetAllAsync(filter);
-			return receipts;
+			return receipts.Value;
 		}
 
 		private async Task<Receipt> GetFirstReceiptAsync()

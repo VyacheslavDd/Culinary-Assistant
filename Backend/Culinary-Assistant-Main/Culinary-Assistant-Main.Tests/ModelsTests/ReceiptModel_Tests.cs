@@ -58,7 +58,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		public void SetTags_WorksCorrectly()
 		{
 			_receipt.SetTags([Tag.Vegetarian, Tag.Lean]);
-			Assert.That(_receipt.Tags, Is.EqualTo("1|2"));
+			Assert.That(_receipt.Tags, Is.EqualTo("0|1"));
 		}
 
 		[Test]

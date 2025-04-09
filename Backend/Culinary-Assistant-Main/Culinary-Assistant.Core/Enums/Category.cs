@@ -8,8 +8,8 @@ namespace Culinary_Assistant.Core.Enums
 {
 	public enum Category
 	{
-		Any,
 		Soups,
-		Dinner
+		Dinner,
+		Breakfast
 	}
 }

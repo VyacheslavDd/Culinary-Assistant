@@ -23,23 +23,32 @@ using Minio;
 
 namespace Culinary_Assistant_Main.Services.Receipts
 {
-	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IMinioClientFactory minioClientFactory,
-		IReceiptsRepository receiptsRepository, ILogger logger) :
+	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService,
+		IMinioClientFactory minioClientFactory, IReceiptsRepository receiptsRepository, ILogger logger) :
 		BaseService<Receipt, ReceiptInDTO, UpdateReceiptDTO>(receiptsRepository, logger), IReceiptsService
 	{
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
+		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
-		public async Task<EntitiesResponseWithCountAndPages<Receipt>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default)
+		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default)
 		{
-			var filteredReceipts = await DoReceiptsFilteringAsync(receiptsFilter, cancellationToken);
+			var elasticFilter = new ReceiptsFilterForElasticSearch(receiptsFilter.SearchByTitle, receiptsFilter.SearchByIngredients, receiptsFilter.Page, receiptsFilter.Limit);
+			List<Guid> requiredReceiptsIds = [Guid.Empty];
+			if (elasticFilter.TitleQuery != "" || elasticFilter.IngredientsQuery != "")
+			{
+				var idsResult = await _elasticReceiptsService.GetReceiptIdsBySearchParametersAsync(elasticFilter);
+				if (idsResult.IsFailure) return Result.Failure<EntitiesResponseWithCountAndPages<Receipt>>(idsResult.Error);
+				requiredReceiptsIds = idsResult.Value;
+			}
+			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, receiptsFilter, cancellationToken);
 			var dataCount = filteredReceipts.Count;
-			var pagesCount = (int)Math.Ceiling((double)dataCount / receiptsFilter.Limit);
-			var currentPage = filteredReceipts.Skip(receiptsFilter.Limit * (receiptsFilter.Page - 1))
-										    .Take(receiptsFilter.Limit)
+			var pagesCount = (int)Math.Ceiling((double)dataCount / elasticFilter.Size);
+			var currentPage = filteredReceipts.Skip(elasticFilter.Size * (elasticFilter.Page - 1))
+										    .Take(elasticFilter.Size)
 											.ToList();
-			return new EntitiesResponseWithCountAndPages<Receipt>(currentPage, dataCount, pagesCount);
+			return Result.Success(new EntitiesResponseWithCountAndPages<Receipt>(currentPage, dataCount, pagesCount));
 		}
 
 		public async override Task<Receipt?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
@@ -69,7 +78,10 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (updateRequest.PicturesUrls != null)
 				results[5] = existingReceipt.SetPictures(updateRequest.PicturesUrls);
 			if (!results.All(r => r.IsSuccess)) return Miscellaneous.ResultFailureWithAllFailuresFromResultList(results);
-			return await base.NotBulkUpdateAsync(entityId, updateRequest);
+			var res = await base.NotBulkUpdateAsync(entityId, updateRequest);
+			if (res.IsSuccess)
+				await _elasticReceiptsService.ReindexReceiptAsync(existingReceipt);
+			return res;
 		}
 
 		public override async Task<Result<Guid>> CreateAsync(ReceiptInDTO entityCreateRequest, bool autoSave = true)
@@ -77,8 +89,15 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			var existingUser = await _usersService.GetByGuidAsync(entityCreateRequest.UserId);
 			if (existingUser == null) return Result.Failure<Guid>($"Пользователя с Guid {entityCreateRequest.UserId} не существует");
 			var receiptResult = Receipt.Create(entityCreateRequest);
-			if (receiptResult.IsSuccess) receiptResult.Value.SetNutrients(20, 15, 20, 30);
-			return await AddToRepositoryAsync(receiptResult);
+			if (!receiptResult.IsSuccess)
+				return Result.Failure<Guid>(receiptResult.Error);
+			var nutrientsResult = receiptResult.Value.SetNutrients(20, 15, 20, 30);
+			if (!nutrientsResult.IsSuccess)
+				return Result.Failure<Guid>(nutrientsResult.Error);
+			var res = await AddToRepositoryAsync(receiptResult);
+			if (res.IsSuccess)
+				await _elasticReceiptsService.IndexReceiptAsync(receiptResult.Value, res.Value);
+			return res;
 		}
 
 		public override async Task<Result<string>> NotBulkDeleteAsync(Guid entityId)
@@ -87,17 +106,20 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (entity != null) {
 				var pictureUrls = JsonSerializer.Deserialize<List<FilePath>>(entity.PicturesUrls).Select(x => x.Url).ToList();
 				await _fileMessagesProducerService.SendRemoveImagesMessageAsync(pictureUrls, BucketConstants.ReceiptsImagesBucketName, _entityTypeName);
-					}
+				await _elasticReceiptsService.RemoveReceiptIndexAsync(entity);
+				}
 			return await base.NotBulkDeleteAsync(entityId);
 		}
 
-		private async Task<List<Receipt>> DoReceiptsFilteringAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
+		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
 		{
 			var tags = new HashSet<Tag>(receiptsFilter.Tags ?? []);
+			var hadEmpty = requiredIds.Count > 0 && requiredIds[0] == Guid.Empty;
+			var idsHashtag = new HashSet<Guid>(requiredIds);
 			var data = await _repository.GetAll()
-				.Where(r => receiptsFilter.SearchByTitle == string.Empty || r.Title.Value.ToLower().Contains(receiptsFilter.SearchByTitle.ToLower()))
-				.Where(r => receiptsFilter.Category == Category.Any || r.Category == receiptsFilter.Category)
-				.Where(r => receiptsFilter.CookingDifficulty == CookingDifficulty.Any || r.CookingDifficulty == receiptsFilter.CookingDifficulty)
+				.Where(r => hadEmpty || idsHashtag.Contains(r.Id))
+				.Where(r => receiptsFilter.Category == null || r.Category == receiptsFilter.Category)
+				.Where(r => receiptsFilter.CookingDifficulty == null || r.CookingDifficulty == receiptsFilter.CookingDifficulty)
 				.ToListAsync(cancellationToken);
 			var filteredByTags = data.Where(r => tags.Count == 0 || Miscellaneous.GetTagsFromString(r.Tags).Any(t => tags.Contains(t))).ToList();
 			return filteredByTags;

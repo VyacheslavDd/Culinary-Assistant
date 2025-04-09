@@ -15,5 +15,6 @@ namespace Culinary_Assistant.Core.Const
 		public const int FileMaxSize = 16777216;
 
 		public static HashSet<string> SupportedFileExtensions => [".jpg", ".png", ".gif", ".jpeg"];
+		public static string ReceiptsElasticSearchIndex = "receipts";
 	}
 }

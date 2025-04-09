@@ -15,7 +15,7 @@ namespace Culinary_Assistant_Main.Tests.Data
 	{
 		public static List<Receipt> Receipts =>
 			[
-				Receipt.Create(new ReceiptInDTO("Название", "Описание", [Tag.Vegetarian], Category.Any, CookingDifficulty.Easy,
+				Receipt.Create(new ReceiptInDTO("Название", "Описание", [Tag.Vegetarian], Category.Breakfast, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", 3, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
 					[new CookingStep(1, "Один"), new CookingStep(2, "Два")],
 					[new FilePath("https://placehold.co/600x400")], default)).Value,
