@@ -2,6 +2,7 @@
 using Culinary_Assistant_Main.Services.Files;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
 using Culinary_Assistant_Main.Services.Receipts;
+using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Seed;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IFileMessagesProducerService, FileMessagesProducerService>();
 			services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<IElasticReceiptsService, ElasticReceiptsService>();
+			services.AddScoped<IElasticReceiptsCollectionsService, ElasticReceiptsCollectionsService>();
 			services.AddScoped<IReceiptsService, ReceiptsService>();
 			services.AddScoped<ISeedService, SeedService>();
 			return services;

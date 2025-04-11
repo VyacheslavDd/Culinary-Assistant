@@ -21,8 +21,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 	{
 
 		private readonly ILogger _logger = logger;
-		private readonly ElasticsearchClient _elasticsearchClient = new(new ElasticsearchClientSettings(new Uri(options.Value.Url))
-				.DefaultIndex(MiscellaneousConstants.ReceiptsElasticSearchIndex));
+		private readonly ElasticsearchClient _elasticsearchClient = new(new ElasticsearchClientSettings(new Uri(options.Value.Url)));
 
 		private readonly Func<Receipt, Guid, ReceiptIndexDto> _receiptToIndexDTO = (Receipt receipt, Guid id) =>
 		{

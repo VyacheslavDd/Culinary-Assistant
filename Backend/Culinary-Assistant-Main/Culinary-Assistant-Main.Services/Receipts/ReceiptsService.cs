@@ -76,7 +76,13 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (updateRequest.CookingSteps != null)
 				results[4] = existingReceipt.SetCookingSteps(updateRequest.CookingSteps);
 			if (updateRequest.PicturesUrls != null)
+			{
+				var oldMainPictureUrl = existingReceipt.MainPictureUrl;
 				results[5] = existingReceipt.SetPictures(updateRequest.PicturesUrls);
+				await _repository.LoadCollectionAsync(existingReceipt, r => r.ReceiptCollections);
+				foreach (var collection in existingReceipt.ReceiptCollections)
+					collection.UpdateCoverIfPresented(oldMainPictureUrl, existingReceipt.MainPictureUrl);
+			}
 			if (!results.All(r => r.IsSuccess)) return Miscellaneous.ResultFailureWithAllFailuresFromResultList(results);
 			var res = await base.NotBulkUpdateAsync(entityId, updateRequest);
 			if (res.IsSuccess)
@@ -104,25 +110,14 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		{
 			var entity = await GetByGuidAsync(entityId);
 			if (entity != null) {
+				await _repository.LoadCollectionAsync(entity, r => r.ReceiptCollections);
+				foreach (var collection in entity.ReceiptCollections)
+					collection.DeleteCoverIfPresented(entity.MainPictureUrl);
 				var pictureUrls = JsonSerializer.Deserialize<List<FilePath>>(entity.PicturesUrls).Select(x => x.Url).ToList();
 				await _fileMessagesProducerService.SendRemoveImagesMessageAsync(pictureUrls, BucketConstants.ReceiptsImagesBucketName, _entityTypeName);
 				await _elasticReceiptsService.RemoveReceiptIndexAsync(entity);
 				}
 			return await base.NotBulkDeleteAsync(entityId);
-		}
-
-		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
-		{
-			var tags = new HashSet<Tag>(receiptsFilter.Tags ?? []);
-			var hadEmpty = requiredIds.Count > 0 && requiredIds[0] == Guid.Empty;
-			var idsHashtag = new HashSet<Guid>(requiredIds);
-			var data = await _repository.GetAll()
-				.Where(r => hadEmpty || idsHashtag.Contains(r.Id))
-				.Where(r => receiptsFilter.Category == null || r.Category == receiptsFilter.Category)
-				.Where(r => receiptsFilter.CookingDifficulty == null || r.CookingDifficulty == receiptsFilter.CookingDifficulty)
-				.ToListAsync(cancellationToken);
-			var filteredByTags = data.Where(r => tags.Count == 0 || Miscellaneous.GetTagsFromString(r.Tags).Any(t => tags.Contains(t))).ToList();
-			return filteredByTags;
 		}
 
 		public async Task SetPresignedUrlsForReceiptsAsync(List<ShortReceiptOutDTO> receipts, CancellationToken cancellationToken = default)
@@ -141,6 +136,20 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			var presignedPictures = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, receipt.PicturesUrls);
 			receipt.PicturesUrls = presignedPictures;
 			receipt.MainPictureUrl = receipt.PicturesUrls[0].Url;
+		}
+
+		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
+		{
+			var tags = new HashSet<Tag>(receiptsFilter.Tags ?? []);
+			var hadEmpty = requiredIds.Count > 0 && requiredIds[0] == Guid.Empty;
+			var idsHashtag = new HashSet<Guid>(requiredIds);
+			var data = await _repository.GetAll()
+				.Where(r => hadEmpty || idsHashtag.Contains(r.Id))
+				.Where(r => receiptsFilter.Category == null || r.Category == receiptsFilter.Category)
+				.Where(r => receiptsFilter.CookingDifficulty == null || r.CookingDifficulty == receiptsFilter.CookingDifficulty)
+				.ToListAsync(cancellationToken);
+			var filteredByTags = data.Where(r => tags.Count == 0 || Miscellaneous.GetTagsFromString(r.Tags).Any(t => tags.Contains(t))).ToList();
+			return filteredByTags;
 		}
 	}
 }

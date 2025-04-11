@@ -7,6 +7,7 @@ using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Mappers;
 using Culinary_Assistant_Main.Infrastructure.Startups;
 using Culinary_Assistant_Main.Services.Receipts;
+using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Seed;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -82,7 +83,9 @@ using (var scope = app.Services.CreateScope())
 	var seedService = scope.ServiceProvider.GetRequiredService<ISeedService>();
 	await seedService.CreateAdministratorUserAsync();
 	var elasticReceiptsService = scope.ServiceProvider.GetRequiredService<IElasticReceiptsService>();
+	var elasticCollectionReceiptsService = scope.ServiceProvider.GetRequiredService<IElasticReceiptsCollectionsService>();
 	await elasticReceiptsService.CreateReceiptsIndexAsync();
+	await elasticCollectionReceiptsService.CreateReceiptsCollectionsIndexAsync();
 }
 
 app.Run();

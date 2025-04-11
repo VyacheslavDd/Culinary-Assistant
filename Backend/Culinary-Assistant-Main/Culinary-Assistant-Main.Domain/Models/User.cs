@@ -14,6 +14,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 	public class User : Core.Base.Entity<Guid>
 	{
 		private readonly List<Receipt> _receipts = [];
+		private readonly List<ReceiptCollection> _receiptCollections = [];
 
 		public Login Login { get; private set; }
 		public Phone Phone { get; private set; }
@@ -21,6 +22,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public string? ProfilePictureUrl { get; private set; }
 		public string PasswordHash { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
+		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 
 		public static Result<User> Create(UserInDTO userInDTO)
 		{

@@ -18,6 +18,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 {
 	public class Receipt : Core.Base.Entity<Guid>
 	{
+		private readonly List<ReceiptCollection> _receiptCollections = [];
+
 		public Text Title { get; private set; }
 		public Text Description { get; private set; }
 		public CookingDifficulty CookingDifficulty { get; private set; }
@@ -32,6 +34,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public string PicturesUrls { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
+		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
 		{
