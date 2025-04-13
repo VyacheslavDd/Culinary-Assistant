@@ -3,6 +3,7 @@ using Culinary_Assistant_Main.Infrastructure.Repositories;
 using Culinary_Assistant_Main.Services.Seed;
 using Culinary_Assistant_Main.Services.Users;
 using Culinary_Assistant_Main.Tests.Common;
+using Minio;
 using Moq;
 using Serilog;
 using System;
@@ -27,7 +28,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			_seedService = new SeedService(usersRepository, logger);
-			_usersService = new UsersService(usersRepository, logger);
+			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
+			_usersService = new UsersService(usersRepository, logger, minioClientFactoryMock.Object);
 		}
 
 		[TearDown]

@@ -6,10 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.User
 {
-	public class ShortUserOutDTO : IUserOutDTO
-	{
-		public Guid Id { get; set; }
-		public string Login { get; set; }
-		public string? PictureUrl { get; set; }
-	}
+	public record UpdatePasswordDTO(string OldPassword, string NewPassword, string NewPasswordConfirmation);
 }

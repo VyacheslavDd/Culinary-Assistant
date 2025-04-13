@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.User
 {
-	public class ShortUserOutDTO : IUserOutDTO
+	public interface IUserOutDTO
 	{
-		public Guid Id { get; set; }
-		public string Login { get; set; }
-		public string? PictureUrl { get; set; }
+		Guid Id { get; set; }
+		string Login { get; set; }
+		string? PictureUrl { get; set; }
 	}
 }

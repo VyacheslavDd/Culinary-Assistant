@@ -46,14 +46,14 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var receiptsRepository = new ReceiptsRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
+			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
 			var seedService = new SeedService(usersRepository, logger);
 			_userId = await seedService.CreateAdministratorUserAsync();
-			var usersService = new UsersService(usersRepository, logger);
+			var usersService = new UsersService(usersRepository, logger, minioClientFactoryMock.Object);
 			var rabbitMqOptionsMock = new Mock<IOptions<RabbitMQOptions>>();
 			rabbitMqOptionsMock.Setup(o => o.Value).Returns(new RabbitMQOptions() { HostName = "" });
 			var producerService = new Mock<IFileMessagesProducerService>();
 			producerService.Setup(ps => ps.SendRemoveImagesMessageAsync(It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
-			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
 			var elasticServiceMock = new Mock<IElasticReceiptsService>();
 			elasticServiceMock.Setup(esm => esm.GetReceiptIdsBySearchParametersAsync(It.IsAny<ReceiptsFilterForElasticSearch>()))
 				.Returns(Task.FromResult(CSharpFunctionalExtensions.Result.Success<List<Guid>>([Guid.Empty])));

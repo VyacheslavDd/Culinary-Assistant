@@ -20,7 +20,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public Text Title { get; private set; }
 		public string ReceiptCovers { get; private set; }
 		public bool IsPrivate { get; private set; }
-		public bool IsFavourite { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
@@ -30,7 +29,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 			var receiptCollection = new ReceiptCollection();
 			var titleRes = receiptCollection.SetTitle(receiptCollectionInModelDTO.Title);
 			if (titleRes.IsFailure) return Result.Failure<ReceiptCollection>(titleRes.Error);
-			receiptCollection.IsFavourite = receiptCollectionInModelDTO.IsFavourite;
 			receiptCollection.IsPrivate = receiptCollectionInModelDTO.IsPrivate;
 			receiptCollection.SetUserId(receiptCollectionInModelDTO.UserId);
 			receiptCollection.SetCovers(null);
@@ -98,11 +96,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void SwitchPrivateState()
 		{
 			IsPrivate = !IsPrivate;
-		}
-
-		public void SwitchFavouriteState()
-		{
-			IsFavourite = !IsFavourite;
 		}
 	}
 }

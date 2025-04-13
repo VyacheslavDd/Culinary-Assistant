@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.User
 {
-	public class FullUserOutDTO
+	public class FullUserOutDTO : IUserOutDTO
 	{
 		public Guid Id { get; set; }
 		public string Login { get; set; }

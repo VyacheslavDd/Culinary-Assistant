@@ -56,14 +56,6 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		}
 
 		[Test]
-		public void TogglingIsFavourite_Works()
-		{
-			var prevValue = _receiptCollection.IsFavourite;
-			_receiptCollection.SwitchFavouriteState();
-			Assert.That(prevValue, Is.Not.EqualTo(_receiptCollection.IsFavourite));
-		}
-
-		[Test]
 		public void SetNullCovers_WorksCorrectly()
 		{
 			_receiptCollection.SetCovers(null);
