@@ -38,9 +38,11 @@ namespace Culinary_Assistant_Main.Services.Users
 			if (user == null)
 				return Result.Failure("Попытка обновить несуществующего пользователя");
 			var results = Miscellaneous.CreateResultList(3);
-			results[0] = user.SetLogin(updateRequest?.Login ?? user.Login.Value);
-			results[1] = user.SetEmail(updateRequest?.Email ?? "");
-			results[2] = user.SetPhone(updateRequest?.Phone ?? "");
+			results[0] = user.SetLogin(updateRequest.Login ?? user.Login.Value);
+			if (updateRequest.Email != null)
+				results[1] = user.SetEmail(updateRequest.Email);
+			if (updateRequest.Phone != null)
+				results[2] = user.SetPhone(updateRequest.Phone);
 			user.SetProfilePictureUrl(updateRequest?.ProfilePictureUrl ?? user.ProfilePictureUrl);
 			if (!results.All(r => r.IsSuccess))
 				return Miscellaneous.ResultFailureWithAllFailuresFromResultList(results);
@@ -64,12 +66,13 @@ namespace Culinary_Assistant_Main.Services.Users
 			return Result.Success();
 		}
 
-		public async Task SetPresignedUrlPictureAsync(IUserOutDTO userOutDTO)
+		public async Task SetPresignedUrlPictureAsync<T>(List<T> userOutDTO) where T: IUserOutDTO
 		{
-			if (userOutDTO.PictureUrl == null && userOutDTO.PictureUrl == "") return;
 			using var minioClient = _minioClientFactory.CreateClient();
-			var presignedUrl = (await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, [new FilePath(userOutDTO.PictureUrl)]))[0];
-			userOutDTO.PictureUrl = presignedUrl.Url;
+			var filePaths = userOutDTO.Select(uDTO => new FilePath(uDTO.PictureUrl ?? "")).ToList();
+			var presignedUrls = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, filePaths);
+			for (var i = 0; i < presignedUrls.Count; i++)
+				userOutDTO[i].PictureUrl = presignedUrls[i].Url;
 		}
 
 		public override Task<Result<Guid>> CreateAsync(UserInDTO entityCreateRequest, bool autoSave = true)

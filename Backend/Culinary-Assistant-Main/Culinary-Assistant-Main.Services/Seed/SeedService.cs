@@ -27,6 +27,7 @@ namespace Culinary_Assistant_Main.Services.Seed
 			}
 			var userDTO = new UserInDTO(adminLogin, "admin@admin.ru", "Culinar_scr");
 			var adminUser = User.Create(userDTO);
+			adminUser.Value.SetAsAdmin();
 			var adminGuid = await _usersRepository.AddAsync(adminUser.Value);
 			_logger.Information("Администратор создан: {guid}", adminGuid);
 			return adminGuid;

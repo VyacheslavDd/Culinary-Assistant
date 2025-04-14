@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Culinary_Assistant.Core.DTO.Receipt;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,6 @@ namespace Culinary_Assistant.Core.DTO.User
 		public long? Phone { get; set; }
 		public string? Email { get; set; }
 		public string? PictureUrl { get; set; }
+		public List<ShortReceiptOutDTO> Receipts { get; set; }
 	}
 }

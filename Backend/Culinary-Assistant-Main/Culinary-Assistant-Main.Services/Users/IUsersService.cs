@@ -13,6 +13,6 @@ namespace Culinary_Assistant_Main.Services.Users
 	public interface IUsersService : IService<User, UserInDTO, UpdateUserDTO>
 	{
 		Task<Result> UpdatePasswordAsync(Guid userId, UpdatePasswordDTO updatePasswordDTO);
-		Task SetPresignedUrlPictureAsync(IUserOutDTO userOutDTO);
+		Task SetPresignedUrlPictureAsync<T>(List<T> userOutDTO) where T: IUserOutDTO;
 	}
 }

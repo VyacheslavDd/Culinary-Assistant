@@ -25,10 +25,10 @@ namespace Culinary_Assistant.Core.Utils
 			var presignedUrls = new List<FilePath>();
 			foreach (var standardFilePath in filePaths)
 			{
-				var bucketAndFileNameData = standardFilePath.Url.Split(MiscellaneousConstants.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
 				string presignedUrl;
 				try
 				{
+					var bucketAndFileNameData = standardFilePath.Url.Split(MiscellaneousConstants.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
 					var args = new PresignedGetObjectArgs()
 						.WithBucket(bucketAndFileNameData[0])
 						.WithObject(bucketAndFileNameData[1])

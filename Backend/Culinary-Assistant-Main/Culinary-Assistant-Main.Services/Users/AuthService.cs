@@ -44,12 +44,17 @@ namespace Culinary_Assistant_Main.Services.Users
 
 		public async Task<Result<AuthOutDTO>> AuthenthicateAsync(AuthInDTO authInDTO)
 		{
-			var userByLogin = await _usersRepository.GetBySelectorAsync(u => u.Login.Value == authInDTO.Login);
+			var isPhone = long.TryParse(authInDTO.Login.Replace("+7", "8"), out long phone);
+			var userByLogin = await _usersRepository.GetBySelectorAsync(u => (isPhone && u.Phone.Value == phone) ||
+																			  u.Login.Value == authInDTO.Login ||
+																			  u.Email.Value == authInDTO.Login);
 			if (userByLogin == null)
 				return Result.Failure<AuthOutDTO>("Пользователя с таким логином не существует");
 			var isVerifiedPassword = BCrypt.Net.BCrypt.Verify(authInDTO.Password, userByLogin.PasswordHash);
 			if (!isVerifiedPassword)
 				return Result.Failure<AuthOutDTO>("Неправильный пароль");
+			if (authInDTO.AdminEntrance && !userByLogin.IsAdmin)
+				return Result.Failure<AuthOutDTO>("Данный пользователь не может авторизоваться как админ");
 			//TODO: выдать токены; refresh только если rememberMe = true
 			return Result.Success(new AuthOutDTO("access", "refresh"));
 		}

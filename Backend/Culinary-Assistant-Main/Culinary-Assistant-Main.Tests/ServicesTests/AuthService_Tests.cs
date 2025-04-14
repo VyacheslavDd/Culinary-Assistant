@@ -56,9 +56,27 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		}
 
 		[Test]
-		public async Task Can_Authenthicate()
+		public async Task Can_Authenthicate_WithLogin()
 		{
 			var authData = new AuthInDTO("Culinary_Perfecto", "Culinar_scr");
+			var res = await _authService.AuthenthicateAsync(authData);
+			Assert.That(res.IsSuccess, Is.True);
+		}
+
+		[Test]
+		public async Task Can_Authenthicate_WithEmail()
+		{
+			var authData = new AuthInDTO("admin@admin.ru", "Culinar_scr");
+			var res = await _authService.AuthenthicateAsync(authData);
+			Assert.That(res.IsSuccess, Is.True);
+		}
+
+		[Test]
+		public async Task Can_Authenthicate_WithPhone()
+		{
+			var adminUser = (await _usersService.GetAllAsync())[0];
+			await _usersService.NotBulkUpdateAsync(adminUser.Id, new UpdateUserDTO(null, null, "+75351346688", null));
+			var authData = new AuthInDTO("85351346688", "Culinar_scr");
 			var res = await _authService.AuthenthicateAsync(authData);
 			Assert.That(res.IsSuccess, Is.True);
 		}
@@ -67,6 +85,15 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task CannotAuthenthicate_With_WrongLogin()
 		{
 			var authData = new AuthInDTO("Culinary_Perfect", "Culinar_scr");
+			var res = await _authService.AuthenthicateAsync(authData);
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
+		public async Task StandardUser_CannotAuthenthicate_AsAdmin()
+		{
+			await _authService.RegisterAsync(new UserInDTO("someuser", "user@user.ru", "somepassword"));
+			var authData = new AuthInDTO("someuser", "somepassword", AdminEntrance: true);
 			var res = await _authService.AuthenthicateAsync(authData);
 			Assert.That(res.IsFailure, Is.True);
 		}

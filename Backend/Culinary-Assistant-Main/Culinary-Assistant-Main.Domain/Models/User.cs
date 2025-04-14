@@ -21,6 +21,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public Phone Phone { get; private set; }
 		public Email Email { get; private set; }
 		public string? ProfilePictureUrl { get; private set; }
+		public bool IsAdmin { get; private set; }
 		public string PasswordHash { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
@@ -86,6 +87,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 			if (result.IsFailure) return Result.Failure(result.Error);
 			Email = result.Value;
 			return Result.Success();
+		}
+
+		public void SetAsAdmin()
+		{
+			IsAdmin = true;
 		}
 
 		public void AddReceipt(Receipt receipt)

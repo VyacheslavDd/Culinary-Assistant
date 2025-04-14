@@ -45,7 +45,11 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var users = await _usersService.GetAllAsync();
 			Assert.That(users, Has.Count.EqualTo(1));
 			var user = users[0];
-			Assert.That(user.Login.Value, Is.EqualTo("Culinary_Perfecto"));
+			Assert.Multiple(() =>
+			{
+				Assert.That(user.IsAdmin, Is.True);
+				Assert.That(user.Login.Value, Is.EqualTo("Culinary_Perfecto"));
+			});
 		}
 
 		[Test]

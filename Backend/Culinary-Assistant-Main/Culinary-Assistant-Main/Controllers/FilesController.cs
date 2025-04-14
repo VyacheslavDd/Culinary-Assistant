@@ -22,7 +22,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <param name="filesDTO">Файлы для загрузки</param>
 		/// <returns>Возвращает сгенерированные ссылки на ресурсы</returns>
 		/// <response code="200">Результат с успешно загруженными файлами</response>
-		/// <response code="500">Ошибка сервера</response>
+		/// <response code="400">Некорректные данные</response>
 		[HttpPost]
 		[Route("receipts")]
 		[Consumes("multipart/form-data")]
@@ -30,6 +30,23 @@ namespace Culinary_Assistant_Main.Controllers
 		{
 			var result = await _fileService.GenerateFileLinksAndInitiateUploadMessageSending(BucketConstants.ReceiptsImagesBucketName, typeof(Receipt).Name, filesDTO);
 			return Ok(result);
+		}
+
+		/// <summary>
+		/// Загрузить аватарку пользователя и получить ссылку на нее
+		/// </summary>
+		/// <param name="fileDTO">Аватарка пользователя</param>
+		/// <returns>Возвращает сгенерированную ссылку на аватарку</returns>
+		/// <response code="200">Успешная загрузка</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpPost]
+		[Route("users")]
+		[Consumes("multipart/form-data")]
+		public async Task<IActionResult> UploadUsersFilesAsync([FromForm] FileDTO fileDTO)
+		{
+			var filesDTO = new FilesDTO([fileDTO.File]);
+			var res = await _fileService.GenerateFileLinksAndInitiateUploadMessageSending(BucketConstants.UserProfilePicturesBucketName, typeof(User).Name, filesDTO);
+			return Ok(res[0]);
 		}
 	}
 }
