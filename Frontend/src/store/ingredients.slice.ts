@@ -25,8 +25,8 @@ export const ingredientsSlice = createSlice({
     selectIngredientsLoading: (state) => state.isLoading
   },
   reducers: {},
-  extraReducers: (builder) => {
-    builder
+  // extraReducers: (builder) => {
+  //   builder
     //   .addCase(fetchIngredients.pending, (state) => {
     //     state.isLoading = true;
     //   })
@@ -37,7 +37,7 @@ export const ingredientsSlice = createSlice({
     //   .addCase(fetchIngredients.rejected, (state) => {
     //     state.isLoading = false;
     //   });
-  }
+  // }
 });
 
 export const { selectIngredients, selectIngredientsLoading } =

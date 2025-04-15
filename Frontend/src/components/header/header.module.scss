@@ -1,7 +1,7 @@
 .header {
     width: 100%;
     display: flex;
-    padding: 1.25rem 5.5rem 0.93rem 6.5rem;
+    padding: 1.04vw 4.58vw 0.78vw 5.42vw;
     background-color: var(--crimson);
     justify-content: space-between;
     align-items: center;
@@ -9,11 +9,12 @@
     font-family: 'TildaSans';
     font-weight: 500;
     color: #fff;
-    font-size: 1.25rem;
+    font-size: var(--font-size-20);
 }
 
 .logo {
-    width: 7.5rem;
+    width: 6.3vw;
+    min-width: 80px;
     height: auto;
     cursor: pointer;
 }
@@ -35,9 +36,19 @@
     color: #fff;
     font-family: 'Bree CYR';
     font-weight: 600;
-    font-size: 1.2rem;
-    padding: 0.5rem 2.625rem;
+    font-size: var(--font-size-20);
+    padding: clamp(4.6px, 0.42vw, 8px) clamp(24px, 2.2vw, 42px);
     background-color: var(--blue);
     border: none;
     border-radius: 1.25rem;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: var(--blue-hover);
+    }
+
+    &:active {
+        background-color: var(--blue-active);
+        transform: translateY(1px);
+    }
 }

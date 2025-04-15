@@ -1,0 +1,96 @@
+.mainContainer {
+    width: 100%;
+    padding-bottom: 1.6vw;
+    border-bottom: 0.08vw solid #E5E0D6;
+    color: white;
+    font-size: var(--font-size-20);
+    font-family: 'TildaSans';
+    font-weight: 400;
+    line-height: 120%;
+    display: flex;
+    flex-direction: row;
+    gap: 1.05vw;
+}
+
+.buttonShare {
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    border: none;
+    cursor: pointer;
+    background-color: var(--blue);
+    color: white;
+    padding: 0.3vw 1.25vw 0.3vw 0.8vw;
+    border-radius: 0.25vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.21vw;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+        background-color: var(--blue-hover);
+    }
+
+    &:active {
+        background-color: var(--blue-active); 
+        transform: translateY(1px); 
+    }
+}
+
+.icon {
+    width: 1.5vw;
+    height: 1.5vw;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+.like {
+    background-image: url('../../assets/svg/button_favorite.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    top: 0.03vw;
+}
+
+.share {
+    background-image: url('../../assets/svg/button_share.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    top: -0.03vw;
+}
+
+.add {
+    background-image: url('../../assets/svg/button_cards.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+    top: -0.03vw;
+}
+
+.buttonAdd {
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    border: 0.05vw solid var(--pink);
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--pink);
+    padding: 0.3vw 1.25vw 0.3vw 0.8vw;
+    border-radius: 0.25vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.21vw;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--pink-hover);
+        color: var(--pink-hover);
+    }
+
+    &:active {
+        border-color: var(--pink-active);
+        color: var(--pink-active);
+        transform: translateY(1px);
+    }
+}

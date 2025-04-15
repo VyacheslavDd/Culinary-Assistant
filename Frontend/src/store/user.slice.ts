@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { User } from '../types';
 
 type TUserState = {
@@ -32,9 +32,9 @@ export const userSlice = createSlice({
         selectIsAuthChecked: (state) => state.isAuthChecked,
         selectUserError: (state) => state.error,
     },
-    reducers: {},
-    extraReducers: (builder) => {
-        builder;
+    reducers: {}
+    // extraReducers: (builder) => {
+    //     builder;
         //   //fetchUser
         //   .addCase(fetchUser.pending, (state) => {
         //     state.error = null;
@@ -48,7 +48,7 @@ export const userSlice = createSlice({
         //     state.isAuthChecked = true;
         //     state.error = action.error.message;
         //   })
-    },
+    // },
 });
 
 export const {
