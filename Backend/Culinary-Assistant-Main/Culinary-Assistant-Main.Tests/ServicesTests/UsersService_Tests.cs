@@ -29,8 +29,9 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var logger = CommonUtils.MockLogger();
 			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
 			var usersRepository = new UsersRepository(_dbContext);
+			var configuration = CommonUtils.MockConfiguration();
 			_usersService = new UsersService(usersRepository, logger, minioClientFactoryMock.Object);
-			_authService = new AuthService(usersRepository);
+			_authService = new AuthService(usersRepository, configuration);
 			await CreateSomeUsersAsync();
 		}
 
@@ -112,10 +113,11 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task UpdatingPassword_WorksCorrectly()
 		{
+			var httpResponse = CommonUtils.MockHttpResponse();
 			var passwordDTO = new UpdatePasswordDTO("DONTREMEMBER", "NOWREMEMBER", "NOWREMEMBER");
 			var userId = await GetUserIdAsync();
 			await _usersService.UpdatePasswordAsync(userId, passwordDTO);
-			var authResult = await _authService.AuthenthicateAsync(new AuthInDTO("myworstlogin", "NOWREMEMBER"));
+			var authResult = await _authService.AuthenthicateAsync(new AuthInDTO("myworstlogin", "NOWREMEMBER"), httpResponse);
 			Assert.That(authResult.IsSuccess, Is.True);
 		}
 

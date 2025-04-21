@@ -11,11 +11,14 @@ using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Seed;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +45,18 @@ builder.Services.UseMinioWithoutFileService(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
 builder.Services.AddDomain();
 builder.Services.AddCustomServices();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(c =>
+{
+	c.TokenValidationParameters = new TokenValidationParameters()
+	{
+		ClockSkew = TimeSpan.Zero,
+		ValidateAudience = false,
+		ValidateIssuer = false,
+		ValidateLifetime = true,
+		ValidateIssuerSigningKey = true,
+		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration[ConfigurationConstants.JWTSecretKey]!))
+	};
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddControllers().AddNewtonsoftJson(config =>
 {

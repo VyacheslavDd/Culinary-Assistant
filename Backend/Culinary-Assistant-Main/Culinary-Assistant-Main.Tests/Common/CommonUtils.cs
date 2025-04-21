@@ -16,6 +16,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Culinary_Assistant_Main.Domain.Repositories;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
+using Culinary_Assistant.Core.Constants;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -27,6 +30,21 @@ namespace Culinary_Assistant_Main.Tests.Common
 			loggerMock.Setup(l => l.Information(It.IsAny<string>(), It.IsAny<object[]>()));
 			loggerMock.Setup(l => l.Error(It.IsAny<string>(), It.IsAny<object[]>()));
 			return loggerMock.Object;
+		}
+
+		public static IConfiguration MockConfiguration()
+		{
+			var confMock = new Mock<IConfiguration>();
+			confMock.Setup(c => c[ConfigurationConstants.JWTSecretKey]).Returns("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			return confMock.Object;
+		}
+
+		public static HttpResponse MockHttpResponse()
+		{
+			var responseMock = new Mock<HttpResponse>();
+			var cookiesMock = new Mock<IResponseCookies>();
+			responseMock.Setup(r => r.Cookies).Returns(cookiesMock.Object);
+			return responseMock.Object;
 		}
 
 		public static IReceiptsService MockReceiptsService(CulinaryAppContext dbContext, IUsersRepository usersRepository, ILogger logger)

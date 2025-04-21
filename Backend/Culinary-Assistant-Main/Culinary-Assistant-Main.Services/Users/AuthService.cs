@@ -1,10 +1,15 @@
 ﻿using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.Const;
+using Culinary_Assistant.Core.Constants;
 using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant.Core.ValueTypes;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Services.Handlers.Login;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +18,13 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.Users
 {
-	public class AuthService(IUsersRepository usersRepository) : IAuthService
+	public class AuthService(IUsersRepository usersRepository, IConfiguration configuration) : IAuthService
 	{
 		private readonly IUsersRepository _usersRepository = usersRepository;
+		private readonly string _secretKey = configuration[ConfigurationConstants.JWTSecretKey]!;
 		private readonly BaseLoginHandler _loginHandler = HandlerConstructor.GetLoginHandler();
 
-		public async Task<Result<AuthOutDTO>> RegisterAsync(UserInDTO userInDTO)
+		public async Task<Result<AuthOutDTO>> RegisterAsync(UserInDTO userInDTO, HttpResponse httpResponse)
 		{
 			var userResult = User.Create(userInDTO);
 			if (userResult.IsFailure)
@@ -39,12 +45,12 @@ namespace Culinary_Assistant_Main.Services.Users
 				if (userByPhone != null)
 					return Result.Failure<AuthOutDTO>("К указанному номеру телефона уже есть привязанный аккаунт");
 			}
-			await _usersRepository.AddAsync(user);
-			//TODO: выдать токены
-			return Result.Success(new AuthOutDTO("access", "refresh"));
+			var guid = await _usersRepository.AddAsync(user);
+			AddTokensToResponseCookies(httpResponse, guid, ["User"], true);
+			return Result.Success(new AuthOutDTO(guid));
 		}
 
-		public async Task<Result<AuthOutDTO>> AuthenthicateAsync(AuthInDTO authInDTO)
+		public async Task<Result<AuthOutDTO>> AuthenthicateAsync(AuthInDTO authInDTO, HttpResponse httpResponse)
 		{
 			var userByLogin = await _loginHandler.Handle(_usersRepository, authInDTO.Login);
 			if (userByLogin == null)
@@ -54,8 +60,16 @@ namespace Culinary_Assistant_Main.Services.Users
 				return Result.Failure<AuthOutDTO>("Неправильный пароль");
 			if (authInDTO.AdminEntrance && !userByLogin.IsAdmin)
 				return Result.Failure<AuthOutDTO>("Данный пользователь не может авторизоваться как админ");
-			//TODO: выдать токены; refresh только если rememberMe = true
-			return Result.Success(new AuthOutDTO("access", "refresh"));
+			AddTokensToResponseCookies(httpResponse, userByLogin.Id, authInDTO.AdminEntrance ? ["Admin"] : ["User"], authInDTO.RememberMe);
+			return Result.Success(new AuthOutDTO(userByLogin.Id));
+		}
+
+		private void AddTokensToResponseCookies(HttpResponse httpResponse, Guid userId, List<string> roles, bool rememberMe)
+		{
+			var tokens = TokenUtils.GenerateAccessAndRefreshTokens(userId, roles, _secretKey);
+			httpResponse.Cookies.Append(MiscellaneousConstants.AccessTokenCookie, tokens.AccessToken);
+			if (rememberMe)
+				httpResponse.Cookies.Append(MiscellaneousConstants.RefreshTokenCookie, tokens.RefreshToken, new CookieOptions() { HttpOnly = true });
 		}
 	}
 }

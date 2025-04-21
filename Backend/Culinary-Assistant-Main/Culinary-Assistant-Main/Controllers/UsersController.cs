@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant_Main.Infrastructure.Filters;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,7 +39,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="200">Успешное выполнение</response>
 		/// <response code="404">Пользователь не найден</response>
 		[HttpGet]
-		[Route("{id}")]
+		[Route("{id}/full")]
 		public async Task<IActionResult> GetByGuidAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
 			var user = await _usersService.GetByGuidAsync(id, cancellationToken);
@@ -46,6 +48,24 @@ namespace Culinary_Assistant_Main.Controllers
 			var mappedUser = _mapper.Map<FullUserOutDTO>(user);
 			mappedUser.Receipts = _mapper.Map<List<ShortReceiptOutDTO>>(user.Receipts);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(mappedUser.Receipts);
+			await _usersService.SetPresignedUrlPictureAsync([mappedUser]);
+			return Ok(mappedUser);
+		}
+
+		/// <summary>
+		/// Получить краткую информацию о пользователе сайта
+		/// </summary>
+		/// <param name="id">Guid пользователя</param>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Успешный возврат данных</response>
+		/// <response code="404">Пользователь не найден</response>
+		[HttpGet]
+		[Route("{id}/short")]
+		public async Task<IActionResult> GetByGuidShortAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+		{
+			var user = await _usersService.GetByGuidAsync(id, cancellationToken);
+			if (user == null) return NotFound();
+			var mappedUser = _mapper.Map<ShortUserOutDTO>(user);
 			await _usersService.SetPresignedUrlPictureAsync([mappedUser]);
 			return Ok(mappedUser);
 		}

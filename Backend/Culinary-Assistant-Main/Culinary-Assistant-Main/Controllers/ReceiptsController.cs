@@ -6,6 +6,7 @@ using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Services.Receipts;
+using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 
@@ -13,9 +14,10 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+	public class ReceiptsController(IReceiptsService receiptsService, IUsersService usersService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
 
 		/// <summary>
@@ -55,6 +57,7 @@ namespace Culinary_Assistant_Main.Controllers
 			if (receipt == null) return NotFound();
 			var mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
 			await _receiptsService.SetPresignedUrlForReceiptAsync(mappedReceipt, cancellationToken);
+			await _usersService.SetPresignedUrlPictureAsync([mappedReceipt.User]);
 			return Ok(mappedReceipt);
 		}
 

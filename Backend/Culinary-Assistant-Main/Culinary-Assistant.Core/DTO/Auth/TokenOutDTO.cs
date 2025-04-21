@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.Auth
 {
-	public record AuthOutDTO(Guid UserId);
+	public record TokenOutDTO(string AccessToken, string RefreshToken);
 }
