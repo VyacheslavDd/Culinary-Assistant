@@ -1,4 +1,5 @@
 import styles from './auth.module.scss';
+import { NavLink } from 'react-router-dom';
 
 export function Login() {
     return (
@@ -20,9 +21,7 @@ export function Login() {
                         />
                         <span className={`${styles.email} ${styles.icon}`} />
                         <p className={`${styles.error_text} ${styles.active}`}>
-                            <span
-                                className={styles.error}
-                            />
+                            <span className={styles.error} />
                             Поле не может быть пустым.
                         </p>
                     </div>
@@ -35,9 +34,7 @@ export function Login() {
                         />
                         <span className={`${styles.lock} ${styles.icon}`} />
                         <p className={`${styles.error_text} ${styles.active}`}>
-                            <span
-                                className={styles.error}
-                            />
+                            <span className={styles.error} />
                             Поле не может быть пустым.
                         </p>
                     </div>
@@ -48,15 +45,15 @@ export function Login() {
                     </button>
                     <p>
                         Забыли пароль?{' '}
-                        <a href='/' className={styles.link}>
+                        <NavLink to='/pass-recovery' className={styles.link}>
                             Восстановить пароль
-                        </a>
+                        </NavLink>
                     </p>
                     <p>
                         Нет аккаунта?{' '}
-                        <a href='/' className={styles.link}>
+                        <NavLink to='/register' className={styles.link}>
                             Зарегистрироваться
-                        </a>
+                        </NavLink>
                     </p>
                 </div>
             </div>

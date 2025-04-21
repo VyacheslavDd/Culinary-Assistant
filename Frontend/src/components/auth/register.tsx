@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import styles from './auth.module.scss';
 
 export function Register() {
@@ -74,9 +75,10 @@ export function Register() {
                     </button>
                     <p>
                         Уже есть аккаунт?{' '}
-                        <a href='/' className={styles.link}>
+                        <NavLink to='/login' className={styles.link}>Войти</NavLink>
+                        {/* <a href='/' className={styles.link}>
                             Войти
-                        </a>
+                        </a> */}
                     </p>
                 </div>
             </div>

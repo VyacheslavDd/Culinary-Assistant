@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from '../store/store';
 import { selectIsAuthChecked, selectUser } from '../store/user.slice';
 import { Preloader } from '../components/preloader';

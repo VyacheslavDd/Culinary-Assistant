@@ -13,10 +13,7 @@ export function Reviews() {
                     <div className={styles.card} key={index}>
                     <p className={styles.rating}>10/10</p>
                     <p className={styles.text}>
-                        aaaaaaaaaaaa aaaaaaaaaaaaaaa aaaaaaaa aaaaaaaaa aaaaaaaa
-                        aaaaaaa aaaaaaaaaa aaaaa aaaaaaaa aaaaaaaaaa aaaaaa
-                        aaaaaaa aaaaaaa aaaaa aaaa aaaaaaaaaa aaaaaaaaa aaaaaaaa
-                        aaaaaaaa aaaaa aaaaaaaaa aaaaaaaa
+                    Очень вкусные блины получились, буду готовить еще!
                     </p>
                     <div className={styles.info}>
                         <a className={styles.name} href='#'>

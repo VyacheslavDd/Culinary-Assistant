@@ -1,6 +1,13 @@
+import { useState } from 'react';
 import styles from './ingredients.module.scss';
 
 export function Ingredients() {
+    const [counter, setCounter] = useState(1);
+
+    const decreaseCounter = () => {
+        setCounter((prev) => (prev > 1 ? prev - 1 : 1));
+    };
+
     return (
         <div className={styles.mainContainer}>
             <div className={styles.top}></div>
@@ -8,9 +15,19 @@ export function Ingredients() {
                 <div className={styles.header}>
                     <p className={styles.title}>Ингредиенты</p>
                     <div className={styles.counter}>
-                        <button className={styles.button}>-</button>
-                        <span className={styles.number}>4</span>
-                        <button className={styles.button}>+</button>
+                        <button
+                            className={styles.button}
+                            onClick={decreaseCounter}
+                        >
+                            -
+                        </button>
+                        <span className={styles.number}>{counter}</span>
+                        <button
+                            className={styles.button}
+                            onClick={() => setCounter((prev) => prev + 1)}
+                        >
+                            +
+                        </button>
                     </div>
                 </div>
 

@@ -1,11 +1,11 @@
-import { PassRecovery, LayoutAuth } from 'components/auth';
+import { LayoutAuth, Register } from 'components/auth';
 
-function PassRecoveryPage() {
+function RegisterPage() {
     return (
         <LayoutAuth>
-            <PassRecovery />
+            <Register />
         </LayoutAuth>
     );
 }
 
-export default PassRecoveryPage;
+export default RegisterPage;

@@ -4,14 +4,15 @@ import MainBack from 'components/backgrounds/main-back';
 // import Footer from 'components/footer/footer';
 import styles from './main.module.scss';
 import { Catalog } from 'components/catalog/catalog';
+import ScrollToTop from 'components/common/scrollToTop';
 
 function MainPage() {
     return (
         <div className={styles.mainContainer}>
             <MainBack />
-            {/* <main className={styles.main}>
+            <main className={styles.main}>
                 <Catalog />
-            </main> */}
+            </main>
         </div>
     );
 }

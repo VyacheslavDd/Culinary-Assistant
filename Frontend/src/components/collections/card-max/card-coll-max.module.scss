@@ -1,0 +1,131 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6vw;
+    padding-bottom: 0.7vw;
+    font-family: 'TildaSans';
+    font-weight: 400;
+    color: var(--black);
+    font-size: var(--font-size-20);
+    background-color: white;
+    border-radius: 0.52vw;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.info {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1.05vw;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 1.05vw;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    gap: 0.52vw;
+    align-items: center;
+
+    .name {
+        max-width: 60%;
+        background-color: #ccd6ff;
+        padding: 0.46vw 1.3vw;
+        color: black;
+        font-size: var(--font-size-20);
+        border-top-left-radius: 0.52vw;
+        border-bottom-right-radius: 0.52vw;
+    }
+}
+
+.list {
+    width: 100%;
+    padding: 0 1.05vw;
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 0.52vw;
+    flex-wrap: nowrap;
+
+    .more {
+        height: 100%;
+        border-radius: 0.52vw;
+        min-width: 3.5vw;
+        background-color: #F2F2F2;
+        color: black;
+        font-size: var(--font-size-20);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .item {
+        width: 100%;
+        border-radius: 0.52vw;
+        overflow: hidden;
+        position: relative;
+
+        .title {
+            width: 100%;
+            height: 36%;
+            max-height: 36%;
+            position: absolute;
+            line-height: 120%;
+            bottom: 0;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.76);
+            font-family: 'TildaSans';
+            color: black;
+            font-size: var(--font-size-20);
+            padding: 0.3vw 0.52vw;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+    }
+
+    .img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
+.rating {
+    display: flex;
+    flex-direction: row;
+    gap: 0.15vw;
+    align-items: center;
+
+    .icon {
+        display: inline-block;
+        width: 1.05vw;
+        height: 1.05vw;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-width: 20px;
+        min-height: 20px;
+    }
+}
+
+.date {
+    padding-right: 1.05vw;
+    text-align: right;
+}
+
+

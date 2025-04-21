@@ -1,18 +1,21 @@
 import styles from './card.module.scss';
-// import photo from '../../../assets/img/Photo.png';
-// import icon_favourite from '../../../assets/svg/fav.svg';
-import icon_unfavourite from '../../../assets/svg/unfav.svg';
 import clock from '../../../assets/svg/clock.svg';
 import chef from '../../../assets/svg/chef.svg';
 import fire from '../../../assets/svg/fire.svg';
 import { ShortRecipe } from 'types';
-import { transformDifficulty, transformRating, transformCookingTime } from 'utils/api-transform';
+import {
+    transformDifficulty,
+    transformRating,
+    transformCookingTime,
+} from 'utils/api-transform';
+import { useNavigate } from 'react-router-dom';
 
 type CatalogCardProps = {
     recipe: ShortRecipe;
 };
 
 export function CatalogCard(props: CatalogCardProps) {
+    const navigate = useNavigate();
     const { recipe } = props;
     const {
         // id,
@@ -26,8 +29,12 @@ export function CatalogCard(props: CatalogCardProps) {
         rating,
     } = recipe;
 
+    const handleClick = () => {
+        navigate('/receipt');
+    };
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onClick={handleClick}>
             <div
                 className={`${styles.rate} 
                 ${rating > 8 ? styles.good : rating < 4 ? styles.bad : ''}
@@ -39,11 +46,7 @@ export function CatalogCard(props: CatalogCardProps) {
             <div className={styles.description}>
                 <div className={styles.name}>
                     <p className={styles.title}>{title}</p>
-                    <img
-                        src={icon_unfavourite}
-                        alt='unfavourite'
-                        className={styles.icon}
-                    />
+                    <span className={`${styles.icon}`}></span>
                 </div>
                 <div className={styles.infoContainer}>
                     <p className={styles.info}>

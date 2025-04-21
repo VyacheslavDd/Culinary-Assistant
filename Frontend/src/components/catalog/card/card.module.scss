@@ -14,6 +14,7 @@
     overflow: hidden;
     cursor: pointer;
     box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
+    text-decoration: none;
 }
 
 .rate {
@@ -67,11 +68,19 @@
     }
 
     .icon {
+        display: inline-block;
+        background-image: url('../../../assets/svg/unfav.svg');
+        background-size: cover;
+        background-repeat: no-repeat;
         cursor: pointer;
-        // min-width: 30px;
-        // min-height: 30px;
-        width: clamp(30px, 2.5vw, 50px);
-        height: clamp(30px, 2.5vw, 50px);
+        width: clamp(30px, 2.5vw, 40px);
+        height: clamp(30px, 2.5vw, 40px);
+        object-fit: cover;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-image: url('../../../assets/svg/fav.svg');
+        }
     }
 }
 
