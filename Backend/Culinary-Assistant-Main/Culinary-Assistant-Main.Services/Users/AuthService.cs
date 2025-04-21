@@ -4,6 +4,7 @@ using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.ValueTypes;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
+using Culinary_Assistant_Main.Services.Handlers.Login;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Culinary_Assistant_Main.Services.Users
 	public class AuthService(IUsersRepository usersRepository) : IAuthService
 	{
 		private readonly IUsersRepository _usersRepository = usersRepository;
+		private readonly BaseLoginHandler _loginHandler = HandlerConstructor.GetLoginHandler();
 
 		public async Task<Result<AuthOutDTO>> RegisterAsync(UserInDTO userInDTO)
 		{
@@ -44,10 +46,7 @@ namespace Culinary_Assistant_Main.Services.Users
 
 		public async Task<Result<AuthOutDTO>> AuthenthicateAsync(AuthInDTO authInDTO)
 		{
-			var isPhone = long.TryParse(authInDTO.Login.Replace("+7", "8"), out long phone);
-			var userByLogin = await _usersRepository.GetBySelectorAsync(u => (isPhone && u.Phone.Value == phone) ||
-																			  u.Login.Value == authInDTO.Login ||
-																			  u.Email.Value == authInDTO.Login);
+			var userByLogin = await _loginHandler.Handle(_usersRepository, authInDTO.Login);
 			if (userByLogin == null)
 				return Result.Failure<AuthOutDTO>("Пользователя с таким логином не существует");
 			var isVerifiedPassword = BCrypt.Net.BCrypt.Verify(authInDTO.Password, userByLogin.PasswordHash);
