@@ -19,6 +19,7 @@ using Culinary_Assistant_Main.Domain.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Culinary_Assistant.Core.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -50,8 +51,7 @@ namespace Culinary_Assistant_Main.Tests.Common
 		public static IReceiptsService MockReceiptsService(CulinaryAppContext dbContext, IUsersRepository usersRepository, ILogger logger)
 		{
 			var receiptsRepository = new ReceiptsRepository(dbContext);
-			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
-			var usersService = new UsersService(usersRepository, logger, minioClientFactoryMock.Object);
+			var usersService = new UsersService(usersRepository, logger);
 			var rabbitMqOptionsMock = new Mock<IOptions<RabbitMQOptions>>();
 			rabbitMqOptionsMock.Setup(o => o.Value).Returns(new RabbitMQOptions() { HostName = "" });
 			var producerService = new Mock<IFileMessagesProducerService>();
@@ -59,7 +59,15 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var elasticServiceMock = new Mock<IElasticReceiptsService>();
 			elasticServiceMock.Setup(esm => esm.GetReceiptIdsBySearchParametersAsync(It.IsAny<ReceiptsFilterForElasticSearch>()))
 				.Returns(Task.FromResult(CSharpFunctionalExtensions.Result.Success<List<Guid>>([Guid.Empty])));
-			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, minioClientFactoryMock.Object, receiptsRepository, logger);
+			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, receiptsRepository, logger);
+		}
+
+		public static IUsersService MockUsersService(IUsersRepository usersRepository)
+		{
+			var logger = MockLogger();
+			var configuration = CommonUtils.MockConfiguration();
+			var usersService = new UsersService(usersRepository, logger);
+			return usersService;
 		}
 	}
 }

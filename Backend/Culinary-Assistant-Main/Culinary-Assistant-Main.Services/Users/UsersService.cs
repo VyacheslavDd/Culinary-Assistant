@@ -16,11 +16,9 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.Users
 {
-	public class UsersService(IUsersRepository usersRepository, ILogger logger, IMinioClientFactory minioClientFactory) :
+	public class UsersService(IUsersRepository usersRepository, ILogger logger) :
 		BaseService<User, UserInDTO, UpdateUserDTO>(usersRepository, logger), IUsersService
 	{
-		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
-
 		public override async Task<User?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
 		{
 			var user = await base.GetByGuidAsync(id, cancellationToken);
@@ -66,9 +64,8 @@ namespace Culinary_Assistant_Main.Services.Users
 			return Result.Success();
 		}
 
-		public async Task SetPresignedUrlPictureAsync<T>(List<T> userOutDTO) where T: IUserOutDTO
+		public async Task SetPresignedUrlPictureAsync<T>(IMinioClient minioClient, List<T> userOutDTO) where T: IUserOutDTO
 		{
-			using var minioClient = _minioClientFactory.CreateClient();
 			var filePaths = userOutDTO.Select(uDTO => new FilePath(uDTO.PictureUrl ?? "")).ToList();
 			var presignedUrls = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, filePaths);
 			for (var i = 0; i < presignedUrls.Count; i++)

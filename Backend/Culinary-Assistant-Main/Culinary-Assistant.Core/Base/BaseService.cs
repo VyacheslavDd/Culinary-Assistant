@@ -10,6 +10,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Culinary_Assistant.Core.ServicesResponses;
+using Culinary_Assistant.Core.Filters;
 
 namespace Core.Base
 {
@@ -67,6 +69,13 @@ namespace Core.Base
 			var answer = await _repository.AddAsync(creationInfo.Value, autoSave);
 			_logger.LogEntityCreation(_entityTypeName, creationInfo.Value);
 			return Result.Success(answer);
+		}
+
+		public EntitiesResponseWithCountAndPages<T> ApplyPaginationToEntities(List<T> entities, IPaginationFilter paginationFilter)
+		{
+			var pagesCount = (int)Math.Ceiling((double)entities.Count / paginationFilter.Limit);
+			var currentPage = entities.Skip((paginationFilter.Page - 1) * paginationFilter.Limit).Take(paginationFilter.Limit).ToList();
+			return new EntitiesResponseWithCountAndPages<T>(currentPage, entities.Count, pagesCount);
 		}
 	}
 }

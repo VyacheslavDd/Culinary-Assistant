@@ -153,6 +153,14 @@ namespace Culinary_Assistant_Main.Domain.Models
 		{
 			Popularity += 1;
 		}
+
+		/// <summary>
+		/// Установить Id рецепта. Лучше не использовать, необходим только для тестирования!
+		/// </summary>
+		public void SetReceiptId(Guid id)
+		{
+			SetId(id);
+		}
 	}
 
 }

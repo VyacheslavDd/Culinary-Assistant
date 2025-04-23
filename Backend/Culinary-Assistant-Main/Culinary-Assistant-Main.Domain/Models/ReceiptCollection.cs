@@ -69,10 +69,26 @@ namespace Culinary_Assistant_Main.Domain.Models
 			}
 		}
 
-		public void DeleteCoverIfPresented(string filePath)
+		public void RemoveReceipts(List<Guid> receiptIds)
 		{
+			var hashSetIds = new HashSet<Guid>(receiptIds);
+			List<string> coversToRemove = [];
+			for (var i = _receipts.Count - 1; i >= 0; i--)
+			{
+				if (hashSetIds.Contains(_receipts[i].Id))
+				{
+					coversToRemove.Add(_receipts[i].MainPictureUrl);
+					_receipts.Remove(_receipts[i]);
+				}
+			}
+			DeleteCoversIfPresented(coversToRemove);
+		}
+
+		public void DeleteCoversIfPresented(List<string> filePaths)
+		{
+			var hashSetPaths = new HashSet<string>(filePaths);
 			var covers = ReceiptCovers == "" ? [] : JsonSerializer.Deserialize<List<FilePath>>(ReceiptCovers);
-			var updatedCovers = covers.Where(c => c.Url != filePath).ToList();
+			var updatedCovers = covers.Where(c => !hashSetPaths.Contains(c.Url)).ToList();
 			SetCovers(updatedCovers);
 		}
 		
@@ -93,9 +109,9 @@ namespace Culinary_Assistant_Main.Domain.Models
 			UserId = userId;
 		}
 
-		public void SwitchPrivateState()
+		public void SetPrivateState(bool isPrivate)
 		{
-			IsPrivate = !IsPrivate;
+			IsPrivate = isPrivate;
 		}
 	}
 }

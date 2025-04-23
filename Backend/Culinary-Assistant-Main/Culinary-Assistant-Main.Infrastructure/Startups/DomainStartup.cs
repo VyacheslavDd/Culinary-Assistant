@@ -15,6 +15,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 		{
 			services.AddScoped<IReceiptsRepository, ReceiptsRepository>();
 			services.AddScoped<IUsersRepository, UsersRepository>();
+			services.AddScoped<IReceiptCollectionsRepository, ReceiptCollectionsRepository>();
 			return services;
 		}
 	}

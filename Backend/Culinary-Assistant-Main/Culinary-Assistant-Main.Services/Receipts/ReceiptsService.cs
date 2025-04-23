@@ -24,11 +24,10 @@ using Minio;
 namespace Culinary_Assistant_Main.Services.Receipts
 {
 	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService,
-		IMinioClientFactory minioClientFactory, IReceiptsRepository receiptsRepository, ILogger logger) :
+		IReceiptsRepository receiptsRepository, ILogger logger) :
 		BaseService<Receipt, ReceiptInDTO, UpdateReceiptDTO>(receiptsRepository, logger), IReceiptsService
 	{
 		private readonly IUsersService _usersService = usersService;
-		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
@@ -43,12 +42,8 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				requiredReceiptsIds = idsResult.Value;
 			}
 			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, receiptsFilter, cancellationToken);
-			var dataCount = filteredReceipts.Count;
-			var pagesCount = (int)Math.Ceiling((double)dataCount / elasticFilter.Size);
-			var currentPage = filteredReceipts.Skip(elasticFilter.Size * (elasticFilter.Page - 1))
-										    .Take(elasticFilter.Size)
-											.ToList();
-			return Result.Success(new EntitiesResponseWithCountAndPages<Receipt>(currentPage, dataCount, pagesCount));
+			var response = ApplyPaginationToEntities(filteredReceipts, receiptsFilter);
+			return Result.Success(response);
 		}
 
 		public async override Task<Receipt?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
@@ -112,7 +107,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (entity != null) {
 				await _repository.LoadCollectionAsync(entity, r => r.ReceiptCollections);
 				foreach (var collection in entity.ReceiptCollections)
-					collection.DeleteCoverIfPresented(entity.MainPictureUrl);
+					collection.DeleteCoversIfPresented([entity.MainPictureUrl]);
 				var pictureUrls = JsonSerializer.Deserialize<List<FilePath>>(entity.PicturesUrls).Select(x => x.Url).ToList();
 				await _fileMessagesProducerService.SendRemoveImagesMessageAsync(pictureUrls, BucketConstants.ReceiptsImagesBucketName, _entityTypeName);
 				await _elasticReceiptsService.RemoveReceiptIndexAsync(entity);
@@ -120,9 +115,8 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			return await base.NotBulkDeleteAsync(entityId);
 		}
 
-		public async Task SetPresignedUrlsForReceiptsAsync(List<ShortReceiptOutDTO> receipts, CancellationToken cancellationToken = default)
+		public async Task SetPresignedUrlsForReceiptsAsync(IMinioClient minioClient, List<ShortReceiptOutDTO> receipts, CancellationToken cancellationToken = default)
 		{
-			using var minioClient = _minioClientFactory.CreateClient();
 			foreach (var receipt in receipts)
 			{
 				var presignedPictures = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, [new FilePath(receipt.MainPictureUrl)]);
@@ -130,9 +124,8 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			}
 		}
 
-		public async Task SetPresignedUrlForReceiptAsync(FullReceiptOutDTO receipt, CancellationToken cancellationToken = default)
+		public async Task SetPresignedUrlForReceiptAsync(IMinioClient minioClient, FullReceiptOutDTO receipt, CancellationToken cancellationToken = default)
 		{
-			using var minioClient = _minioClientFactory.CreateClient();
 			var presignedPictures = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, receipt.PicturesUrls);
 			receipt.PicturesUrls = presignedPictures;
 			receipt.MainPictureUrl = receipt.PicturesUrls[0].Url;

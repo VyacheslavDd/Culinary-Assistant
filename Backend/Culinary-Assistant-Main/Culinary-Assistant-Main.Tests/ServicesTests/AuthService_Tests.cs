@@ -35,8 +35,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var configuration = CommonUtils.MockConfiguration();
 			await seedService.CreateAdministratorUserAsync();
 			_authService = new AuthService(usersRepository, configuration);
-			var minioClientFactory = new Mock<IMinioClientFactory>();
-			_usersService = new UsersService(usersRepository, logger, minioClientFactory.Object);
+			_usersService = new UsersService(usersRepository, logger);
 		}
 
 		[TearDown]

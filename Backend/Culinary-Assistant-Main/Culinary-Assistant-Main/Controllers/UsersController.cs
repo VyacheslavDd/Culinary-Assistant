@@ -7,16 +7,18 @@ using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Minio;
 
 namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/users")]
 	[ApiController]
-	public class UsersController(IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+	public class UsersController(IUsersService usersService, IReceiptsService receiptsService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly IMapper _mapper = mapper;
+		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 
 		/// <summary>
 		/// Получить краткую информацию о всех пользователях сайта
@@ -28,7 +30,8 @@ namespace Culinary_Assistant_Main.Controllers
 		{
 			var users = await _usersService.GetAllAsync(cancellationToken);
 			var mappedUsers = _mapper.Map<List<ShortUserOutDTO>>(users);
-			await _usersService.SetPresignedUrlPictureAsync(mappedUsers);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, mappedUsers);
 			return Ok(mappedUsers);
 		}
 
@@ -47,8 +50,9 @@ namespace Culinary_Assistant_Main.Controllers
 				return NotFound();
 			var mappedUser = _mapper.Map<FullUserOutDTO>(user);
 			mappedUser.Receipts = _mapper.Map<List<ShortReceiptOutDTO>>(user.Receipts);
-			await _receiptsService.SetPresignedUrlsForReceiptsAsync(mappedUser.Receipts);
-			await _usersService.SetPresignedUrlPictureAsync([mappedUser]);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedUser.Receipts);
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedUser]);
 			return Ok(mappedUser);
 		}
 
@@ -66,7 +70,8 @@ namespace Culinary_Assistant_Main.Controllers
 			var user = await _usersService.GetByGuidAsync(id, cancellationToken);
 			if (user == null) return NotFound();
 			var mappedUser = _mapper.Map<ShortUserOutDTO>(user);
-			await _usersService.SetPresignedUrlPictureAsync([mappedUser]);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedUser]);
 			return Ok(mappedUser);
 		}
 

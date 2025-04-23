@@ -22,7 +22,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[SetUp]
 		public void SetUp()
 		{
-			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Коллекция", false, false, new Guid());
+			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Коллекция", false, new Guid(), null);
 			var receipts = ReceiptsData.Receipts;
 			_receiptCollection = ReceiptCollection.Create(receiptCollectionDTO).Value;
 			_receiptCollection.AddReceipts(receipts);
@@ -50,9 +50,8 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void TogglingIsPrivate_Works()
 		{
-			var prevValue = _receiptCollection.IsPrivate;
-			_receiptCollection.SwitchPrivateState();
-			Assert.That(prevValue, Is.Not.EqualTo(_receiptCollection.IsPrivate));
+			_receiptCollection.SetPrivateState(true);
+			Assert.That(_receiptCollection.IsPrivate, Is.EqualTo(true));
 		}
 
 		[Test]
@@ -89,9 +88,23 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		}
 
 		[Test]
+		public void RemoveReceipts_WorksCorrectly()
+		{
+			List<Guid> ids = [Guid.NewGuid(), Guid.NewGuid()];
+			_receiptCollection.Receipts.ElementAt(0).SetReceiptId(ids[0]);
+			_receiptCollection.Receipts.ElementAt(2).SetReceiptId(ids[1]);
+			_receiptCollection.RemoveReceipts(ids);
+			Assert.Multiple(() =>
+			{
+				Assert.That(_receiptCollection.Receipts, Has.Count.EqualTo(1));
+				Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/800x400\"}]"));
+			});
+		}
+
+		[Test]
 		public void DeletingCover_WorksCorrectly()
 		{
-			_receiptCollection.DeleteCoverIfPresented("https://placehold.co/800x400");
+			_receiptCollection.DeleteCoversIfPresented(["https://placehold.co/800x400"]);
 			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/600x400\"},{\"Url\":\"https://placehold.co/1000x400\"}]"));
 		}
 

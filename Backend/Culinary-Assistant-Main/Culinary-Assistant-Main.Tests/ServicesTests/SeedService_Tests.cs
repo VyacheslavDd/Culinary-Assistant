@@ -28,8 +28,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			_seedService = new SeedService(usersRepository, logger);
-			var minioClientFactoryMock = new Mock<IMinioClientFactory>();
-			_usersService = new UsersService(usersRepository, logger, minioClientFactoryMock.Object);
+			_usersService = new UsersService(usersRepository, logger);
 		}
 
 		[TearDown]

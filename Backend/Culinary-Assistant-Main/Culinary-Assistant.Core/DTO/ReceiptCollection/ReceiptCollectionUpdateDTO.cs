@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 {
-	public record ReceiptCollectionInModelDTO(string Title, bool IsPrivate, Guid UserId, List<Guid>? ReceiptIds);
+	public record ReceiptCollectionUpdateDTO(string? Title, bool? IsPrivate);
 }

@@ -14,9 +14,10 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, IUsersService usersService, IMapper mapper) : ControllerBase
+	public class ReceiptsController(IReceiptsService receiptsService, IUsersService usersService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
 
@@ -36,7 +37,8 @@ namespace Culinary_Assistant_Main.Controllers
 			if (receipts.IsFailure) return StatusCode(500, receipts.Error);
 			if (receipts.Value.EntitiesCount == 0) return NoContent();
 			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Value.Data);
-			await _receiptsService.SetPresignedUrlsForReceiptsAsync(mappedReceipts, cancellationToken);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);
 			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.Value.EntitiesCount, receipts.Value.PagesCount);
 			return Ok(mappedResponse);
 		}
@@ -56,8 +58,9 @@ namespace Culinary_Assistant_Main.Controllers
 			var receipt = await _receiptsService.GetByGuidAsync(id, cancellationToken);
 			if (receipt == null) return NotFound();
 			var mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
-			await _receiptsService.SetPresignedUrlForReceiptAsync(mappedReceipt, cancellationToken);
-			await _usersService.SetPresignedUrlPictureAsync([mappedReceipt.User]);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _receiptsService.SetPresignedUrlForReceiptAsync(minioClient, mappedReceipt, cancellationToken);
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedReceipt.User]);
 			return Ok(mappedReceipt);
 		}
 
