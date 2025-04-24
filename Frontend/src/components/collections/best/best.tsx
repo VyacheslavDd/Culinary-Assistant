@@ -1,5 +1,7 @@
-import { CardCollMin } from '../card-min/card-coll-min';
 import styles from './best.module.scss';
+import left from '../../../assets/svg/button_left.svg';
+import right from '../../../assets/svg/button_right.svg';
+import { ListMinCollections } from '../list-min/list-min';
 
 export function Best() {
     return (
@@ -12,20 +14,14 @@ export function Best() {
                     </p>
                 </div>
                 <div className={styles.content}>
-                    <ul className={styles.list}>
-                        <li className={styles.item}>
-                            <CardCollMin theme='light' />
-                        </li>
-                        <li className={styles.item}>
-                            <CardCollMin theme='light' />
-                        </li>
-                        <li className={styles.item}>
-                            <CardCollMin theme='light' />
-                        </li>
-                    </ul>
+                    <ListMinCollections theme='light' />
                     <div className={styles.buttons}>
-                        <button className={styles.button}>&lt;</button>
-                        <button className={styles.button}>&gt;</button>
+                        <button className={styles.button}>
+                            <img src={left} alt='left' />
+                        </button>
+                        <button className={styles.button}>
+                            <img src={right} alt='right' />
+                        </button>
                     </div>
                 </div>
             </div>

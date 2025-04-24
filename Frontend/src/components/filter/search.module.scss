@@ -1,0 +1,61 @@
+.mainContainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 0.35vw;
+    padding: 0.52vw 0.625vw;
+    background-color: white;
+    border-radius: 0.52vw;
+    box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
+}
+
+.input {
+    border: none;
+    width: 100%;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 400;
+    color: black;
+
+    &:focus {
+        border: none;
+        outline: none;
+    }
+
+    &::placeholder {
+        color: var(--grey);
+    }
+}
+
+.icon {
+    width: 1.5vw;
+    height: 1.5vw;
+    min-width: 18px;
+    min-height: 18px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.button {
+    cursor: pointer;
+    border: none;
+    background-color: var(--pink);
+    border-radius: 0.41vw;
+    padding: 0.2vw 0.6vw;
+    color: white;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 400;
+    transform: all 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+        background-color: var(--pink-hover);
+    }
+
+    &:active {
+        background-color: var(--pink-active);
+        transform: translateY(1px);
+    }
+}

@@ -5,12 +5,14 @@ import MainBack from 'components/backgrounds/main-back';
 import styles from './main.module.scss';
 import { Catalog } from 'components/catalog/catalog';
 import ScrollToTop from 'components/common/scrollToTop';
+import { Filter } from './filter';
 
 function MainPage() {
     return (
         <div className={styles.mainContainer}>
             <MainBack />
             <main className={styles.main}>
+                <Filter />
                 <Catalog />
             </main>
         </div>

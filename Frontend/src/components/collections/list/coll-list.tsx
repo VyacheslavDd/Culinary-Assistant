@@ -1,4 +1,5 @@
 import { CardCollMax } from '../card-max/card-coll-max';
+import { Filter } from '../filter/filter';
 import styles from './coll-list.module.scss';
 
 type Props = {
@@ -10,6 +11,7 @@ export function CollList(props: Props) {
     return (
         <div className={styles.mainContainer}>
             <h2 className={styles.title}>{title}</h2>
+            <Filter />
             <ul className={styles.list}>
                 <li>
                     <CardCollMax />

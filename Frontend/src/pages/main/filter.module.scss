@@ -1,0 +1,14 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.8vw;
+}
+
+.buttons {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: row;
+    gap: 0.7vw;
+}
