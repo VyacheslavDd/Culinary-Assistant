@@ -9,6 +9,7 @@ using Minio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace Core.Minio
 {
 	public static class MinioStartup
 	{
-		public static IServiceCollection UseMinio(this IServiceCollection services, IConfiguration configuration)
+		public static IServiceCollection UseMinioWithoutFileService(this IServiceCollection services, IConfiguration configuration)
 		{
 			var options = new MinioOptions();
 			configuration.Bind(ConfigurationConstants.Minio, options);
@@ -26,8 +27,15 @@ namespace Core.Minio
 				.WithSSL(false)
 				.WithEndpoint(options.Host)
 				.WithCredentials(options.AccessKey, options.SecretKey)
+				.WithProxy(new WebProxy(options.Proxy, options.ProxyPort))
 				.Build();
 			});
+			return services;
+		}
+
+		public static IServiceCollection UseMinioWithFileService(this IServiceCollection services, IConfiguration configuration)
+		{
+			services = UseMinioWithoutFileService(services, configuration);
 			services.AddScoped<IFileService, FileService>();
 			return services;
 		}

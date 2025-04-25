@@ -10,6 +10,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Culinary_Assistant.Core.ServicesResponses;
+using Culinary_Assistant.Core.Filters;
 
 namespace Core.Base
 {
@@ -19,6 +21,11 @@ namespace Core.Base
 		protected readonly IRepository<T> _repository = repository;
 		protected readonly ILogger _logger = logger;
 		protected readonly string _entityTypeName = typeof(T).Name;
+
+		public IQueryable<T> GetAll()
+		{
+			return _repository.GetAll();
+		}
 
 		public virtual async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
@@ -32,14 +39,16 @@ namespace Core.Base
 			await _repository.SaveChangesAsync();
 		}
 
-		public virtual Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest)
+		public virtual async Task<Result> NotBulkUpdateAsync(Guid entityId, TUpdateDTO updateRequest)
 		{
-			return Task.FromResult(Result.Success());
+			await SaveChangesAsync();
+			return Result.Success();
 		}
 
-		public virtual async Task<Result> NotBulkDeleteAsync(Guid entityId)
+		public virtual async Task<Result<string>> NotBulkDeleteAsync(Guid entityId)
 		{
-			return await _repository.NotBulkDeleteAsync(_idSelectorExpression(entityId));
+			var response = await _repository.NotBulkDeleteAsync(_idSelectorExpression(entityId));
+			return response;
 		}
 
 		public virtual async Task<T?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
@@ -60,6 +69,13 @@ namespace Core.Base
 			var answer = await _repository.AddAsync(creationInfo.Value, autoSave);
 			_logger.LogEntityCreation(_entityTypeName, creationInfo.Value);
 			return Result.Success(answer);
+		}
+
+		public EntitiesResponseWithCountAndPages<T> ApplyPaginationToEntities(List<T> entities, IPaginationFilter paginationFilter)
+		{
+			var pagesCount = (int)Math.Ceiling((double)entities.Count / paginationFilter.Limit);
+			var currentPage = entities.Skip((paginationFilter.Page - 1) * paginationFilter.Limit).Take(paginationFilter.Limit).ToList();
+			return new EntitiesResponseWithCountAndPages<T>(currentPage, entities.Count, pagesCount);
 		}
 	}
 }

@@ -1,0 +1,42 @@
+﻿using CSharpFunctionalExtensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Culinary_Assistant.Core.ValueTypes
+{
+	public class Nutrients : ValueObject
+	{
+		public int Calories { get; private set; }
+		public int Proteins { get; private set; }
+		public int Fats { get; private set; }
+		public int Carbohydrates { get; private set; }
+
+		protected override IEnumerable<object> GetEqualityComponents()
+		{
+			yield return Calories;
+			yield return Proteins;
+			yield return Fats;
+			yield return Carbohydrates;
+		}
+
+		public static Result<Nutrients> Create(int calories, int proteins, int fats, int carbohydrates)
+		{
+			List<int> nutrients = [calories, proteins, fats, carbohydrates];
+			if (nutrients.Any(n => n < 0))
+			{
+				return Result.Failure<Nutrients>("Ни один нутриент не может быть меньше 0");
+			}
+			var nutrientsObj = new Nutrients()
+			{
+				Calories = calories,
+				Proteins = proteins,
+				Fats = fats,
+				Carbohydrates = carbohydrates
+			};
+			return Result.Success(nutrientsObj);
+		}
+	}
+}

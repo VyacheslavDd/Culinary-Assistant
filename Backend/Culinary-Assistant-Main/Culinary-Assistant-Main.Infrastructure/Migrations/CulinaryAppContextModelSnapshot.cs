@@ -29,12 +29,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Calories")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Carbohydrates")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Category")
                         .HasColumnType("integer");
 
@@ -46,13 +40,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("CookingTime")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Fats")
                         .HasColumnType("integer");
 
                     b.Property<string>("Ingredients")
@@ -70,14 +57,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.Property<int>("Popularity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Proteins")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Tags")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -91,11 +71,37 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.ToTable("Receipts", "MainAppSchema");
                 });
 
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptCollection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReceiptCovers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReceiptCollections", "MainAppSchema");
+                });
+
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -109,13 +115,129 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.ToTable("Users", "MainAppSchema");
                 });
 
+            modelBuilder.Entity("ReceiptReceiptCollection", b =>
+                {
+                    b.Property<Guid>("ReceiptCollectionsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReceiptsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ReceiptCollectionsId", "ReceiptsId");
+
+                    b.HasIndex("ReceiptsId");
+
+                    b.ToTable("ReceiptReceiptCollection", "MainAppSchema");
+                });
+
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.Receipt", b =>
                 {
-                    b.HasOne("Culinary_Assistant_Main.Domain.Models.User", null)
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.User", "User")
                         .WithMany("Receipts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Culinary_Assistant.Core.ValueTypes.Nutrients", "Nutrients", b1 =>
+                        {
+                            b1.Property<Guid>("ReceiptId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Calories")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Carbohydrates")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Fats")
+                                .HasColumnType("integer");
+
+                            b1.Property<int>("Proteins")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("ReceiptId");
+
+                            b1.ToTable("Receipts", "MainAppSchema");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReceiptId");
+                        });
+
+                    b.OwnsOne("Culinary_Assistant.Core.ValueTypes.Text", "Description", b1 =>
+                        {
+                            b1.Property<Guid>("ReceiptId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ReceiptId");
+
+                            b1.ToTable("Receipts", "MainAppSchema");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReceiptId");
+                        });
+
+                    b.OwnsOne("Culinary_Assistant.Core.ValueTypes.Text", "Title", b1 =>
+                        {
+                            b1.Property<Guid>("ReceiptId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ReceiptId");
+
+                            b1.ToTable("Receipts", "MainAppSchema");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReceiptId");
+                        });
+
+                    b.Navigation("Description")
+                        .IsRequired();
+
+                    b.Navigation("Nutrients")
+                        .IsRequired();
+
+                    b.Navigation("Title")
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptCollection", b =>
+                {
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.User", "User")
+                        .WithMany("ReceiptCollections")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Culinary_Assistant.Core.ValueTypes.Text", "Title", b1 =>
+                        {
+                            b1.Property<Guid>("ReceiptCollectionId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("text");
+
+                            b1.HasKey("ReceiptCollectionId");
+
+                            b1.ToTable("ReceiptCollections", "MainAppSchema");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReceiptCollectionId");
+                        });
+
+                    b.Navigation("Title")
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.User", b =>
@@ -179,8 +301,25 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ReceiptReceiptCollection", b =>
+                {
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.ReceiptCollection", null)
+                        .WithMany()
+                        .HasForeignKey("ReceiptCollectionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.Receipt", null)
+                        .WithMany()
+                        .HasForeignKey("ReceiptsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.User", b =>
                 {
+                    b.Navigation("ReceiptCollections");
+
                     b.Navigation("Receipts");
                 });
 #pragma warning restore 612, 618
