@@ -1,0 +1,93 @@
+.mainContainer {
+    width: 100%;
+    height: 62vh;
+    min-height: fit-content;
+    background-image: url('../../../assets/img/collections_back.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 1vw 0;
+}
+
+.container {
+    width: 54%;
+    display: flex;
+    flex-direction: column;
+    gap: 2.6vw;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.52vw;
+
+    .title {
+        font-family: 'Bree CYR';
+        font-weight: 600;
+        font-size: var(--font-size-48);
+    }
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vw;
+}
+
+
+.buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.52vw;
+
+    .button {
+        font-family: 'Bree CYR';
+        font-weight: 400;
+        width: 2.2vw;
+        height: 2.2vw;
+        min-width: 30px;
+        min-height: 30px;
+        cursor: pointer;
+        border: none;
+        background-color: var(--blue);
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+        object-fit: cover;
+        object-position: center;
+        padding: 0.5vw;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        &:hover {
+            background-color: var(--blue-hover);
+        }
+
+        &:active {
+            background-color: var(--blue-active);
+            transform: translateY(1px);
+        }
+
+        &.disabled {
+            background-color: #B1B1B1;
+            pointer-events: none;
+        }
+    }
+}

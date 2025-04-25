@@ -1,0 +1,68 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.56vw;
+}
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title {
+    display: flex;
+    flex-direction: row;
+    gap: 0.52vw;
+    align-items: center;
+
+    .h3 {
+        font-family: 'Bree CYR';
+        font-size: var(--font-size-32);
+        font-weight: 600;
+        line-height: 120%;
+        color: black;
+    }
+
+    .button {
+        width: 1.7vw;
+        height: 1.7vw;
+        cursor: pointer;
+        min-width: 20px;
+        min-height: 20px;
+        border-radius: 50%;
+        border: none;
+        background-color: transparent;
+        object-fit: cover;
+        object-position: center;
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: scale(1.02);
+        }
+    }
+}
+
+.link {
+    color: var(--grey);
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.list {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+
+    .item {
+        list-style: none;
+    }
+}

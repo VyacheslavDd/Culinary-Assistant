@@ -1,0 +1,102 @@
+.mainContainer {
+    width: 17vw;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15vw;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+.title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 90%;
+    background-color: #ccd6ff;
+    padding: 0.26vw 1.3vw;
+    color: black;
+    font-size: var(--font-size-20);
+    border-top-left-radius: 0.52vw;
+    border-bottom-right-radius: 0.52vw;
+}
+
+.list {
+    width: 100%;
+    height: 9.3vw;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    background-color: white;
+    border-radius: 0.52vw;
+    overflow: hidden;
+    gap: 0.52vw;
+    padding: 0.52vw;
+
+    .item {
+        width: 100%;
+        height: 100%;
+        background-color: var(--grey-background);
+        border-radius: 0.52vw;
+        overflow: hidden;
+    }
+
+    .img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
+.info {
+    font-size: var(--font-size-16);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding: 0 0.52vw;
+    justify-content: space-between;
+    align-items: center;
+
+    .author {
+        max-width: 80%;
+    }
+
+    .rating {
+        display: flex;
+        flex-direction: row;
+        gap: 0.15vw;
+        align-items: center;
+    }
+
+    .icon {
+        display: inline-block;
+        width: 1.05vw;
+        height: 1.05vw;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        min-width: 20px;
+        min-height: 20px;
+    }
+
+    &.light {
+        color: var(--white);
+
+        .icon {
+            background-image: url('../../../assets/svg/coll_fav_light.svg');
+        }
+    }
+
+    &.dark {
+        color: var(--black);
+
+        .icon {
+            background-image: url('../../../assets/svg/coll_fav_dark.svg');
+        }
+    }
+}

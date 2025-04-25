@@ -1,0 +1,41 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    gap: 1.6vw;
+    align-items: center;
+}
+
+.stars {
+    height: max-content;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.15vw;
+}
+
+.star {
+    width: 1.8vw;
+    height: 1.8vw;
+    min-width: 20px;
+    min-height: 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    display: flex;
+
+    img {
+        align-self: center;
+        width: 100%;
+    }
+}
+
+.title {
+    font-family: 'Bree CYR';
+    font-weight: 600;
+    font-size: var(--font-size-24);
+    line-height: 100%;
+    position: relative;
+    bottom: 0.05vw;
+    color: black;
+}
