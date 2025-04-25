@@ -9,6 +9,7 @@ namespace Culinary_Assistant.Core.Enums
 	public enum Category
 	{
 		Soups,
-		Dinner
+		Dinner,
+		Breakfast
 	}
 }

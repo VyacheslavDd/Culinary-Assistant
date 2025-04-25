@@ -9,5 +9,22 @@ namespace Culinary_Assistant.Core.Const
 	public static class MiscellaneousConstants
 	{
 		public const char ValuesSeparator = '|';
+		public const char PathSeparator = '/';
+		public const char RolesSeparator = ',';
+		public const int MaxFilesCount = 30;
+		public const int ReceiptCollectionMaxCoversCount = 4;
+		public const int FilesByMessage = 3;
+		public const int FileMaxSize = 16777216;
+
+		public static HashSet<string> SupportedFileExtensions => [".jpg", ".png", ".gif", ".jpeg"];
+		public const string ReceiptsElasticSearchIndex = "receipts";
+		public const string ReceiptsCollectionsElasticSearchIndex = "receiptscollection";
+
+		public const int AccessTokenExpirationMinutesTime = 15;
+		public const int RefreshTokenExpirationMonthsTime = 1;
+
+		public const string AccessTokenCookie = "AccessToken";
+		public const string RefreshTokenCookie = "RefreshToken";
+
 	}
 }

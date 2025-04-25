@@ -15,5 +15,10 @@ namespace Core.Base
 		{
 			return $"{typeof(T).Name}: {Id}";
 		}
+
+		protected void SetId(T value)
+		{
+			Id = value;
+		}
 	}
 }

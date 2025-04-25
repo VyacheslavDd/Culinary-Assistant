@@ -19,11 +19,14 @@ namespace Culinary_Assistant_Main.Infrastructure
 
 		public virtual DbSet<User> Users { get; set; }
 		public virtual DbSet<Receipt> Receipts { get; set; }
+		public virtual DbSet<ReceiptCollection> ReceiptCollections { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.HasDefaultSchema("MainAppSchema");
 			new UserModelConfiguration().Configure(modelBuilder.Entity<User>());
+			new ReceiptModelConfiguration().Configure(modelBuilder.Entity<Receipt>());
+			new ReceiptCollectionModelConfiguration().Configure(modelBuilder.Entity<ReceiptCollection>());
 			base.OnModelCreating(modelBuilder);
 		}
 

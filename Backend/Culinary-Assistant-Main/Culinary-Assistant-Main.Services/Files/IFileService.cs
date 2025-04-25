@@ -1,4 +1,5 @@
 ﻿using Culinary_Assistant.Core.DTO;
+using Culinary_Assistant.Core.Shared.Serializable;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace Culinary_Assistant_Main.Services.Files
 {
 	public interface IFileService
 	{
-		Task<List<string>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, FilesDTO filesDTO);
+		Task<List<FilePath>> GenerateFileLinksAndInitiateUploadMessageSending(string bucketName, string entityName, FilesDTO filesDTO);
 	}
 }

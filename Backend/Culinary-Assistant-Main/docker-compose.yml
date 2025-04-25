@@ -19,6 +19,8 @@ services:
     depends_on:
         culinarydb:
            condition: service_healthy
+        elasticsearch:
+           condition: service_healthy
 
   culinary-assistant-images:
     networks:
@@ -27,7 +29,8 @@ services:
     container_name: CulinaryAssistantImages
     restart: always
     depends_on:
-        - rabbitmq
+        rabbitmq:
+            condition: service_healthy
     ports:
         - "5002:5002"
     build:
@@ -65,6 +68,11 @@ services:
     image: rabbitmq:management
     volumes:
         - "./volumes/rabbitmq:/var/lib/rabbitmq"
+    healthcheck:
+        test: ["CMD", "rabbitmqctl", "status"]
+        interval: 5s
+        timeout: 5s
+        retries: 40
 
   minio:
     networks:
@@ -82,6 +90,38 @@ services:
         - "9001:9001"
     command: server --console-address ":9001" /data
 
+  nginx:
+    networks:
+        - culinary-network
+    container_name: Nginx
+    image: nginx:latest
+    restart: always
+    volumes:
+        - "./nginx.conf:/etc/nginx/nginx.conf"
+    ports:
+        - "80:80"
+
+  elasticsearch:
+    restart: always
+    networks:
+        - culinary-network
+    container_name: ElasticSearch
+    image: elasticsearch:7.17.9
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+      - ingest.geoip.downloader.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - "./volumes/elasticsearch:/usr/share/elasticsearch/data"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   miniobucketscreator:
     container_name: BucketsCreator
@@ -98,8 +138,6 @@ services:
       done;
       /usr/bin/mc alias set myminio http://minio:9000 culinaryadmin culinarypassword;
       /usr/bin/mc mb --ignore-existing myminio/receiptpictures;
-      /usr/bin/mc anonymous set public myminio/receiptpictures;
       /usr/bin/mc mb --ignore-existing myminio/userpictures;
-      /usr/bin/mc anonymous set public myminio/userpictures;
       exit 0;
       "

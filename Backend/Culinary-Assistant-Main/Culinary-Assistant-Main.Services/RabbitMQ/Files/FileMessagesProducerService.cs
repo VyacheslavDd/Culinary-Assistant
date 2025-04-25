@@ -41,7 +41,6 @@ namespace Culinary_Assistant_Main.Services.RabbitMQ.Images
 			using var connection = await factory.CreateConnectionAsync();
 			using var channel = await connection.CreateChannelAsync();
 			await channel.ExchangeDeclareAsync(RabbitMQConstants.ImagesExchangeName, ExchangeType.Topic);
-
 			var serializableFormFiles = new List<SerializableFormFile>();
 			for (var i = 0; i < files.Count; i++)
 			{
@@ -51,10 +50,13 @@ namespace Culinary_Assistant_Main.Services.RabbitMQ.Images
 				var contentBase64String = Convert.ToBase64String(contentBytes);
 				serializableFormFiles.Add(new SerializableFormFile(correspondingUniqueFileNames[i], files[i].ContentType, contentBase64String));
 			};
-			var serializableFilesData = new UploadFilesData(bucketName, serializableFormFiles);
-			var bytesSerializableFormFilesData = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(serializableFilesData));
-			await channel.BasicPublishAsync(RabbitMQConstants.ImagesExchangeName, RabbitMQConstants.UploadsRoutingKey, bytesSerializableFormFilesData);
-			_logger.Information("Опубликовано сообщение на публикацию файлов для {@entityData}", entityInfo);
+			for (int i = 0; i < serializableFormFiles.Count; i += MiscellaneousConstants.FilesByMessage)
+			{
+				var serializableFilesData = new UploadFilesData(bucketName, serializableFormFiles[i..Math.Min(serializableFormFiles.Count, i + MiscellaneousConstants.FilesByMessage)]);
+				var bytesSerializableFormFilesData = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(serializableFilesData));
+				await channel.BasicPublishAsync(RabbitMQConstants.ImagesExchangeName, RabbitMQConstants.UploadsRoutingKey, bytesSerializableFormFilesData);
+				_logger.Information("Опубликовано сообщение на публикацию файлов для {@entityData}", entityInfo);
+			}
 		}
 	}
 }

@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Culinary_Assistant.Core.Shared.Serializable
+namespace Culinary_Assistant.Core.Options
 {
-	public record PictureUrl(string Url);
+	public class ElasticSearchOptions
+	{
+		public string Url { get; set; }
+	}
 }
