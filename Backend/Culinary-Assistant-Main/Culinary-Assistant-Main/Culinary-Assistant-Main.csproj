@@ -4,24 +4,34 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Culinary_Assistant_Main</RootNamespace>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Minio" Version="6.0.4" />
+    <PackageReference Include="Minio.AspNetCore" Version="6.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,3 +7,10 @@ services:
       - ASPNETCORE_HTTP_PORTS=5000
     ports:
       - "5000:5000"
+
+  culinary-assistant-images:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5002
+    ports:
+      - "5002:5002"
