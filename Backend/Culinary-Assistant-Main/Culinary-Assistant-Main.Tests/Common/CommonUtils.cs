@@ -65,7 +65,6 @@ namespace Culinary_Assistant_Main.Tests.Common
 		public static IUsersService MockUsersService(IUsersRepository usersRepository)
 		{
 			var logger = MockLogger();
-			var configuration = CommonUtils.MockConfiguration();
 			var usersService = new UsersService(usersRepository, logger);
 			return usersService;
 		}

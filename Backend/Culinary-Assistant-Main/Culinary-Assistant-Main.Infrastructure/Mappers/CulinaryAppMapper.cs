@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.Receipt;
+using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
@@ -23,6 +24,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 		{
 			MapUsers();
 			MapReceipts();
+			MapReceiptCollections();
 		}
 
 		private void MapUsers()
@@ -60,6 +62,17 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 				.ForMember(sr => sr.Description, opt => opt.MapFrom(r => r.Description.Value))
 				.ForMember(sr => sr.Calories, opt => opt.MapFrom(r => r.Nutrients.Calories))
 				.ForMember(sr => sr.Tags, opt => opt.MapFrom(r => Miscellaneous.GetTagsFromString(r.Tags)));
+		}
+
+		public void MapReceiptCollections()
+		{
+			CreateMap<ReceiptCollection, ReceiptCollectionShortOutDTO>()
+				.ForMember(dto => dto.Title, opt => opt.MapFrom(rc => rc.Title.Value))
+				.ForPath(dto => dto.User.Login, opt => opt.MapFrom(rc => rc.User.Login.Value));
+
+			CreateMap<ReceiptCollection, ReceiptCollectionFullOutDTO>()
+				.ForMember(dto => dto.Title, opt => opt.MapFrom(rc => rc.Title.Value))
+				.ForPath(dto => dto.User.Login, opt => opt.MapFrom(rc => rc.User.Login.Value));
 		}
 	}
 }

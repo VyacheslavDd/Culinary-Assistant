@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Repositories;
 using Culinary_Assistant_Main.Services.Receipts;
@@ -7,6 +8,7 @@ using Culinary_Assistant_Main.Services.Users;
 using Culinary_Assistant_Main.Tests.Common;
 using Culinary_Assistant_Main.Tests.Data;
 using Minio;
+using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -60,15 +62,21 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		}
 
 		[Test]
-		public async Task GetByGuid_Includes_Receipts()
+		public async Task GetByGuid_Includes_ReceiptsAndCollections()
 		{
 			var userId = await GetUserIdAsync();
 			var receipts = ReceiptsData.Receipts;
+			var receiptCollection = ReceiptCollection.Create(new ReceiptCollectionInModelDTO("First", false, userId, null)).Value;
 			receipts.ForEach(r => r.SetUserId(userId));
 			await _dbContext.Receipts.AddRangeAsync(receipts);
+			await _dbContext.ReceiptCollections.AddAsync(receiptCollection);
 			await _dbContext.SaveChangesAsync();
 			var user = await _usersService.GetByGuidAsync(userId);
-			Assert.That(user.Receipts, Has.Count.EqualTo(3));
+			Assert.Multiple(() =>
+			{
+				Assert.That(user.Receipts, Has.Count.EqualTo(3));
+				Assert.That(user.ReceiptCollections, Has.Count.EqualTo(1));
+			});
 		}
 
 
