@@ -127,7 +127,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			return await base.BulkDeleteAsync(entityId);
 		}
 
-		public async Task SetPresignedUrlsForReceiptCollectionsAsync(IMinioClient minioClient, List<IReceiptCollectionCoversOutDTO> receiptCollections)
+		public async Task SetPresignedUrlsForReceiptCollectionsAsync<T>(IMinioClient minioClient, List<T> receiptCollections) where T: IReceiptCollectionCoversOutDTO
 		{
 			foreach (var rc in receiptCollections)
 			{

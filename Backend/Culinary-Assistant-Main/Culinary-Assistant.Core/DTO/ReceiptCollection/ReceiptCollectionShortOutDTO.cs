@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant.Core.DTO.User;
+﻿using Culinary_Assistant.Core.DTO.ReceiptCollection.Interfaces;
+using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Shared.Serializable;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 {
-	public class ReceiptCollectionShortOutDTO
+	public class ReceiptCollectionShortOutDTO : IReceiptCollectionCoversOutDTO
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
+		public bool IsPrivate { get; set; }
 		public List<FilePath> Covers { get; set; }
-		public ShortUserOutDTO User { get; set; }
+		public Guid UserId { get; set; }
 	}
 }

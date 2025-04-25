@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "main", "Slava" ]
+    branches: [ "main", "Slava-collections" ]
   pull_request:
-    branches: [ "main", "Slava" ]
+    branches: [ "main", "Slava-collections" ]
 
 jobs:
   build:

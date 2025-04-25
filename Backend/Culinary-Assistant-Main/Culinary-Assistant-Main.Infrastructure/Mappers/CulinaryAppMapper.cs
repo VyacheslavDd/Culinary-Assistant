@@ -68,11 +68,13 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 		{
 			CreateMap<ReceiptCollection, ReceiptCollectionShortOutDTO>()
 				.ForMember(dto => dto.Title, opt => opt.MapFrom(rc => rc.Title.Value))
-				.ForPath(dto => dto.User.Login, opt => opt.MapFrom(rc => rc.User.Login.Value));
+				.ForMember(dto => dto.Covers,
+				opt => opt.MapFrom(rc => rc.ReceiptCovers == "" ? new List<FilePath>() : JsonSerializer.Deserialize<List<FilePath>>(rc.ReceiptCovers, _jsonSerializerOptions)));
 
 			CreateMap<ReceiptCollection, ReceiptCollectionFullOutDTO>()
 				.ForMember(dto => dto.Title, opt => opt.MapFrom(rc => rc.Title.Value))
-				.ForPath(dto => dto.User.Login, opt => opt.MapFrom(rc => rc.User.Login.Value));
+				.ForMember(dto => dto.Covers,
+				opt => opt.MapFrom(rc => rc.ReceiptCovers == "" ? new List<FilePath>() : JsonSerializer.Deserialize<List<FilePath>>(rc.ReceiptCovers, _jsonSerializerOptions)));
 		}
 	}
 }
