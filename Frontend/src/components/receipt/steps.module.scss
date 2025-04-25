@@ -1,0 +1,33 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.9vw;
+    padding-top: 1.8vw;
+    color: black;
+}
+
+.h3 {
+    font-weight: 600;
+    font-size: var(--font-size-32);
+    line-height: 100%;
+    font-family: 'Bree CYR';
+}
+
+.stepsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3vw;
+
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8vw;
+
+    .title {
+        font-weight: 500;
+        font-size: var(--font-size-24);
+    }
+}

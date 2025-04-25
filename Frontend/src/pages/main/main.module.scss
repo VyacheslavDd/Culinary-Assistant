@@ -1,0 +1,13 @@
+.mainContainer {
+    flex: 1 0 auto; 
+}
+
+.main {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 1.5vw;
+    padding-bottom: 4vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6vw;
+}

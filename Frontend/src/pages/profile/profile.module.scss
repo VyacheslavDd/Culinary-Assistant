@@ -1,0 +1,34 @@
+.mainContainer {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    font-family: 'TildaSans';
+    font-weight: 400;
+    color: var(--black);
+    font-size: var(--font-size-20);
+}
+
+.container {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 2.3vw;
+    padding-top: 2.1vw;
+    padding-bottom: 4vw;
+    margin: 0 auto;
+}
+
+.catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6vw;
+}
+
+.h3 {
+    font-size: var(--font-size-32);
+    font-weight: 600;
+    line-height: 100%;
+    color: black;
+    font-family: 'Bree CYR';
+}
