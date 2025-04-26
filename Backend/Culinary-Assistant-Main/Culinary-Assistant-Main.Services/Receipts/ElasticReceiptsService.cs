@@ -38,12 +38,15 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				var createIndexResponse = await _elasticsearchClient.Indices.CreateAsync(MiscellaneousConstants.ReceiptsElasticSearchIndex, c => c
 					.Settings(s => s
 							.Analysis(a => a
+							.TokenFilters(tf => tf
+								.NGram("ngram_filter", ngtf => ngtf
+								.MinGram(4).MaxGram(5)))
 							.Analyzers(an => an
-							.Russian("russian_analyzer"))))
+							.Custom("ngram_analyzer", na => na.Tokenizer("standard").Filter(["lowercase", "ngram_filter"])))))
 					.Mappings(m => m
 							.Properties<ReceiptIndexDto>(p => p
-							.Text(r => r.Title, p => p.Analyzer("russian_analyzer").Boost(2.0))
-							.Text(r => r.Ingredients, p => p.Analyzer("russian_analyzer"))
+							.Text(r => r.Title, p => p.Analyzer("russian").Fields(f => f.Text("ngrams", n => n.Analyzer("ngram_analyzer"))).Boost(2.0))
+							.Text(r => r.Ingredients, p => p.Analyzer("russian").Fields(f => f.Text("ngrams", n => n.Analyzer("ngram_analyzer"))))
 							.IntegerNumber(r => r.CookingTime))));
 				if (!createIndexResponse.IsValidResponse)
 					_logger.Error("Не удалось создать индекс для рецептов.");
@@ -59,8 +62,8 @@ namespace Culinary_Assistant_Main.Services.Receipts
 					q.Bool(b =>
 					{
 						b.Should(
-							m => m.Match(mq => mq.Field("title").Query(receiptsFilterForElasticSearch.TitleQuery).Boost(2.0f)),
-							m => m.Match(mq => mq.Field("ingredients").Query(receiptsFilterForElasticSearch.IngredientsQuery).Boost(1.0f))
+							m => m.MultiMatch(mq => mq.Fields(Fields.FromFields(["title", "title.ngrams"])).Query(receiptsFilterForElasticSearch.TitleQuery).Boost(2.0f)),
+							m => m.MultiMatch(mq => mq.Fields(Fields.FromFields(["ingredients", "ingredients.ngrams"])).Query(receiptsFilterForElasticSearch.IngredientsQuery).Boost(1.0f))
 							);
 					});
 				})

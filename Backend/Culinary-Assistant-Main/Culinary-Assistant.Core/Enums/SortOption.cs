@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.Enums
 {
-	public enum Measure
+	public enum SortOption
 	{
-		Gram,
-		Kilogram,
-		Liter,
-		Piece
+		ByCookingTime,
+		ByPopularity,
+		ByCalories
 	}
 }

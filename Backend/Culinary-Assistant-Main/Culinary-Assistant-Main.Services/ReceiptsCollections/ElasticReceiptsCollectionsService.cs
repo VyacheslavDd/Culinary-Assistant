@@ -28,14 +28,17 @@ namespace Culinary_Assistant_Main.Services.ReceiptsCollections
 				{
 					s.Analysis(a =>
 					{
-						a.Analyzers(anl => anl.Russian("russian"));
+						a.TokenFilters(tf => tf
+								.NGram("ngram_filter", ngtf => ngtf
+								.MinGram(4).MaxGram(5)))
+						.Analyzers(anl => anl.Custom("ngram_analyzer", na => na.Tokenizer("standard").Filter(["lowercase", "ngram_filter"])));
 					});
 				})
 				.Mappings(m =>
 				{
 					m.Properties<ReceiptCollectionIndexDTO>(conf =>
 					{
-						conf.Text(p => p.Title, rc => rc.Analyzer("russian"));
+						conf.Text(p => p.Title, rc => rc.Analyzer("russian").Fields(f => f.Text("ngrams", n => n.Analyzer("ngram_analyzer"))));
 					});
 				});
 			});
@@ -49,7 +52,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptsCollections
 			{
 				c.Query(q =>
 				{
-					q.Match(m => m.Field("title").Query(searchByTitle));
+					q.MultiMatch(m => m.Fields(Fields.FromFields(["title", "title.ngrams"])).Query(searchByTitle));
 				})
 				.From(0)
 				.Size(1000);

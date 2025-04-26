@@ -35,6 +35,12 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 				.ForMember(dto => dto.Email, o => o.MapFrom(u => u.Email == null ? "" : u.Email.Value))
 				.ForMember(dto => dto.PictureUrl, o => o.MapFrom(u => u.ProfilePictureUrl));
 
+			CreateMap<User, AuthUserOutDTO>()
+				.ForMember(dto => dto.Login, o => o.MapFrom(u => u.Login.Value))
+				.ForMember(dto => dto.Phone, opt => opt.MapFrom(u => u.Phone == null ? null : u.Phone.Value))
+				.ForMember(dto => dto.Email, o => o.MapFrom(u => u.Email == null ? "" : u.Email.Value))
+				.ForMember(dto => dto.PictureUrl, o => o.MapFrom(u => u.ProfilePictureUrl));
+
 			CreateMap<User, ShortUserOutDTO>()
 				.ForMember(dto => dto.Login, o => o.MapFrom(u => u.Login.Value))
 				.ForMember(dto => dto.PictureUrl, o => o.MapFrom(u => u.ProfilePictureUrl));
@@ -59,7 +65,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 
 			CreateMap<Receipt, ShortReceiptOutDTO>()
 				.ForMember(sr => sr.Title, opt => opt.MapFrom(r => r.Title.Value))
-				.ForMember(sr => sr.Description, opt => opt.MapFrom(r => r.Description.Value))
 				.ForMember(sr => sr.Calories, opt => opt.MapFrom(r => r.Nutrients.Calories))
 				.ForMember(sr => sr.Tags, opt => opt.MapFrom(r => Miscellaneous.GetTagsFromString(r.Tags)));
 		}

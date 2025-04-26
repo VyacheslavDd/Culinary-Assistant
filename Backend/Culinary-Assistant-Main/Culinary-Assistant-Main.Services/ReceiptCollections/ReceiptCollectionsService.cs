@@ -44,7 +44,8 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			var receiptCollections = await _repository
 				.GetAll()
 				.Where(rc => requiredIds.Count == 1 && requiredIds[0] == Guid.Empty || idsHashset.Contains(rc.Id))
-				.Where(rc => !rc.IsPrivate)
+				.Where(rc => filter.UserId == null || rc.UserId == filter.UserId)
+				.Where(rc => filter.UserId != null || !rc.IsPrivate)
 				.ToListAsync(cancellationToken);
 			var entitiesResponse = ApplyPaginationToEntities(receiptCollections, filter);
 			return Result.Success(entitiesResponse);
