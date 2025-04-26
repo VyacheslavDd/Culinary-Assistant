@@ -82,6 +82,17 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		}
 
 		[Test]
+		public async Task GetAllAsync_WithUserIdFilter_ReturnsCollectionsOfUser()
+		{
+			var collections = await _receiptCollectionsService.GetAllAsync();
+			var userId = Guid.NewGuid();
+			collections[0].SetUserId(userId);
+			await _context.SaveChangesAsync();
+			var collectionsByUserId = await _receiptCollectionsService.GetAllByFilterAsync(new ReceiptCollectionsFilter(UserId: userId));
+			Assert.That(collectionsByUserId.Value.EntitiesCount, Is.EqualTo(1));
+		}
+
+		[Test]
 		public async Task GetByGuidAsync_Works_And_LoadsReceiptsAndUser()
 		{
 			var collectionId = await GetReceiptCollectionGuid(2);
@@ -260,7 +271,6 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			for (int i = 0; i <  _receiptIds.Count; i++)
 				receipts[i].SetReceiptId(_receiptIds[i]);
 			await _context.Receipts.AddRangeAsync(receipts);
-			var colllections = new List<ReceiptCollection>();
 			List<ReceiptCollectionInModelDTO> receiptCollectionsDTO =
 				[
 					new("First", true, _adminId, null),

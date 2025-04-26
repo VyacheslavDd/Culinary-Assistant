@@ -19,7 +19,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		public void SetUp()
 		{
 			List<Ingredient> ingredients = [new Ingredient("Ingredient 1", 1, Measure.Gram)];
-			List<CookingStep> steps = [new CookingStep(1, "Chill")];
+			List<CookingStep> steps = [new CookingStep(1, "Первый", "Chill")];
 			List<FilePath> pictureUrls = [new FilePath("http://picture.com")];
 			var receiptInDTO = new ReceiptInDTO("Receipt", "Description Receipt", [], Category.Soups, CookingDifficulty.Easy, 60, ingredients, steps, pictureUrls, Guid.Empty);
 			_receipt = Receipt.Create(receiptInDTO).Value;
@@ -105,15 +105,15 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		{
 			List<Ingredient> ingredients = [new Ingredient("water", 2, Measure.Liter)];
 			_receipt.SetIngredients(ingredients);
-			Assert.That(_receipt.Ingredients, Is.EqualTo("[{\"Name\":\"water\",\"NumericValue\":2,\"Measure\":3}]"));
+			Assert.That(_receipt.Ingredients, Is.EqualTo("[{\"Name\":\"water\",\"NumericValue\":2,\"Measure\":2}]"));
 		}
 
 		[Test]
 		public void SetCookingSteps_WorksCorrectly()
 		{
-			List<CookingStep> cookingSteps = [new CookingStep(1, "1")];
+			List<CookingStep> cookingSteps = [new CookingStep(1, "1", "1")];
 			_receipt.SetCookingSteps(cookingSteps);
-			Assert.That(_receipt.CookingSteps, Is.EqualTo("[{\"Step\":1,\"Description\":\"1\"}]"));
+			Assert.That(_receipt.CookingSteps, Is.EqualTo("[{\"Step\":1,\"Title\":\"1\",\"Description\":\"1\"}]"));
 		}
 
 		[Test]
@@ -131,15 +131,22 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		}
 
 		[Test]
-		public void AddView_WorksCorrectly()
+		public void AddPopularity_WorksCorrectly()
 		{
 			var popularityBefore = _receipt.Popularity;
-			_receipt.AddView();
+			_receipt.AddPopularity();
 			Assert.Multiple(() =>
 			{
 				Assert.That(popularityBefore, Is.EqualTo(0));
 				Assert.That(_receipt.Popularity, Is.EqualTo(1));
 			});
+		}
+
+		[Test]
+		public void SetRating_WorksCorrectly()
+		{
+			_receipt.SetRating(5.3);
+			Assert.That(_receipt.Rating, Is.EqualTo(5.3));
 		}
 
 		[Test]
@@ -175,7 +182,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void CannotSet_IncorrectSteps()
 		{
-			var steps = new List<CookingStep>() { new(1, "1"), new(3, "2") };
+			var steps = new List<CookingStep>() { new(1, "1", "1"), new(3, "2", "2") };
 			var res = _receipt.SetCookingSteps(steps);
 			Assert.That(res.IsFailure, Is.True);
 		}

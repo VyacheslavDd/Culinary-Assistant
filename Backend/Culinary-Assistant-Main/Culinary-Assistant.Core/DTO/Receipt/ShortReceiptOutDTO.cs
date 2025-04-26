@@ -11,13 +11,13 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
-		public string Description { get; set; }
 		public int Calories { get; set; }
 		public int CookingTime { get; set; }
 		public List<Tag> Tags { get; set; }
 		public Category Category { get; set; }
 		public CookingDifficulty CookingDifficulty { get; set; }
 		public int Popularity { get; set; }
+		public double Rating { get; set; }
 		public string MainPictureUrl { get; set; }
 	}
 }

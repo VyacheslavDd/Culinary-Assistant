@@ -32,6 +32,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public int Popularity { get; private set; }
 		public string MainPictureUrl { get; private set; }
 		public string PicturesUrls { get; private set; }
+		public double Rating { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
@@ -102,8 +103,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 					return Result.Failure("Название ингредиента не может быть пустым");
 				if (ingredient.NumericValue <= 0)
 					return Result.Failure("Количество ингредиента должно быть больше 0");
-				if (ingredient.Measure == Measure.None)
-					return Result.Failure("Мера не должна быть None");
 			}
 			Ingredients = JsonSerializer.Serialize(ingredients);
 			return Result.Success();
@@ -115,8 +114,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 			var currentStep = 1;
 			foreach (var step in cookingSteps)
 			{
-				if (string.IsNullOrWhiteSpace(step.Description))
-					return Result.Failure("Описание шага не может быть пустым");
+				if (string.IsNullOrWhiteSpace(step.Description) || string.IsNullOrWhiteSpace(step.Title))
+					return Result.Failure("Название и описание шага не могут быть пустыми");
 				if (currentStep != step.Step)
 					return Result.Failure($"Нарушена последовательность шагов приготовления. Ожидаемый пункт: {currentStep}. Фактический: {step.Step}");
 				currentStep++;
@@ -149,9 +148,14 @@ namespace Culinary_Assistant_Main.Domain.Models
 			return Result.Failure(nutrientsResult.Error);
 		}
 
-		public void AddView()
+		public void AddPopularity()
 		{
 			Popularity += 1;
+		}
+
+		public void SetRating(double rating)
+		{
+			Rating = rating;
 		}
 
 		/// <summary>

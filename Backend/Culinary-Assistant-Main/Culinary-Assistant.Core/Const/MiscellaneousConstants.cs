@@ -17,8 +17,8 @@ namespace Culinary_Assistant.Core.Const
 		public const int FileMaxSize = 16777216;
 
 		public static HashSet<string> SupportedFileExtensions => [".jpg", ".png", ".gif", ".jpeg"];
-		public const string ReceiptsElasticSearchIndex = "receipts";
-		public const string ReceiptsCollectionsElasticSearchIndex = "receiptscollection";
+		public const string ReceiptsElasticSearchIndex = "receipts_v2";
+		public const string ReceiptsCollectionsElasticSearchIndex = "receiptscollection_v2";
 
 		public const int AccessTokenExpirationMinutesTime = 15;
 		public const int RefreshTokenExpirationMonthsTime = 1;

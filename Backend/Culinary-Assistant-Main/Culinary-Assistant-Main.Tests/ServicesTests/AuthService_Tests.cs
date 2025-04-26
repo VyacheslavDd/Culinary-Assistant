@@ -1,5 +1,7 @@
-﻿using Culinary_Assistant.Core.DTO.Auth;
+﻿using AutoMapper;
+using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Repositories;
 using Culinary_Assistant_Main.Services.Seed;
@@ -34,7 +36,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var seedService = new SeedService(usersRepository, logger);
 			var configuration = CommonUtils.MockConfiguration();
 			await seedService.CreateAdministratorUserAsync();
-			_authService = new AuthService(usersRepository, configuration);
+			var mapper = CommonUtils.MockMapper();
+			_authService = new AuthService(usersRepository, configuration, mapper);
 			_usersService = new UsersService(usersRepository, logger);
 		}
 

@@ -20,6 +20,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Culinary_Assistant.Core.Constants;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant_Main.Domain.Models;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -67,6 +70,13 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var logger = MockLogger();
 			var usersService = new UsersService(usersRepository, logger);
 			return usersService;
+		}
+
+		public static IMapper MockMapper()
+		{
+			var mapperMock = new Mock<IMapper>();
+			mapperMock.Setup(m => m.Map<AuthUserOutDTO>(It.IsAny<User>())).Returns(new AuthUserOutDTO());
+			return mapperMock.Object;
 		}
 	}
 }
