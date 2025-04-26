@@ -4,13 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Culinary_Assistant.Core.Enums
+namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 {
-	public enum Measure
-	{
-		Gram,
-		Kilogram,
-		Liter,
-		Piece
-	}
+	public record ReceiptsListDTO(List<Guid> Receipts);
 }

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using AutoMapper;
+using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.Constants;
 using Culinary_Assistant.Core.DTO.Auth;
@@ -18,11 +19,12 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.Users
 {
-	public class AuthService(IUsersRepository usersRepository, IConfiguration configuration) : IAuthService
+	public class AuthService(IUsersRepository usersRepository, IConfiguration configuration, IMapper mapper) : IAuthService
 	{
 		private readonly IUsersRepository _usersRepository = usersRepository;
 		private readonly string _secretKey = configuration[ConfigurationConstants.JWTSecretKey]!;
 		private readonly BaseLoginHandler _loginHandler = HandlerConstructor.GetLoginHandler();
+		private readonly IMapper _mapper = mapper;
 
 		public async Task<Result<AuthOutDTO>> RegisterAsync(UserInDTO userInDTO, HttpResponse httpResponse)
 		{
@@ -47,7 +49,8 @@ namespace Culinary_Assistant_Main.Services.Users
 			}
 			var guid = await _usersRepository.AddAsync(user);
 			AddTokensToResponseCookies(httpResponse, guid, ["User"], true);
-			return Result.Success(new AuthOutDTO(guid));
+			var mappedUser = _mapper.Map<AuthUserOutDTO>(user);
+			return Result.Success(new AuthOutDTO(mappedUser));
 		}
 
 		public async Task<Result<AuthOutDTO>> AuthenthicateAsync(AuthInDTO authInDTO, HttpResponse httpResponse)
@@ -61,7 +64,8 @@ namespace Culinary_Assistant_Main.Services.Users
 			if (authInDTO.AdminEntrance && !userByLogin.IsAdmin)
 				return Result.Failure<AuthOutDTO>("Данный пользователь не может авторизоваться как админ");
 			AddTokensToResponseCookies(httpResponse, userByLogin.Id, authInDTO.AdminEntrance ? ["Admin"] : ["User"], authInDTO.RememberMe);
-			return Result.Success(new AuthOutDTO(userByLogin.Id));
+			var mappedUser = _mapper.Map<AuthUserOutDTO>(userByLogin);
+			return Result.Success(new AuthOutDTO(mappedUser));
 		}
 
 		private void AddTokensToResponseCookies(HttpResponse httpResponse, Guid userId, List<string> roles, bool rememberMe)

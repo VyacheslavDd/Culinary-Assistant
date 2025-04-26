@@ -31,6 +31,13 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
+		private readonly Dictionary<SortOption, Func<Receipt, int>> _orderByExpressions = new()
+		{
+			{ SortOption.ByPopularity, (Receipt receipt) => receipt.Popularity },
+			{ SortOption.ByCookingTime, (Receipt receipt) => receipt.CookingTime },
+			{ SortOption.ByCalories, (Receipt receipt) => receipt.Nutrients.Calories }
+		};
+
 		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default)
 		{
 			var elasticFilter = new ReceiptsFilterForElasticSearch(receiptsFilter.SearchByTitle, receiptsFilter.SearchByIngredients, receiptsFilter.Page, receiptsFilter.Limit);
@@ -42,7 +49,8 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				requiredReceiptsIds = idsResult.Value;
 			}
 			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, receiptsFilter, cancellationToken);
-			var response = ApplyPaginationToEntities(filteredReceipts, receiptsFilter);
+			var sortedReceipts = receiptsFilter.SortOption == null ? filteredReceipts : DoReceiptsSorting(filteredReceipts, receiptsFilter.SortOption, receiptsFilter.IsAscendingSorting);
+			var response = ApplyPaginationToEntities(sortedReceipts, receiptsFilter);
 			return Result.Success(response);
 		}
 
@@ -134,15 +142,27 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
 		{
 			var tags = new HashSet<Tag>(receiptsFilter.Tags ?? []);
+			var categories = new HashSet<Category>(receiptsFilter.Categories ?? []);
+			var difficulties = new HashSet<CookingDifficulty>(receiptsFilter.CookingDifficulties ?? []);
 			var hadEmpty = requiredIds.Count > 0 && requiredIds[0] == Guid.Empty;
 			var idsHashtag = new HashSet<Guid>(requiredIds);
 			var data = await _repository.GetAll()
 				.Where(r => hadEmpty || idsHashtag.Contains(r.Id))
-				.Where(r => receiptsFilter.Category == null || r.Category == receiptsFilter.Category)
-				.Where(r => receiptsFilter.CookingDifficulty == null || r.CookingDifficulty == receiptsFilter.CookingDifficulty)
+				.Where(r => receiptsFilter.UserId == null || r.UserId == receiptsFilter.UserId)
+				.Where(r => receiptsFilter.Categories == null || categories.Contains(r.Category))
+				.Where(r => receiptsFilter.CookingDifficulties == null || difficulties.Contains(r.CookingDifficulty))
+				.Where(r => r.CookingTime >= receiptsFilter.CookingTimeFrom && r.CookingTime <= receiptsFilter.CookingTimeTo)
 				.ToListAsync(cancellationToken);
 			var filteredByTags = data.Where(r => tags.Count == 0 || Miscellaneous.GetTagsFromString(r.Tags).Any(t => tags.Contains(t))).ToList();
 			return filteredByTags;
+		}
+
+		private List<Receipt> DoReceiptsSorting(List<Receipt> receipts, SortOption? sortOption, bool isAscendingSorting)
+		{
+			var nonNullableOption = (SortOption)sortOption;
+			var orderedReceipts = isAscendingSorting ? receipts.OrderBy(_orderByExpressions[nonNullableOption]).ToList()
+				: receipts.OrderByDescending(_orderByExpressions[nonNullableOption]).ToList();
+			return orderedReceipts;
 		}
 	}
 }

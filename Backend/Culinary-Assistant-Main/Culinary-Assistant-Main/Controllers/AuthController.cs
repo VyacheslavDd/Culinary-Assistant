@@ -6,14 +6,17 @@ using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Minio;
 
 namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/auth")]
 	[ApiController]
-	public class AuthController(IAuthService authService) : ControllerBase
+	public class AuthController(IAuthService authService, IUsersService usersService, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IAuthService _authService = authService;
+		private readonly IUsersService _usersService = usersService;
+		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 
 		/// <summary>
 		/// Зарегистрироваться на сайте
@@ -26,7 +29,7 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> RegisterAsync([FromBody] UserInDTO userInDTO)
 		{
 			var response = await _authService.RegisterAsync(userInDTO, Response);
-			if (response.IsSuccess) return Created("auth/register", response.Value);
+			if (response.IsSuccess) return Created("auth/register", response.Value.AuthUserOutDTO);
 			return BadRequest(response.Error);
 		}
 
@@ -41,8 +44,10 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> AuthenthicateAsync([FromBody] AuthInDTO authInDTO)
 		{
 			var response = await _authService.AuthenthicateAsync(authInDTO, Response);
-			if (response.IsSuccess) return Ok(response.Value);
-			return BadRequest(response.Error);
+			if (response.IsFailure) return BadRequest(response.Error);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, [response.Value.AuthUserOutDTO]);
+			return Ok(response.Value.AuthUserOutDTO);
 		}
 
 		/// <summary>

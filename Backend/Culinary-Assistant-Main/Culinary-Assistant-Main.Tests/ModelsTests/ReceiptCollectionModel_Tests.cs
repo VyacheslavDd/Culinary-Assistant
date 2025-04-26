@@ -81,7 +81,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		{
 			var nextReceipt = Receipt.Create(new ReceiptInDTO("Салат", "Вкусный салат", [Tag.Lean], Category.Dinner, CookingDifficulty.Hard,
 					50, [new Ingredient("Огурец", 3, Measure.Piece), new Ingredient("Помидор", 2, Measure.Piece)],
-					[new CookingStep(1, "Порезать огурец"), new CookingStep(2, "Порезать помидор")],
+					[new CookingStep(1, "Первый", "Порезать огурец"), new CookingStep(2, "Второй", "Порезать помидор")],
 					[new FilePath("4")], default)).Value;
 			_receiptCollection.AddReceipts([nextReceipt]);
 			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/600x400\"},{\"Url\":\"https://placehold.co/800x400\"},{\"Url\":\"https://placehold.co/1000x400\"},{\"Url\":\"4\"}]"));

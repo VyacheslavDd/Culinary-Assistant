@@ -17,7 +17,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 	public interface IReceiptCollectionsService : IService<ReceiptCollection, ReceiptCollectionInModelDTO, ReceiptCollectionUpdateDTO>
 	{
 		Task<Result<EntitiesResponseWithCountAndPages<ReceiptCollection>>> GetAllByFilterAsync(ReceiptCollectionsFilter filter, CancellationToken cancellationToken = default);
-		Task SetPresignedUrlsForReceiptCollectionsAsync(IMinioClient minioClient, List<IReceiptCollectionCoversOutDTO> receiptCollections);
+		Task SetPresignedUrlsForReceiptCollectionsAsync<T>(IMinioClient minioClient, List<T> receiptCollections) where T: IReceiptCollectionCoversOutDTO;
 		Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds);
 		Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds);
 	}

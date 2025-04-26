@@ -31,12 +31,12 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 
 		private readonly Func<Guid, ReceiptInDTO> _getFineReceiptInDTO = (Guid userId) => new("Пища", "Описание", [Tag.Vegetarian], Category.Dinner, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", 3, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
-					[new CookingStep(1, "Один"), new CookingStep(2, "Два")],
+					[new CookingStep(1, "w", "Один"), new CookingStep(2, "w", "Два")],
 					[new FilePath("https://placehold.co/600x400")], userId);
 
 		private readonly Func<Guid, ReceiptInDTO> _getWrongReceiptInDTO = (Guid userId) => new("", "Описание", [Tag.Vegetarian], Category.Breakfast, CookingDifficulty.Easy,
 					50, [new Ingredient("Морковь", -30, Measure.Piece), new Ingredient("Свекла", 2, Measure.Piece)],
-					[new CookingStep(4, "Один"), new CookingStep(2, "Два")],
+					[new CookingStep(4, "w", "Один"), new CookingStep(2, "w", "Два")],
 					[new FilePath("https://placehold.co/600x400")], userId);
 
 		[SetUp]
@@ -94,14 +94,21 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task GetAllAsync_ByDifficulty_WorksCorrectly()
 		{
-			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(CookingDifficulty: CookingDifficulty.Hard));
+			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(CookingDifficulties: [CookingDifficulty.Hard]));
 			Assert.That(receipts.Data.All(r => r.CookingDifficulty == CookingDifficulty.Hard), Is.True);
+		}
+
+		[Test]
+		public async Task GetAllAsync_ByCookingTime_WorksCorrectly()
+		{
+			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(CookingTimeTo: 60));
+			Assert.That(receipts.Data.All(r => r.CookingTime <= 60), Is.True);
 		}
 
 		[Test]
 		public async Task GetAllAsync_ByCategory_WorksCorrectly()
 		{
-			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Category: Category.Soups));
+			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Categories: [Category.Soups]));
 			Assert.That(receipts.Data.All(r => r.Category == Category.Soups), Is.True);
 		}
 
@@ -119,12 +126,38 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task GetAllAsync_WithComplexFilter_WorksCorrectly()
 		{
-			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Limit: 2, SearchByTitle: "а", Category: Category.Dinner));
+			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Limit: 2, SearchByTitle: "а", Categories: [Category.Dinner]));
 			Assert.Multiple(() =>
 			{
 				Assert.That(receipts.EntitiesCount, Is.EqualTo(1));
 				Assert.That(receipts.Data[0].Title.Value, Is.EqualTo("Салат"));
 			});
+		}
+
+		[Test]
+		public async Task GetAllAsync_WithSorting_WorksCorrectly()
+		{
+			await _culinaryAppContext.SaveChangesAsync();
+			var sortedReceipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SortOption: SortOption.ByCookingTime, IsAscendingSorting: false));
+			var receiptsData = sortedReceipts.Data;
+			Assert.Multiple(() =>
+			{
+				Assert.That(receiptsData[0].Title.Value, Is.EqualTo("Суп"));
+				Assert.That(receiptsData[1].Title.Value, Is.EqualTo("Салат"));
+				Assert.That(receiptsData[2].Title.Value, Is.EqualTo("Название"));
+			});
+		}
+
+		[Test]
+		public async Task GetAllAsync_WithUserId_WorksCorrectly()
+		{
+			await AddReceiptsToDbContextAsync();
+			var receipts = await _receiptsService.GetAllAsync();
+			var userId = Guid.NewGuid();
+			receipts[0].SetUserId(userId);
+			await _culinaryAppContext.SaveChangesAsync();
+			var receiptsByUserIdFilter = await _receiptsService.GetAllAsync(new ReceiptsFilter(UserId: userId));
+			Assert.That(receiptsByUserIdFilter.Value.EntitiesCount, Is.EqualTo(1));
 		}
 
 		[Test]
