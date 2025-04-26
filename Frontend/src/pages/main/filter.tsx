@@ -1,7 +1,26 @@
-import { ButtonLayout, FilterContent, IngredientsContent, Search, SortContent } from 'components/filter';
+import {
+    ButtonLayout,
+    FilterContent,
+    IngredientsContent,
+    Search,
+    SortContent,
+} from 'components/filter';
 import styles from './filter.module.scss';
+import { useDispatch, useSelector } from 'store/store';
+import { selectFilter, updateFilter } from 'store/main-page.slice';
+import { Filter as TFilter } from 'types';
 
 export function Filter() {
+    const dispatch = useDispatch();
+    const filter = useSelector(selectFilter);
+
+    const handleChange = <K extends keyof TFilter>(
+        key: K,
+        selected: TFilter[K]
+    ) => {
+        dispatch(updateFilter({ [key]: selected } as Pick<TFilter, K>));
+    };
+
     return (
         <div className={styles.mainContainer}>
             <Search />

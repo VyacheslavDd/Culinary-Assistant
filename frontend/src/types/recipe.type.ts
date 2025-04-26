@@ -1,4 +1,4 @@
-import { recipeDifficulty } from './short-recipe.type';
+import { CookingDifficulty } from './cookingDifficulty.enum';
 import { ShortUser } from './short-user.type';
 
 export type Recipe = {
@@ -9,7 +9,7 @@ export type Recipe = {
     steps: string[];
     calories: number;
     tags: string[];
-    difficulty: recipeDifficulty;
+    difficulty: CookingDifficulty;
     cookingTime: number;
     mainImage: string;
     images: string[];

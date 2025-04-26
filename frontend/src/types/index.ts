@@ -5,3 +5,8 @@ export * from "./short-user.type";
 export * from "./short-recipe.type";
 export * from "./short-selection-of-recipes.type";
 export * from "./ingredient.type";
+export * from "./measure.enum";
+export * from "./tags.enum";
+export * from "./category.enum";
+export * from "./cookingDifficulty.enum";
+export * from "./filter.type";

@@ -1,12 +1,12 @@
-import { recipeDifficulty } from 'types';
+import { CookingDifficulty } from 'types';
 
-export function transformDifficulty(difficulty: recipeDifficulty) {
+export function transformDifficulty(difficulty: CookingDifficulty): string {
     switch (difficulty) {
-        case 'easy':
+        case CookingDifficulty.easy:
             return 'Легко';
-        case 'medium':
+        case CookingDifficulty.medium:
             return 'Средне';
-        case 'hard':
+        case CookingDifficulty.hard:
             return 'Сложно';
         default:
             return 'Легко';
@@ -25,11 +25,11 @@ export function transformRating(rating: number | string): string {
 
 export function transformCookingTime(minutes: number): string {
     if (minutes < 60) {
-      return `${minutes} мин`;
+        return `${minutes} мин`;
     }
-    
+
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-    
+
     return `${hours} ч ${remainingMinutes} мин`;
-  }
+}

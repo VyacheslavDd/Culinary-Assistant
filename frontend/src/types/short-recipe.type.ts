@@ -1,13 +1,17 @@
+import { Category } from './category.enum';
+import { CookingDifficulty } from './cookingDifficulty.enum';
+import { Tag } from './tags.enum';
+
 export type ShortRecipe = {
     id: string;
     title: string;
-    mainImage: string;
+    // description: string;
+    mainPictureUrl: string;
     cookingTime: number;
-    difficulty: recipeDifficulty;
+    cookingDifficulty: CookingDifficulty;
     calories: number;
-    tags: string[];
+    tags: Tag[];
     popularity: number;
     rating: number;
+    category: Category
 };
-
-export type recipeDifficulty = 'easy' | 'medium' | 'hard';

@@ -12,13 +12,27 @@ import RegisterPage from 'pages/register/register.page';
 import PassRecoveryPage from 'pages/pass-recovery/pass-recovery.page';
 import { ProfilePage } from 'pages/profile/profile.page';
 import MyCollectionsPage from 'pages/my-collections/my-collection.page';
+import { useEffect } from 'react';
+import { useDispatch } from 'store/store';
+import { fetchRecipes } from 'store/main-page.slice';
 
 function App() {
     const location = useLocation();
+    const dispatch = useDispatch();
     const { pathname } = location;
 
     const authPages = ['/login', '/register', '/pass-recovery'];
     const isAuthPage = authPages.includes(pathname);
+
+    // useEffect(() => {
+    //     dispatch(
+    //         fetchRecipes({
+    //             Page: 1,
+    //             Limit: 10,
+    //             SearchByTitle: 'Вишн',
+    //         })
+    //     );
+    // }, [dispatch]);
 
     return (
         <div className='App'>

@@ -12,7 +12,7 @@ export function CollectionPage() {
                 {/* <OtherCollHeader /> */}
                 <div className={styles.catalogContainer}>
                     <h2 className={styles.title}> Рецепты</h2>
-                    <Catalog />
+                    {/* <Catalog /> */}
                 </div>
             </div>
         </>

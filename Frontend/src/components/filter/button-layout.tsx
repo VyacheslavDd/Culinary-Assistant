@@ -3,6 +3,8 @@ import styles from './button-layout.module.scss';
 import ingredient_icon from '../../assets/svg/ingredients_icon.svg';
 import fiter_icon from '../../assets/svg/filter_icon.svg';
 import sort_icon from '../../assets/svg/sort_icon.svg';
+import { useDispatch } from 'store/store';
+import { fetchRecipes } from 'store/main-page.slice';
 
 type IconName = 'ingredients' | 'filter' | 'sort';
 
@@ -23,6 +25,7 @@ export function ButtonLayout(props: Props) {
     const { children, color, name, icon } = props;
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const dispatch = useDispatch();
 
     const toggleMenu = () => setOpen(!open);
 
@@ -53,7 +56,10 @@ export function ButtonLayout(props: Props) {
             {open && (
                 <div className={styles.dropdown}>
                     {children}
-                    <button className={`${styles.button} ${styles.apply}`}>
+                    <button
+                        className={`${styles.button} ${styles.apply}`}
+                        onClick={() => dispatch(fetchRecipes())}
+                    >
                         Применить
                     </button>
                 </div>

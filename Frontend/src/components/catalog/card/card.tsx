@@ -7,7 +7,7 @@ import {
     transformDifficulty,
     transformRating,
     transformCookingTime,
-} from 'utils/api-transform';
+} from 'utils/transform';
 import { useNavigate } from 'react-router-dom';
 
 type CatalogCardProps = {
@@ -20,9 +20,10 @@ export function CatalogCard(props: CatalogCardProps) {
     const {
         // id,
         title,
-        mainImage,
+        mainPictureUrl,
         cookingTime,
-        difficulty,
+        cookingDifficulty,
+        // category,
         calories,
         // tags,
         // popularity,
@@ -42,7 +43,7 @@ export function CatalogCard(props: CatalogCardProps) {
             >
                 {transformRating(rating)}
             </div>
-            <img src={mainImage} alt='porridge' className={styles.image} />
+            <img src={mainPictureUrl} alt='porridge' className={styles.image} />
             <div className={styles.description}>
                 <div className={styles.name}>
                     <p className={styles.title}>{title}</p>
@@ -63,7 +64,7 @@ export function CatalogCard(props: CatalogCardProps) {
                             alt='chef'
                             className={styles.infoIcon}
                         />
-                        {transformDifficulty(difficulty)}
+                        {transformDifficulty(cookingDifficulty)}
                     </p>
                     <p className={styles.info}>
                         <img
