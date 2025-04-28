@@ -20,7 +20,7 @@ namespace Culinary_Assistant.Core.ValueTypes
 				var phoneToLong = long.Parse(phone.Replace("+7", "8"));
 				return Result.Success(new Phone() { Value = phoneToLong });
 			}
-			return Result.Failure<Phone>("Номер должен начинаться с +7 или 8 и быть длинною 11 цифр");
+			return Result.Failure<Phone>("Номер должен начинаться с +7 или 8 и быть длиною 11 цифр");
 		}
 
 		protected override IEnumerable<object> GetEqualityComponents()

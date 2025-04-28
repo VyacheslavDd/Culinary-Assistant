@@ -36,7 +36,6 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
 		{
 			var collections = await _receiptCollectionsService.GetAllAsync(cancellationToken);
-			if (collections.Count == 0) return NoContent();
 			var mappedCollections = await MapCollectionsAsync(collections);
 			return Ok(mappedCollections);
 		}

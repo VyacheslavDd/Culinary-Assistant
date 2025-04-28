@@ -35,7 +35,7 @@ namespace Culinary_Assistant_Main.Controllers
 		{
 			var receipts = await _receiptsService.GetAllAsync(receiptsFilter, cancellationToken);
 			if (receipts.IsFailure) return StatusCode(500, receipts.Error);
-			if (receipts.Value.EntitiesCount == 0) return NoContent();
+			if (receipts.Value.EntitiesCount == 0) return Ok(Array.Empty<ShortReceiptOutDTO>());
 			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Value.Data);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);

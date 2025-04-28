@@ -40,9 +40,10 @@ namespace Culinary_Assistant_Main.Services.Receipts
 
 		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default)
 		{
-			var elasticFilter = new ReceiptsFilterForElasticSearch(receiptsFilter.SearchByTitle, receiptsFilter.SearchByIngredients, receiptsFilter.Page, receiptsFilter.Limit);
+			var elasticFilter = new ReceiptsFilterForElasticSearch(receiptsFilter.SearchByTitle, receiptsFilter.SearchByIngredients ?? [], receiptsFilter.StrictIngredientsSearch,
+				receiptsFilter.Page, receiptsFilter.Limit);
 			List<Guid> requiredReceiptsIds = [Guid.Empty];
-			if (elasticFilter.TitleQuery != "" || elasticFilter.IngredientsQuery != "")
+			if (elasticFilter.TitleQuery != "" || receiptsFilter.SearchByIngredients != null)
 			{
 				var idsResult = await _elasticReceiptsService.GetReceiptIdsBySearchParametersAsync(elasticFilter);
 				if (idsResult.IsFailure) return Result.Failure<EntitiesResponseWithCountAndPages<Receipt>>(idsResult.Error);
@@ -154,6 +155,11 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				.Where(r => r.CookingTime >= receiptsFilter.CookingTimeFrom && r.CookingTime <= receiptsFilter.CookingTimeTo)
 				.ToListAsync(cancellationToken);
 			var filteredByTags = data.Where(r => tags.Count == 0 || Miscellaneous.GetTagsFromString(r.Tags).Any(t => tags.Contains(t))).ToList();
+			if (!hadEmpty && receiptsFilter.StrictIngredientsSearch && receiptsFilter.SearchByIngredients != null)
+			{
+				var strictedReceipts = filteredByTags.Where(r => JsonSerializer.Deserialize<List<Ingredient>>(r.Ingredients).Count == receiptsFilter.SearchByIngredients.Count).ToList();
+				return strictedReceipts;
+			}
 			return filteredByTags;
 		}
 
