@@ -34,6 +34,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<ILikesService<ReceiptLike, Receipt>, ReceiptLikesService>();
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
 			services.AddScoped<AuthenthicationFilter>();
+			services.AddScoped<EnrichUserFilter>();
 			return services;
 		}
 	}

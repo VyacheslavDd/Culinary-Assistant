@@ -8,6 +8,7 @@ using Minio.DataModel.Args;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -38,9 +39,9 @@ namespace Culinary_Assistant.Core.Utils
 				.Select(t => (Tag)int.Parse(t)).ToList();
 		}
 
-		public static Guid RetrieveUserIdFromHttpContext(HttpContext httpContext)
+		public static Guid RetrieveUserIdFromHttpContext(ClaimsPrincipal user)
 		{
-			var guidClaim = httpContext.User.FindFirst("Id");
+			var guidClaim = user.FindFirst("Id");
 			if (guidClaim == null) return Guid.Empty;
 			return Guid.Parse(guidClaim.Value);
 		}

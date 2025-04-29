@@ -14,6 +14,11 @@ namespace Culinary_Assistant_Main.Infrastructure.Repositories.Abstract
 		protected readonly CulinaryAppContext _context = context;
 		protected readonly DbSet<T> _dbSet = dbSet;
 
+		public IQueryable<T> GetAll()
+		{
+			return _dbSet;
+		}
+
 		public async Task<Guid> AddAsync(T like)
 		{
 			var res = await _dbSet.AddAsync(like);

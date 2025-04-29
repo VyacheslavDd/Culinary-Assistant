@@ -9,6 +9,7 @@ namespace Culinary_Assistant_Main.Domain.Repositories
 {
 	public interface ILikesRepository<T, TLiked> where T: Like<TLiked> where TLiked : Core.Base.Entity<Guid>
 	{
+		IQueryable<T> GetAll();
 		Task<Guid> AddAsync(T like);
 		Task<T?> GetByUserAndEntityIdsAsync(Guid userId, Guid entityId, CancellationToken cancellationToken = default);
 	}

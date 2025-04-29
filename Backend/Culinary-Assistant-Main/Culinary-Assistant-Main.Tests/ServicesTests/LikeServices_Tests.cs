@@ -150,6 +150,18 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		}
 
 		[Test]
+		public async Task CannotPutLike_OnPrivateCollection()
+		{
+			var userId = await GetUserGuidByLoginAsync("mybestlogin");
+			var collection = await _context.ReceiptCollections.FirstAsync(rc => rc.Title.Value == "First");
+			var collectionId = collection.Id;
+			collection.SetPrivateState(true);
+			await _context.SaveChangesAsync();
+			var res = await _receiptCollectionLikesService.AddAsync(new LikeInDTO(userId, collectionId));
+			Assert.That(res.IsFailure, Is.True);
+		}
+
+		[Test]
 		public async Task CannotPutLike_WhenReceipt_DoesNotExist()
 		{
 			var userId = await GetUserGuidByLoginAsync("mybestlogin");

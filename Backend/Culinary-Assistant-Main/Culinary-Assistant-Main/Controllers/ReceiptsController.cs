@@ -37,6 +37,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="204">Нет рецептов с данным фильтром</response>
 		[HttpGet]
 		[Route("")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetAllAsync([FromQuery] ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
 		{
 			var receipts = await _receiptsService.GetAllAsync(receiptsFilter, cancellationToken);
@@ -45,6 +46,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receipts.Value.Data);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);
+			await _likesService.ApplyLikesInfoForUserAsync(User, mappedReceipts);
 			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.Value.EntitiesCount, receipts.Value.PagesCount);
 			return Ok(mappedResponse);
 		}
@@ -59,6 +61,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="404">Рецепт не найден</response>
 		[HttpGet]
 		[Route("{id}")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetByGuidAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
 			var receipt = await _receiptsService.GetByGuidAsync(id, cancellationToken);
@@ -66,6 +69,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptsService.SetPresignedUrlForReceiptAsync(minioClient, mappedReceipt, cancellationToken);
+			await _likesService.ApplyLikeInfoForUserAsync(User, mappedReceipt);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedReceipt.User]);
 			return Ok(mappedReceipt);
 		}
@@ -98,7 +102,7 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(AuthenthicationFilter))]
 		public async Task<IActionResult> LikeReceiptAsync([FromRoute] Guid id)
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext);
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext.User);
 			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
