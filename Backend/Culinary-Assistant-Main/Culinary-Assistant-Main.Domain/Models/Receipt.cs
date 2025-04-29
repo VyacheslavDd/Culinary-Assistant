@@ -36,6 +36,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public double Rating { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
+		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> Likes => _likes;
 
@@ -55,6 +56,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			receipt.SetCookingDifficulty(receiptInDTO.CookingDifficulty);
 			receipt.SetTags(receiptInDTO.Tags);
 			receipt.SetUserId(receiptInDTO.UserId);
+			receipt.ActualizeUpdatedAtField();
 			return Result.Success(receipt);
 		}
 
@@ -166,6 +168,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void SetReceiptId(Guid id)
 		{
 			SetId(id);
+		}
+
+		public void ActualizeUpdatedAtField()
+		{
+			UpdatedAt = DateTime.UtcNow;
 		}
 	}
 
