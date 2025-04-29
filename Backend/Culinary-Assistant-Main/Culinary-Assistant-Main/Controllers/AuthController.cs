@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant.Core.DTO.Auth;
+﻿using Culinary_Assistant.Core.Const;
+using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Infrastructure.Filters;
@@ -61,6 +62,19 @@ namespace Culinary_Assistant_Main.Controllers
 		public IActionResult CheckIn()
 		{
 			return Ok();
+		}
+
+		/// <summary>
+		/// Выйти из аккаунта (очистить Cookie)
+		/// </summary>
+		/// <response code="204">Удаление Cookies токенов</response>
+		[HttpPost]
+		[Route("logout")]
+		public IActionResult Logout()
+		{
+			Response.Cookies.Delete(MiscellaneousConstants.AccessTokenCookie);
+			Response.Cookies.Delete(MiscellaneousConstants.RefreshTokenCookie);
+			return NoContent();
 		}
 	}
 }

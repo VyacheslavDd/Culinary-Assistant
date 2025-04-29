@@ -15,6 +15,7 @@ namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 		public Guid Id { get; set; }
 		public string Title { get; set; }
 		public bool IsPrivate { get; set; }
+		public int Popularity { get; set; }
 		public List<FilePath> Covers { get; set; }
 		public ShortUserOutDTO User { get; set; }
 		public List<ShortReceiptOutDTO> Receipts { get; set; }

@@ -16,13 +16,16 @@ namespace Culinary_Assistant_Main.Domain.Models
 	public class ReceiptCollection : Core.Base.Entity<Guid>
 	{
 		private readonly List<Receipt> _receipts = [];
+		private readonly List<ReceiptCollectionLike> _likes = [];
 
 		public Text Title { get; private set; }
 		public string ReceiptCovers { get; private set; }
 		public bool IsPrivate { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
+		public int Popularity { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
+		public IReadOnlyCollection<ReceiptCollectionLike> Likes => _likes;
 
 		public static Result<ReceiptCollection> Create(ReceiptCollectionInModelDTO receiptCollectionInModelDTO)
 		{
@@ -112,6 +115,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void SetPrivateState(bool isPrivate)
 		{
 			IsPrivate = isPrivate;
+		}
+
+		public void AddPopularity()
+		{
+			Popularity += 1;
 		}
 	}
 }

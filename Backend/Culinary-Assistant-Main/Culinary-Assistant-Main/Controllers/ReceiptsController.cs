@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.DTO;
+using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
+using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +18,11 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, IUsersService usersService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService, IMapper mapper,
+		IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -78,6 +84,24 @@ namespace Culinary_Assistant_Main.Controllers
 			var response = await _receiptsService.CreateAsync(receiptInDTO);
 			if (response.IsFailure) return BadRequest(response.Error);
 			return Created("api/receipts", response.Value);
+		}
+
+		/// <summary>
+		/// Поставить лайк на рецепт
+		/// </summary>
+		/// <param name="id">Id рецепта</param>
+		/// <response code="204">Успешно поставленный лайк</response>
+		/// <response code="400">Некорректные данные или лайк уже поставлен</response>
+		/// <response code="401">Требуется авторизация</response>
+		[HttpPost]
+		[Route("{id}/likes")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> LikeReceiptAsync([FromRoute] Guid id)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext);
+			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
+			if (res.IsFailure) return BadRequest(res.Error);
+			return NoContent();
 		}
 
 		/// <summary>

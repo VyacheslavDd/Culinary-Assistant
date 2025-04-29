@@ -2,6 +2,7 @@
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
+using Microsoft.AspNetCore.Http;
 using Minio;
 using Minio.DataModel.Args;
 using System;
@@ -35,6 +36,13 @@ namespace Culinary_Assistant.Core.Utils
 		{
 			return tags.Split(MiscellaneousConstants.ValuesSeparator, StringSplitOptions.RemoveEmptyEntries)
 				.Select(t => (Tag)int.Parse(t)).ToList();
+		}
+
+		public static Guid RetrieveUserIdFromHttpContext(HttpContext httpContext)
+		{
+			var guidClaim = httpContext.User.FindFirst("Id");
+			if (guidClaim == null) return Guid.Empty;
+			return Guid.Parse(guidClaim.Value);
 		}
 	}
 }

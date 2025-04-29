@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.Auth;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,18 @@ namespace Culinary_Assistant.Core.Utils
 			{
 				return Result.Failure<ClaimsPrincipal>(e.Message);
 			}
+		}
+
+		public static void SetAccessTokenToCookies(HttpResponse response, string accessToken)
+		{
+			response.Cookies.Append(MiscellaneousConstants.AccessTokenCookie, accessToken,
+				new CookieOptions() { Expires = DateTime.UtcNow.AddMinutes(MiscellaneousConstants.AccessTokenExpirationMinutesTime) });
+		}
+
+		public static void SetRefreshTokenToCookies(HttpResponse response, string refreshToken)
+		{
+			response.Cookies.Append(MiscellaneousConstants.RefreshTokenCookie, refreshToken,
+					new CookieOptions() { HttpOnly = true, Expires = DateTime.UtcNow.AddMonths(MiscellaneousConstants.RefreshTokenExpirationMonthsTime) });
 		}
 	}
 }
