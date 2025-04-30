@@ -20,13 +20,14 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipt-collections")]
 	[ApiController]
-	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> likesService,
-		IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> collectionLikesService,
+		ILikesService<ReceiptLike, Receipt> receiptLikesService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
-		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _likesService = likesService;
+		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionLikesService = collectionLikesService;
+		private readonly ILikesService<ReceiptLike, Receipt> _receiptLikesService = receiptLikesService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IMapper _mapper = mapper;
 
@@ -60,8 +61,8 @@ namespace Culinary_Assistant_Main.Controllers
 			var collections = await _receiptCollectionsService.GetAllByFilterAsync(receiptCollectionsFilter, cancellationToken);
 			if (collections.IsFailure) return StatusCode(500, collections.Error);
 			if (collections.Value.Data.Count == 0) return Ok(collections.Value);
-			var mappedCollections = await MapCollectionsAsync(collections.Value.Data);
-			await _likesService.ApplyLikesInfoForUserAsync(User, mappedCollections);
+			var mappedCollections = await MapCollectionsAsync(collections.Value.Data, true);
+			await _collectionLikesService.ApplyLikesInfoForUserAsync(User, mappedCollections);
 			return Ok(new EntitiesResponseWithCountAndPages<ReceiptCollectionShortOutDTO>(mappedCollections, collections.Value.EntitiesCount, collections.Value.PagesCount));
 		}
 
@@ -87,7 +88,8 @@ namespace Culinary_Assistant_Main.Controllers
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, [mappedCollection]);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedCollection.Receipts);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedCollection.User]);
-			await _likesService.ApplyLikeInfoForUserAsync(User, mappedCollection);
+			await _collectionLikesService.ApplyLikeInfoForUserAsync(User, mappedCollection);
+			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, mappedCollection.Receipts);
 			return Ok(mappedCollection);
 		}
 
@@ -119,7 +121,7 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> LikeReceiptCollectionAsync([FromRoute] Guid id)
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext.User);
-			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
+			var res = await _collectionLikesService.AddAsync(new LikeInDTO(userId, id));
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
 		}
@@ -187,9 +189,11 @@ namespace Culinary_Assistant_Main.Controllers
 			return Ok(res.Value);
 		}
 
-		private async Task<List<ReceiptCollectionShortOutDTO>> MapCollectionsAsync(List<ReceiptCollection> receiptCollections)
+		private async Task<List<ReceiptCollectionShortOutDTO>> MapCollectionsAsync(List<ReceiptCollection> receiptCollections, bool includeReceiptNames=false)
 		{
 			var mappedCollections = _mapper.Map<List<ReceiptCollectionShortOutDTO>>(receiptCollections);
+			if (includeReceiptNames)
+				_receiptCollectionsService.SetReceiptNames(receiptCollections, mappedCollections);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, mappedCollections);
 			return mappedCollections;

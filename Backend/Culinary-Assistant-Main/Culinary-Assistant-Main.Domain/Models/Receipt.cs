@@ -141,7 +141,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			UserId = userId;
 		}
 
-		public Result SetNutrients(int calories, int proteins, int fats, int carbohydrates)
+		public Result SetNutrients(double calories, double proteins, double fats, double carbohydrates)
 		{
 			var nutrientsResult =  Nutrients.Create(calories, proteins, fats, carbohydrates);
 			if (nutrientsResult.IsSuccess)

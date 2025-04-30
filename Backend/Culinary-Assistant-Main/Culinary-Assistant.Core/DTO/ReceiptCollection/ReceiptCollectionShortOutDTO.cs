@@ -17,6 +17,8 @@ namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 		public bool IsLiked { get; set; }
 		public int Popularity { get; set; }
 		public List<FilePath> Covers { get; set; }
-		public Guid UserId { get; set; }
+		public List<string> ReceiptNames { get; set; }
+		public DateTime CreatedAt { get; set; }
+		public string UserLogin { get; set; }
 	}
 }

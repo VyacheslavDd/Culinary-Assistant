@@ -16,11 +16,11 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 		public string Description { get; set; }
 		public List<Ingredient> Ingredients { get; set; }
 		public List<CookingStep> CookingSteps { get; set; }
-		public int Calories { get; set; }
+		public double Calories { get; set; }
 		public int CookingTime { get; set; }
-		public int Proteins { get; set; }
-		public int Fats { get; set; }
-		public int Carbohydrates { get; set; }
+		public double Proteins { get; set; }
+		public double Fats { get; set; }
+		public double Carbohydrates { get; set; }
 		public List<Tag> Tags { get; set; }
 		public Category Category { get; set; }
 		public CookingDifficulty CookingDifficulty { get; set; }
