@@ -11,7 +11,7 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
-		public int Calories { get; set; }
+		public double Calories { get; set; }
 		public int CookingTime { get; set; }
 		public List<Tag> Tags { get; set; }
 		public Category Category { get; set; }

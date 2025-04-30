@@ -48,6 +48,11 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				.Where(rc => filter.UserId != null || !rc.IsPrivate)
 				.OrderByDescending(rc => rc.UpdatedAt)
 				.ToListAsync(cancellationToken);
+			foreach (var receiptCollection in receiptCollections)
+			{
+				await _repository.LoadReferenceAsync(receiptCollection, rc => rc.User);
+				await _repository.LoadCollectionAsync(receiptCollection, rc => rc.Receipts);
+			}
 			var entitiesResponse = ApplyPaginationToEntities(receiptCollections, filter);
 			return Result.Success(entitiesResponse);
 		}
@@ -136,6 +141,28 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			{
 				var filePaths = await MinioUtils.GetPresignedUrlsForFilesFromFilePathsAsync(minioClient, _logger, rc.Covers);
 				rc.Covers = filePaths;
+			}
+		}
+
+		public void SetReceiptNames(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections)
+		{
+			for (var i = 0; i < originals.Count; i++)
+			{
+				var original = originals[i];
+				var mapped = mappedCollections[i];
+				mapped.ReceiptNames = [];
+				var coversMap = new Dictionary<string, string>();
+				foreach (var receipt in original.Receipts)
+					coversMap.Add(receipt.MainPictureUrl, receipt.Title.Value);
+				foreach (var cover in mapped.Covers)
+				{
+					if (!coversMap.ContainsKey(cover.Url))
+					{
+						mapped.ReceiptNames.Add("Рецепт");
+						continue;
+					}
+					mapped.ReceiptNames.Add(coversMap[cover.Url]);
+				}
 			}
 		}
 	}
