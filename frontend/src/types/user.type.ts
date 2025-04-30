@@ -6,7 +6,8 @@ export type User = {
     login: string;
     email: string;
     phone: string;
-    recipeHistory: Recipe[];
-    recipes: Recipe[];
-    selectionRecipes: SelectionRecipes[];
+    pictureUrl: string;
+    // recipeHistory: Recipe[];
+    // recipes: Recipe[];
+    // selectionRecipes: SelectionRecipes[];
 };

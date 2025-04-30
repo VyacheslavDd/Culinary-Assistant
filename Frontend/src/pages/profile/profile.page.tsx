@@ -11,7 +11,7 @@ export function ProfilePage() {
                 <MyCollection />
                 <div className={styles.catalog}>
                     <h3 className={styles.h3}>Недавно просмотренные</h3>
-                    <Catalog limit={8} />
+                    {/* <Catalog limit={8} /> */}
                 </div>
             </div>
         </div>

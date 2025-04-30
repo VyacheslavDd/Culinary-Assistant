@@ -6,10 +6,12 @@ import {
 } from 'react-redux';
 import userReducer from './user.slice';
 import ingredientsReducer from './ingredients.slice';
+import mainPageReducer from './main-page.slice';
 
 export const rootReducer = combineReducers({
     user: userReducer,
     ingredients: ingredientsReducer,
+    mainPage: mainPageReducer,
 });
 
 const store = configureStore({

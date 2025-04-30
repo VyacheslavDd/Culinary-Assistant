@@ -1,9 +1,12 @@
 import styles from './header.module.scss';
 import logo from '../../assets/svg/logo.svg';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { selectIsAuthenticated } from 'store/user.slice';
+import { useSelector } from 'store/store';
 
 function Header() {
     const navigate = useNavigate();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     return (
         <header className={styles.header}>
@@ -25,13 +28,30 @@ function Header() {
                     </li>
                 </ul>
             </nav>
-            <button
+            {isAuthenticated ? (
+                <button
+                    type='button'
+                    className={styles.button}
+                    onClick={() => navigate('/profile')}
+                >
+                    Мой профиль
+                </button>
+            ) : (
+                <button
+                    type='button'
+                    className={styles.button}
+                    onClick={() => navigate('/login')}
+                >
+                    Войти
+                </button>
+            )}
+            {/* <button
                 type='button'
                 className={styles.button}
                 onClick={() => navigate('/login')}
             >
                 Войти
-            </button>
+            </button> */}
         </header>
     );
 }

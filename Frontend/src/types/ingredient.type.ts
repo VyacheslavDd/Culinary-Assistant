@@ -1,4 +1,7 @@
+import { Measure } from './measure.enum';
+
 export type Ingredient = {
-    id: string;
+    numericValue: number;
     name: string;
+    measure: Measure;
 }

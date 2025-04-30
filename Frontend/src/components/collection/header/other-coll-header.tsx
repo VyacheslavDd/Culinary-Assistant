@@ -10,7 +10,7 @@ export function OtherCollHeader() {
                 <div className={styles.container}>
                     <div className={styles.info}>
                         <div className={styles.name}>
-                            <p className={styles.title}>Для новичков</p>
+                            <p className={styles.title}>Подборка 1</p>
                         </div>
                         <div className={styles.buttons}>
                             <div className={styles.profile}>
@@ -29,11 +29,11 @@ export function OtherCollHeader() {
                     </div>
                     <div className={styles.description}>
                         <div className={styles.shareContainer}>
-                            <button>
+                            <button className='button'>
                                 <span className={`icon ${styles.like}`}></span>
                                 Нравится
                             </button>
-                            <button>
+                            <button className='button'>
                                 <span className={`icon ${styles.share}`}></span>
                                 Поделиться
                             </button>
