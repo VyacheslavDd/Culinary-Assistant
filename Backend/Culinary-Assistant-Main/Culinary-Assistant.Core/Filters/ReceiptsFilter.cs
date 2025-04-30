@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.Filters
 {
-	public record ReceiptsFilter(int Page = 1, List<Tag>? Tags = null, string SearchByTitle = "", string SearchByIngredients = "", int CookingTimeFrom=0, int CookingTimeTo=1000,
-		List<CookingDifficulty>? CookingDifficulties = null, List<Category>? Categories = null, int Limit = 10, Guid? UserId = null,
+	public record ReceiptsFilter(int Page = 1, List<Tag>? Tags = null, string SearchByTitle = "", List<string>? SearchByIngredients = null, bool StrictIngredientsSearch = false,
+		int CookingTimeFrom=0, int CookingTimeTo=1000, List<CookingDifficulty>? CookingDifficulties = null, List<Category>? Categories = null, int Limit = 10, Guid? UserId = null,
 		SortOption? SortOption = null, bool IsAscendingSorting = true) : IPaginationFilter;
 }

@@ -60,8 +60,8 @@ namespace Culinary_Assistant_Main.Infrastructure.Filters
 			var userId = Guid.Parse(user.FindFirstValue("Id")!);
 			var roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 			var tokens = TokenUtils.GenerateAccessAndRefreshTokens(userId, roles, _secretKey);
-			context.HttpContext.Response.Cookies.Append(MiscellaneousConstants.AccessTokenCookie, tokens.AccessToken);
-			context.HttpContext.Response.Cookies.Append(MiscellaneousConstants.RefreshTokenCookie, tokens.RefreshToken, new CookieOptions() { HttpOnly = true });
+			TokenUtils.SetAccessTokenToCookies(context.HttpContext.Response, tokens.AccessToken);
+			TokenUtils.SetRefreshTokenToCookies(context.HttpContext.Response, tokens.RefreshToken);
 		}
 	}
 }

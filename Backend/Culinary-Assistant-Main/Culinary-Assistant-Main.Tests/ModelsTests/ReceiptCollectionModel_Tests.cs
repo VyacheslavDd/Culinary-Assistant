@@ -71,9 +71,9 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void CanSet_Covers()
 		{
-			List<FilePath> covers = [new FilePath("1"), new FilePath("2"), new FilePath("3"), new FilePath("4"), new FilePath("5")];
+			List<FilePath> covers = [new FilePath("1"), new FilePath("2"), new FilePath("3"), new FilePath("4"), new FilePath("5"), new FilePath("6"), new FilePath("7")];
 			_receiptCollection.SetCovers(covers);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"1\"},{\"Url\":\"2\"},{\"Url\":\"3\"},{\"Url\":\"4\"}]"));
+			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"1\"},{\"Url\":\"2\"},{\"Url\":\"3\"},{\"Url\":\"4\"},{\"Url\":\"5\"},{\"Url\":\"6\"}]"));
 		}
 
 		[Test]

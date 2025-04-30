@@ -46,6 +46,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				.Where(rc => requiredIds.Count == 1 && requiredIds[0] == Guid.Empty || idsHashset.Contains(rc.Id))
 				.Where(rc => filter.UserId == null || rc.UserId == filter.UserId)
 				.Where(rc => filter.UserId != null || !rc.IsPrivate)
+				.OrderByDescending(rc => rc.UpdatedAt)
 				.ToListAsync(cancellationToken);
 			var entitiesResponse = ApplyPaginationToEntities(receiptCollections, filter);
 			return Result.Success(entitiesResponse);
@@ -87,6 +88,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				await _elasticReceiptCollectionsService.ReindexReceiptCollectionAsync(updateRequest.Title, existingCollection.Id);
 			}
 			existingCollection.SetPrivateState(updateRequest.IsPrivate ?? existingCollection.IsPrivate);
+			existingCollection.ActualizeUpdatedAtField();
 			return await base.NotBulkUpdateAsync(entityId, updateRequest);
 		}
 
