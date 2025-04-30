@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant.Core.Const;
+﻿using AutoMapper;
+using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Utils;
@@ -13,10 +14,11 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/auth")]
 	[ApiController]
-	public class AuthController(IAuthService authService, IUsersService usersService, IMinioClientFactory minioClientFactory) : ControllerBase
+	public class AuthController(IAuthService authService, IUsersService usersService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IAuthService _authService = authService;
 		private readonly IUsersService _usersService = usersService;
+		private readonly IMapper _mapper = mapper;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 
 		/// <summary>
@@ -54,14 +56,21 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <summary>
 		/// Проверка актуальности сессии, с возможным перевыпуском токенов
 		/// </summary>
-		/// <response code="200">Успешная проверка</response>
+		/// <response code="200">Успешная проверка и возврат информации о пользователе</response>
 		/// <response code="401">Сессия закончилась и невозможно перевыпустить токены, нужно аутентифицироваться</response>
 		[HttpPost]
 		[Route("check-in")]
 		[ServiceFilter(typeof(AuthenthicationFilter))]
-		public IActionResult CheckIn()
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> CheckIn()
 		{
-			return Ok();
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
+			var user = await _usersService.GetByGuidAsync(userId);
+			if (user == null) return NotFound();
+			var mappedUser = _mapper.Map<AuthUserOutDTO>(user);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedUser]);
+			return Ok(mappedUser);
 		}
 
 		/// <summary>

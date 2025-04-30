@@ -39,7 +39,7 @@ namespace Culinary_Assistant.Core.Utils
 				.Select(t => (Tag)int.Parse(t)).ToList();
 		}
 
-		public static Guid RetrieveUserIdFromHttpContext(ClaimsPrincipal user)
+		public static Guid RetrieveUserIdFromHttpContextUser(ClaimsPrincipal user)
 		{
 			var guidClaim = user.FindFirst("Id");
 			if (guidClaim == null) return Guid.Empty;
