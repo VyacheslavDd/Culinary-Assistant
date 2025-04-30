@@ -8,7 +8,7 @@ const DIFFICULTY = [
 const CATEGORY = [
     { name: 'Завтрак', value: Category.breakfast },
     { name: 'Обед', value: Category.dinner },
-    { name: 'Суп', value: Category.soup },
+    { name: 'Суп', value: Category.soups },
     { name: 'Салат', value: Category.salad },
     { name: 'Десерт', value: Category.dessert },
     { name: 'Напитки', value: Category.drinks },

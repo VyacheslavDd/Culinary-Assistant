@@ -15,6 +15,12 @@ export function Search() {
         dispatch(updateFilter({ SearchByTitle: e.target.value }));
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            dispatch(fetchRecipes());
+        }
+    };
+
     return (
         <div className={styles.mainContainer}>
             <img src={search} alt='search' className={styles.icon} />
@@ -25,6 +31,7 @@ export function Search() {
                 className={styles.input}
                 value={filter.SearchByTitle}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
             />
 
             <button

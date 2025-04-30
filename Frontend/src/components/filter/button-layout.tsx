@@ -43,6 +43,12 @@ export function ButtonLayout(props: Props) {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const handleClick = () => {
+        dispatch(fetchRecipes());
+        setOpen(false);
+    };
+
     return (
         <div className={styles.mainContainer} ref={dropdownRef}>
             <button
@@ -58,7 +64,7 @@ export function ButtonLayout(props: Props) {
                     {children}
                     <button
                         className={`${styles.button} ${styles.apply}`}
-                        onClick={() => dispatch(fetchRecipes())}
+                        onClick={handleClick}
                     >
                         Применить
                     </button>

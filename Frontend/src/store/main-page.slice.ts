@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Filter, ShortRecipe } from '../types';
-import { getRecipesApi, TRecipesData } from './api';
-import axios from 'axios';
+import { getRecipesApi } from './api';
+
 import { RootState } from './store';
 
 type TMainPageState = {
@@ -19,11 +19,12 @@ export const initialState: TMainPageState = {
     recipes: [],
     filter: {
         SearchByTitle: '',
-        SearchByIngredients: [],
+        // SearchByIngredients: [],
+        SearchByIngredients: '',
         CookingTimeFrom: 0,
         CookingTimeTo: 0,
-        CookingDifficulty: [],
-        Category: [],
+        CookingDifficulties: [],
+        Categories: [],
         Tags: [],
     },
     error: null,
@@ -38,20 +39,12 @@ export const fetchRecipes = createAsyncThunk(
         try {
             const state = getState() as RootState;
             const { page, filter } = state.mainPage;
-
-            const requestParams: TRecipesData = {
-                Page: page,
-                ...filter,
-            };
-
-            return await getRecipesApi(requestParams);
+            return await getRecipesApi({ Page: page, ...filter });
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                return rejectWithValue(
-                    error.response?.data?.message || error.message
-                );
+            if (error instanceof Error) {
+                return rejectWithValue(error.message);
             }
-            return rejectWithValue('Unknown error occurred');
+            return rejectWithValue('Failed to fetch recipes');
         }
     }
 );

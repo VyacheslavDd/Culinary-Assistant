@@ -1,7 +1,7 @@
 export enum Category {
     breakfast = 'breakfast',
     dinner = 'dinner',
-    soup = 'soup',
+    soups = 'soups',
     salad = 'salad',
     dessert = 'dessert',
     drinks = 'drinks',

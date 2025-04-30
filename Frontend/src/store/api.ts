@@ -3,9 +3,14 @@ import qs from 'qs';
 import {
     Category,
     CookingDifficulty,
+    CookingStep,
     Ingredient,
+    Measure,
+    Recipe,
     ShortRecipe,
+    ShortUser,
     Tag,
+    User,
 } from 'types';
 
 export type TRecipesData = {
@@ -13,7 +18,8 @@ export type TRecipesData = {
     Limit?: number;
     Tags?: Tag[];
     SearchByTitle?: string;
-    SearchByIngredients?: Ingredient[];
+    // SearchByIngredients?: Ingredient[];
+    SearchByIngredients?: string;
     CookingTimeFrom?: number;
     CookingTimeTo?: number;
     Category?: Category[];
@@ -32,44 +38,58 @@ const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
 export const getRecipesApi = async (
     data: TRecipesData
 ): Promise<TRecipesResponse> => {
-    const params = Object.fromEntries(
-        Object.entries(data).filter(
-            ([_, value]) =>
-                value !== undefined &&
-                value !== null &&
-                value !== '' &&
-                (!Array.isArray(value) || value.length > 0)
-        )
-    );
+    try {
+        const params = Object.fromEntries(
+            Object.entries(data).filter(
+                ([_, value]) =>
+                    value !== undefined &&
+                    value !== null &&
+                    value !== '' &&
+                    value !== 0 &&
+                    (!Array.isArray(value) || value.length > 0)
+            )
+        );
 
-    const response = await axios.get<TRecipesResponse>(
-        `${apiUrl}api/receipts`,
-        {
-            params: params,
-            paramsSerializer: (params) =>
-                qs.stringify(params, { arrayFormat: 'repeat' }),
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
+        const response = await axios.get<TRecipesResponse>(
+            `${apiUrl}api/receipts`,
+            {
+                params: params,
+                paramsSerializer: (params) =>
+                    qs.stringify(params, { arrayFormat: 'repeat' }),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Login failed');
         }
-    );
-
-    return response.data;
+        throw new Error('Unknown error occurred');
+    }
 };
 
-export type TRecipeResponse = {
-    data: ShortRecipe;
-    entitiesCount?: number;
-    pagesCount?: number;
-};
+// export type TRecipeResponse = {
+//     data: ShortRecipe;
+//     entitiesCount?: number;
+//     pagesCount?: number;
+// };
 
 // Получение отдельного рецепта
-export const getRecipeByIdApi = async (
-    id: string
-): Promise<TRecipeResponse> => {
+export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
     try {
-        const response = await axios.get<TRecipeResponse>(
+        const response = await axios.get<Recipe>(
             `${apiUrl}api/receipts/${id}`,
             {
                 headers: {
@@ -78,12 +98,58 @@ export const getRecipeByIdApi = async (
                 },
             }
         );
-        return response.data;
+        const data = response.data;
+        const recipe: Recipe = {
+            ...data,
+            category:
+                typeof data.category === 'string'
+                    ? Category[data.category as keyof typeof Category]
+                    : Category.hot,
+            cookingDifficulty:
+                typeof data.cookingDifficulty === 'string'
+                    ? CookingDifficulty[
+                          data.cookingDifficulty as keyof typeof CookingDifficulty
+                      ]
+                    : CookingDifficulty.easy,
+            tags: Array.isArray(data.tags)
+                ? (data.tags
+                      .map((value) => Tag[value as keyof typeof Tag])
+                      .filter(Boolean) as Tag[])
+                : [],
+            cookingSteps: Array.isArray(data.cookingSteps)
+                ? data.cookingSteps.map((step: any) => step as CookingStep)
+                : [],
+            ingredients: Array.isArray(data.ingredients)
+                ? data.ingredients.map(
+                      (ing: any) =>
+                          ({
+                              name: String(ing.name),
+                              measure:
+                                  typeof ing.measure === 'string'
+                                      ? Measure[
+                                            ing.measure as keyof typeof Measure
+                                        ] || Measure.piece
+                                      : Measure.piece,
+                              numericValue: Number(ing.numericValue),
+                          } as Ingredient)
+                  )
+                : [],
+            user: data.user as ShortUser,
+        };
+        console.log(recipe);
+
+        return recipe;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            throw new Error(
-                error.response?.data?.message || 'Failed to fetch recipe'
-            );
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Login failed');
         }
         throw new Error('Unknown error occurred');
     }
@@ -95,22 +161,12 @@ export type RegisterUserData = {
     password: string;
 };
 
-export type AuthResponse = {
-    user: {
-        userId: string;
-        username: string;
-        email: string;
-    };
-    token: string;
-    expiresIn: number;
-};
-
 //Регистрация пользователя
 export const registerUserApi = async (
     data: RegisterUserData
-): Promise<AuthResponse> => {
+): Promise<User> => {
     try {
-        const response = await axios.post<AuthResponse>(
+        const response = await axios.post<User>(
             `${apiUrl}api/auth/register`,
             data,
             {
@@ -124,9 +180,15 @@ export const registerUserApi = async (
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            throw new Error(
-                error.response?.data?.message || 'Registration failed'
-            );
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Login failed');
         }
         throw new Error('Unknown error occurred');
     }
@@ -135,18 +197,15 @@ export const registerUserApi = async (
 export type AuthUserData = {
     login: string;
     password: string;
-    adminEntrance: true;
-    rememberMe: true;
+    rememberMe?: boolean;
 };
 
 //Аутентификация пользователя
-export const loginUserApi = async (
-    data: AuthUserData
-): Promise<AuthResponse> => {
+export const loginUserApi = async (data: AuthUserData): Promise<User> => {
     try {
-        const response = await axios.post<AuthResponse>(
+        const response = await axios.post<User>(
             `${apiUrl}api/auth/login`,
-            data,
+            { adminEntrance: false, rememberMe: false, ...data },
             {
                 headers: {
                     Accept: 'application/json',
@@ -158,7 +217,15 @@ export const loginUserApi = async (
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            throw new Error(error.response?.data?.message || 'Login failed');
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Login failed');
         }
         throw new Error('Unknown error occurred');
     }

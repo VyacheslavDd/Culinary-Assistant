@@ -18,7 +18,7 @@ export function CatalogCard(props: CatalogCardProps) {
     const navigate = useNavigate();
     const { recipe } = props;
     const {
-        // id,
+        id,
         title,
         mainPictureUrl,
         cookingTime,
@@ -31,7 +31,7 @@ export function CatalogCard(props: CatalogCardProps) {
     } = recipe;
 
     const handleClick = () => {
-        navigate('/receipt');
+        navigate(`/recipe/${id}`);
     };
 
     return (

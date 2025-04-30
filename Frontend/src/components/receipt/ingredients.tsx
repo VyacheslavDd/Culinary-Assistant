@@ -1,11 +1,25 @@
 import { useState } from 'react';
 import styles from './ingredients.module.scss';
+import { Ingredient } from 'types';
+import { transformMeasure } from 'utils/transform';
 
-export function Ingredients() {
+type props = {
+    ingredients: Ingredient[];
+};
+
+export function Ingredients(props: props) {
+    const { ingredients } = props;
     const [counter, setCounter] = useState(1);
 
     const decreaseCounter = () => {
         setCounter((prev) => (prev > 1 ? prev - 1 : 1));
+    };
+
+    const getAdjustedIngredient = (ingredient: Ingredient) => {
+        return {
+            ...ingredient,
+            numericValue: ingredient.numericValue * counter,
+        };
     };
 
     return (
@@ -18,6 +32,7 @@ export function Ingredients() {
                         <button
                             className={styles.button}
                             onClick={decreaseCounter}
+                            aria-label='Уменьшить количество порций'
                         >
                             -
                         </button>
@@ -25,6 +40,7 @@ export function Ingredients() {
                         <button
                             className={styles.button}
                             onClick={() => setCounter((prev) => prev + 1)}
+                            aria-label='Увеличить количество порций'
                         >
                             +
                         </button>
@@ -32,26 +48,21 @@ export function Ingredients() {
                 </div>
 
                 <ul className={styles.list}>
-                    <li className={styles.li}>
-                        <span>Молоко</span>
-                        <span>500 мл</span>
-                    </li>
-                    <li className={styles.li}>
-                        <span>Яйца</span>
-                        <span>2 шт.</span>
-                    </li>
-                    <li className={styles.li}>
-                        <span>Мука</span>
-                        <span>200 г</span>
-                    </li>
-                    <li className={styles.li}>
-                        <span>Сахар</span>
-                        <span>1 ст. л.</span>
-                    </li>
-                    <li className={styles.li}>
-                        <span>Соль</span>
-                        <span>щепотка</span>
-                    </li>
+                    {ingredients.map((ingredient) => {
+                        const adjustedIngredient =
+                            getAdjustedIngredient(ingredient);
+                        return (
+                            <li className={styles.li} key={ingredient.name}>
+                                <span>{ingredient.name}</span>
+                                <span>
+                                    {adjustedIngredient.numericValue}{' '}
+                                    {transformMeasure(
+                                        adjustedIngredient.measure
+                                    )}
+                                </span>
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
         </div>

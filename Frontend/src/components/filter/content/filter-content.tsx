@@ -43,17 +43,17 @@ export function FilterContent() {
             <FilterList
                 name='Сложность'
                 list={DIFFICULTY}
-                selected={filter.CookingDifficulty}
+                selected={filter.CookingDifficulties}
                 onChange={(selected) =>
-                    dispatch(updateFilter({ CookingDifficulty: selected }))
+                    dispatch(updateFilter({ CookingDifficulties: selected }))
                 }
             />
             <FilterList
                 name='Категория'
                 list={CATEGORY}
-                selected={filter.Category}
+                selected={filter.Categories}
                 onChange={(selected) =>
-                    dispatch(updateFilter({ Category: selected }))
+                    dispatch(updateFilter({ Categories: selected }))
                 }
             />
             <FilterList

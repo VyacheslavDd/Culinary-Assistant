@@ -15,6 +15,7 @@ import MyCollectionsPage from 'pages/my-collections/my-collection.page';
 import { useEffect } from 'react';
 import { useDispatch } from 'store/store';
 import { fetchRecipes } from 'store/main-page.slice';
+import { ProtectedRoute } from 'utils/protected-route';
 
 function App() {
     const location = useLocation();
@@ -39,33 +40,40 @@ function App() {
             {!isAuthPage && <Header />}
             <Routes location={location}>
                 <Route path='/' element={<MainPage />} />
-                <Route path='/receipt' element={<ReceiptPage />} />
+                <Route path='/recipe/:id' element={<ReceiptPage />} />
                 <Route path='/collections' element={<CollectionsPage />} />
                 <Route path='/collection' element={<CollectionPage />} />
-                <Route path='/profile' element={<ProfilePage />} />
+                <Route
+                    path='/profile'
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path='/my-collection' element={<MyCollectionsPage />} />
                 <Route
                     path='/login'
                     element={
-                        // <ProtectedRoute onlyUnAuth>
-                        <LoginPage />
-                        // </ProtectedRoute>
+                        <ProtectedRoute onlyUnAuth>
+                            <LoginPage />
+                        </ProtectedRoute>
                     }
                 />
                 <Route
                     path='/register'
                     element={
-                        // <ProtectedRoute onlyUnAuth>
-                        <RegisterPage />
-                        // </ProtectedRoute>
+                        <ProtectedRoute onlyUnAuth>
+                            <RegisterPage />
+                        </ProtectedRoute>
                     }
                 />
                 <Route
                     path='/pass-recovery'
                     element={
-                        // <ProtectedRoute onlyUnAuth>
-                        <PassRecoveryPage />
-                        // </ProtectedRoute>
+                        <ProtectedRoute onlyUnAuth>
+                            <PassRecoveryPage />
+                        </ProtectedRoute>
                     }
                 />
             </Routes>

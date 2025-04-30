@@ -3,8 +3,14 @@ import styles from './header.module.scss';
 import profile_photo from '../../../assets/img/profile_photo.png';
 import edit from '../../../assets/svg/edit.svg';
 import exit from '../../../assets/svg/exit.svg';
+import { selectUser } from 'store/user.slice';
+import { useSelector } from 'store/store';
 
 export function HeaderProfile() {
+    const user = useSelector(selectUser);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { login, email, phone, pictureUrl } = user!;
+
     return (
         <div className={styles.mainContainer}>
             <LayoutHeader>
@@ -16,20 +22,22 @@ export function HeaderProfile() {
                     />
                     <div className={styles.info}>
                         <div className={styles.name}>
-                            <h2 className={styles.title}>MaryDanilova</h2>
+                            <h2 className={styles.title}>{login}</h2>
                             <div className={styles.buttons}>
                                 <button className={styles.button}>
                                     <img src={edit} alt='edit' />
                                     Изм.
                                 </button>
-                                <button className={`${styles.button} ${styles.exit}`}>
+                                <button
+                                    className={`${styles.button} ${styles.exit}`}
+                                >
                                     <img src={exit} alt='exit' />
                                     Выйти
                                 </button>
                             </div>
                         </div>
                         <div className={styles.description}>
-                            <div className={styles.item}>
+                            {/* <div className={styles.item}>
                                 <div className={styles.textContainer}>
                                     <p className={styles.text}>Пол:</p>
                                     <p className={styles.text}>
@@ -40,7 +48,7 @@ export function HeaderProfile() {
                                     <p className={styles.text}>Женский</p>
                                     <p className={styles.text}>19.05.2004</p>
                                 </div>
-                            </div>
+                            </div> */}
                             <div className={styles.item}>
                                 <div className={styles.textContainer}>
                                     <p className={styles.text}>Emai:</p>
@@ -50,9 +58,11 @@ export function HeaderProfile() {
                                 </div>
                                 <div className={styles.textContainer}>
                                     <p className={styles.text}>
-                                        myemail@gmail.com
+                                        {email || 'Не указано'}
                                     </p>
-                                    <p className={styles.text}>не указан</p>
+                                    <p className={styles.text}>
+                                        {phone || 'Не указано'}
+                                    </p>
                                 </div>
                             </div>
                         </div>

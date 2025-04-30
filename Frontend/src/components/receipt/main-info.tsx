@@ -2,11 +2,31 @@ import styles from './main-info.module.scss';
 import star from '../../assets/svg/star.svg';
 import clock from '../../assets/svg/clock_pink.svg';
 import chef from '../../assets/svg/chef_pink.svg';
-import receipt from '../../assets/img/receipt.png';
+// import receipt from '../../assets/img/receipt.png';
 import { useState } from 'react';
 import { Modal } from 'components/common';
+import { Recipe } from 'types';
+import { transformCategory, transformCookingTime, transformDifficulty, transformRating } from 'utils/transform';
 
-export function MainInfo() {
+type props = {
+    recipe: Recipe;
+};
+
+export function MainInfo(props: props) {
+    const { recipe } = props;
+    const {
+        title,
+        description,
+        calories,
+        cookingTime,
+        proteins,
+        fats,
+        carbohydrates,
+        category,
+        mainPictureUrl,
+        rating,
+        cookingDifficulty,
+    } = recipe;
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const openModal = () => setIsModalOpen(true);
@@ -19,14 +39,16 @@ export function MainInfo() {
                 className={styles.imageButton}
                 aria-label='Увеличить изображение рецепта'
             >
-                <img src={receipt} alt='receipt' className={styles.image} />
+                <img
+                    src={mainPictureUrl}
+                    alt='recipe'
+                    className={styles.image}
+                />
             </button>
             <div className={styles.container}>
                 <div className={styles.title}>
-                    <p className={styles.tag}>Горячее</p>
-                    <h2 className={styles.name}>
-                        Блинчики с начинкой “Жульен”
-                    </h2>
+                    <p className={styles.tag}>{transformCategory(category)}</p>
+                    <h2 className={styles.name}>{title}</h2>
                 </div>
                 <div className={styles.descriptionContainer}>
                     <div className={styles.infoContainer}>
@@ -37,7 +59,7 @@ export function MainInfo() {
                                 alt='star'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>8.8</p>
+                            <p className={styles.text}>{transformRating(rating)}</p>
                         </div>
                         <div className={styles.info}>
                             <p className={styles.title}>Время приготовления</p>
@@ -46,7 +68,7 @@ export function MainInfo() {
                                 alt='clock'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>1.5ч</p>
+                            <p className={styles.text}>{transformCookingTime(cookingTime)}</p>
                         </div>
                         <div className={styles.info}>
                             <p className={styles.title}>Сложность</p>
@@ -55,25 +77,16 @@ export function MainInfo() {
                                 alt='chef'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>Средняя</p>
+                            <p className={styles.text}>{transformDifficulty(cookingDifficulty)}</p>
                         </div>
                     </div>
-                    <p className={styles.description}>
-                        Блинчики с начинкой «Жюльен» — это изысканное сочетание
-                        нежных, тонких блинов и ароматной начинки из курицы,
-                        грибов и сливочного соуса. Сочная куриная грудка,
-                        обжаренные шампиньоны и тягучий сыр создают насыщенный
-                        вкус, а сливочный соус придаёт блюду особую мягкость и
-                        нежность. Такие блинчики станут отличным вариантом для
-                        сытного завтрака, лёгкого ужина или праздничного
-                        угощения. Подаются горячими, с зеленью и сметаной.
-                    </p>
+                    <p className={styles.description}>{description}</p>
                     <div className={styles.kbju}>
                         <p className={styles.title}>КБЖУ</p>
                         <p>
                             На 100 г:{' '}
                             <span className={styles.text}>
-                                415 / 20 / 24 / 47
+                                {calories} / {proteins} / {fats} / {carbohydrates}
                             </span>
                         </p>
                     </div>
@@ -82,7 +95,7 @@ export function MainInfo() {
             {isModalOpen && (
                 <Modal onClose={closeModal}>
                     <img
-                        src={receipt}
+                        src={mainPictureUrl}
                         alt='Увеличенное изображение рецепта'
                         className={styles.fullSizeImage}
                     />

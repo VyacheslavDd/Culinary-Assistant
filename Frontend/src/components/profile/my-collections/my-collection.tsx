@@ -17,7 +17,7 @@ export function MyCollection() {
                 <NavLink to='/' className={styles.link}>Смотреть все</NavLink>
             </div>
             <ul className={styles.list}>
-                <li className={styles.item}>
+                {/* <li className={styles.item}>
                     <CardCollMin theme='dark' />
                 </li>
                 <li className={styles.item}>
@@ -25,7 +25,7 @@ export function MyCollection() {
                 </li>
                 <li className={styles.item}>
                     <CardCollMin theme='dark' />
-                </li>
+                </li> */}
           
                 <li className={styles.item}>
                     <CardNew />
