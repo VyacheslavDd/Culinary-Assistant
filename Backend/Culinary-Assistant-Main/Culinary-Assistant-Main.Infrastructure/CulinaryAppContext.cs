@@ -20,6 +20,8 @@ namespace Culinary_Assistant_Main.Infrastructure
 		public virtual DbSet<User> Users { get; set; }
 		public virtual DbSet<Receipt> Receipts { get; set; }
 		public virtual DbSet<ReceiptCollection> ReceiptCollections { get; set; }
+		public virtual DbSet<ReceiptLike> ReceiptLikes { get; set; }
+		public virtual DbSet<ReceiptCollectionLike> ReceiptCollectionLikes { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -27,6 +29,8 @@ namespace Culinary_Assistant_Main.Infrastructure
 			new UserModelConfiguration().Configure(modelBuilder.Entity<User>());
 			new ReceiptModelConfiguration().Configure(modelBuilder.Entity<Receipt>());
 			new ReceiptCollectionModelConfiguration().Configure(modelBuilder.Entity<ReceiptCollection>());
+			new ReceiptCollectionLikeConfiguration().Configure(modelBuilder.Entity<ReceiptCollectionLike>());
+			new ReceiptLikeConfiguration().Configure(modelBuilder.Entity<ReceiptLike>());
 			base.OnModelCreating(modelBuilder);
 		}
 

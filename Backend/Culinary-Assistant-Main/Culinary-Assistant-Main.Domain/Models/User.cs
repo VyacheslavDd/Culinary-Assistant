@@ -16,6 +16,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 	{
 		private readonly List<Receipt> _receipts = [];
 		private readonly List<ReceiptCollection> _receiptCollections = [];
+		private readonly List<ReceiptLike> _receiptLikes = [];
+		private readonly List<ReceiptCollectionLike> _receiptCollectionLikes = [];
 
 		public Login Login { get; private set; }
 		public Phone Phone { get; private set; }
@@ -25,6 +27,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public string PasswordHash { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
+		public IReadOnlyCollection<ReceiptLike> ReceiptLikes => _receiptLikes;
+		public IReadOnlyCollection<ReceiptCollectionLike> ReceiptCollectionLikes => _receiptCollectionLikes;
 
 		public static Result<User> Create(UserInDTO userInDTO)
 		{
@@ -32,7 +36,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			if (loginObject.IsFailure) return Result.Failure<User>(loginObject.Error);
 			var phone = Phone.Create(userInDTO.EmailOrPhone);
 			var email = Email.Create(userInDTO.EmailOrPhone);
-			if (phone.IsFailure && email.IsFailure) return Result.Failure<User>($"{phone.Error}\n{email.Error}");
+			if (phone.IsFailure && email.IsFailure) return Result.Failure<User>($"Если телефон, то {phone.Error}\nЕсли почта, то {email.Error}");
 			var user = new User
 			{
 				Login = loginObject.Value

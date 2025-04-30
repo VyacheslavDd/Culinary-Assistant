@@ -3,6 +3,7 @@ using System;
 using Culinary_Assistant_Main.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Culinary_Assistant_Main.Infrastructure.Migrations
 {
     [DbContext(typeof(CulinaryAppContext))]
-    partial class CulinaryAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250428184312_likes")]
+    partial class likes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -86,15 +86,9 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("Popularity")
-                        .HasColumnType("integer");
-
                     b.Property<string>("ReceiptCovers")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

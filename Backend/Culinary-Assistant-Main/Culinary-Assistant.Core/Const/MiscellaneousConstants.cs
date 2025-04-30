@@ -12,7 +12,7 @@ namespace Culinary_Assistant.Core.Const
 		public const char PathSeparator = '/';
 		public const char RolesSeparator = ',';
 		public const int MaxFilesCount = 30;
-		public const int ReceiptCollectionMaxCoversCount = 4;
+		public const int ReceiptCollectionMaxCoversCount = 6;
 		public const int FilesByMessage = 3;
 		public const int FileMaxSize = 16777216;
 

@@ -6,6 +6,7 @@ using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant_Main.Domain.Models;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Nodes;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System;
@@ -55,16 +56,24 @@ namespace Culinary_Assistant_Main.Services.Receipts
 
 		public async Task<CSharpFunctionalExtensions.Result<List<Guid>>> GetReceiptIdsBySearchParametersAsync(ReceiptsFilterForElasticSearch receiptsFilterForElasticSearch)
 		{
+			var hasTitleSearch = receiptsFilterForElasticSearch.TitleQuery != "";
+			List<Action<QueryDescriptor<ReceiptIndexDto>>> searchActions = hasTitleSearch ?
+				[
+				 (QueryDescriptor<ReceiptIndexDto> descriptor) =>
+				 descriptor.MultiMatch(mq => mq.Fields(Fields.FromFields(["title", "title.ngrams"])).Query(receiptsFilterForElasticSearch.TitleQuery).Boost(2.0f))
+				] : [];
+			foreach (var ingredientsQuery in receiptsFilterForElasticSearch.IngredientsQuery)
+			{
+				searchActions.Add((QueryDescriptor<ReceiptIndexDto> descriptor) =>
+				descriptor.MultiMatch(mq => mq.Fields(Fields.FromFields(["ingredients", "ingredients.ngrams"])).Query(ingredientsQuery).Boost(1.0f)));
+			}
 			var response = await _elasticsearchClient.SearchAsync<ReceiptIndexDto>(MiscellaneousConstants.ReceiptsElasticSearchIndex, c =>
 			{
 			    c.Query(q =>
 				{
 					q.Bool(b =>
 					{
-						b.Should(
-							m => m.MultiMatch(mq => mq.Fields(Fields.FromFields(["title", "title.ngrams"])).Query(receiptsFilterForElasticSearch.TitleQuery).Boost(2.0f)),
-							m => m.MultiMatch(mq => mq.Fields(Fields.FromFields(["ingredients", "ingredients.ngrams"])).Query(receiptsFilterForElasticSearch.IngredientsQuery).Boost(1.0f))
-							);
+						b.Must([..searchActions]);
 					});
 				})
 				.From(0)

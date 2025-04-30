@@ -70,7 +70,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 				Assert.That(collectionsResponse.PagesCount, Is.EqualTo(2));
 				Assert.That(collectionsResponse.EntitiesCount, Is.EqualTo(2));
 				Assert.That(collectionsResponse.Data, Has.Count.EqualTo(1));
-				Assert.That(collectionsResponse.Data[0].Title.Value, Is.EqualTo("Third"));
+				Assert.That(collectionsResponse.Data[0].Title.Value, Is.EqualTo("Second"));
 			});
 		}
 

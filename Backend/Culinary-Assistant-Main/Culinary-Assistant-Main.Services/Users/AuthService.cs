@@ -71,9 +71,9 @@ namespace Culinary_Assistant_Main.Services.Users
 		private void AddTokensToResponseCookies(HttpResponse httpResponse, Guid userId, List<string> roles, bool rememberMe)
 		{
 			var tokens = TokenUtils.GenerateAccessAndRefreshTokens(userId, roles, _secretKey);
-			httpResponse.Cookies.Append(MiscellaneousConstants.AccessTokenCookie, tokens.AccessToken);
+			TokenUtils.SetAccessTokenToCookies(httpResponse, tokens.AccessToken);
 			if (rememberMe)
-				httpResponse.Cookies.Append(MiscellaneousConstants.RefreshTokenCookie, tokens.RefreshToken, new CookieOptions() { HttpOnly = true });
+				TokenUtils.SetRefreshTokenToCookies(httpResponse, tokens.RefreshToken);
 		}
 	}
 }

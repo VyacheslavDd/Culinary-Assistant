@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.ServicesResponses;
+using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
+using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
@@ -16,12 +20,13 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipt-collections")]
 	[ApiController]
-	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory,
+	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> likesService,
 		IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _likesService = likesService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IMapper _mapper = mapper;
 
@@ -36,13 +41,12 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
 		{
 			var collections = await _receiptCollectionsService.GetAllAsync(cancellationToken);
-			if (collections.Count == 0) return NoContent();
 			var mappedCollections = await MapCollectionsAsync(collections);
 			return Ok(mappedCollections);
 		}
 
 		/// <summary>
-		/// Получить все коллекции рецептов по фильтру, исключая приватные
+		/// Получить все коллекции рецептов по фильтру, исключая приватные (за исключением использования UserId)
 		/// </summary>
 		/// <param name="receiptCollectionsFilter">Название коллекции, страница, лимит на страницу</param>
 		/// <param name="cancellationToken"></param>
@@ -50,12 +54,14 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="500">Ошибка поиска по индексам</response>
 		[HttpGet]
 		[Route("all/by-filter")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetAllByFilterAsync([FromQuery] ReceiptCollectionsFilter receiptCollectionsFilter, CancellationToken cancellationToken)
 		{
 			var collections = await _receiptCollectionsService.GetAllByFilterAsync(receiptCollectionsFilter, cancellationToken);
 			if (collections.IsFailure) return StatusCode(500, collections.Error);
 			if (collections.Value.Data.Count == 0) return Ok(collections.Value);
 			var mappedCollections = await MapCollectionsAsync(collections.Value.Data);
+			await _likesService.ApplyLikesInfoForUserAsync(User, mappedCollections);
 			return Ok(new EntitiesResponseWithCountAndPages<ReceiptCollectionShortOutDTO>(mappedCollections, collections.Value.EntitiesCount, collections.Value.PagesCount));
 		}
 
@@ -69,6 +75,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="404">Несуществующая коллекция</response>
 		[HttpGet]
 		[Route("{id}")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetByGuidAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
 			var collection = await _receiptCollectionsService.GetByGuidAsync(id, cancellationToken);
@@ -80,6 +87,7 @@ namespace Culinary_Assistant_Main.Controllers
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, [mappedCollection]);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedCollection.Receipts);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedCollection.User]);
+			await _likesService.ApplyLikeInfoForUserAsync(User, mappedCollection);
 			return Ok(mappedCollection);
 		}
 
@@ -96,6 +104,24 @@ namespace Culinary_Assistant_Main.Controllers
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionInModelDTO);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return Created("api/receipt-collections", res.Value);
+		}
+
+		/// <summary>
+		/// Поставить лайк на коллекцию рецептов
+		/// </summary>
+		/// <param name="id">Id коллекции рецептов</param>
+		/// <response code="204">Успешно поставленный лайк</response>
+		/// <response code="400">Некорректные данные или лайк уже поставлен</response>
+		/// <response code="401">Требуется авторизация</response>
+		[HttpPost]
+		[Route("{id}/likes")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> LikeReceiptCollectionAsync([FromRoute] Guid id)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext.User);
+			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
+			if (res.IsFailure) return BadRequest(res.Error);
+			return NoContent();
 		}
 
 		/// <summary>
