@@ -48,7 +48,7 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 
 		public async Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : ILikedDTO
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(user);
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(user);
 			if (userId == Guid.Empty) return;
 			var foundLikedEntities = await _repository.GetAll().Where(l => l.UserId == userId).Select(e => e.LikedEntityId).ToListAsync();
 			var foundLikedEntitiesHashSet = new HashSet<Guid>(foundLikedEntities);
@@ -60,7 +60,7 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 
 		public async Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : ILikedDTO
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(user);
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(user);
 			if (userId == Guid.Empty) return;
 			var likedEntity = await GetAsync(userId, entity.Id);
 			if (likedEntity != null) entity.IsLiked = true;
