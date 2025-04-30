@@ -24,6 +24,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public int Popularity { get; private set; }
+		public DateTime CreatedAt { get; private set; }
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 		public IReadOnlyCollection<ReceiptCollectionLike> Likes => _likes;
@@ -37,6 +38,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			receiptCollection.SetUserId(receiptCollectionInModelDTO.UserId);
 			receiptCollection.SetCovers(null);
 			receiptCollection.ActualizeUpdatedAtField();
+			receiptCollection.CreatedAt = DateTime.UtcNow;
 			return Result.Success(receiptCollection);
 		}
 

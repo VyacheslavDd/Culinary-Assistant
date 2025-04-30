@@ -31,7 +31,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
-		private readonly Dictionary<SortOption, Func<Receipt, int>> _orderByExpressions = new()
+		private readonly Dictionary<SortOption, Func<Receipt, double>> _orderByExpressions = new()
 		{
 			{ SortOption.ByPopularity, (Receipt receipt) => receipt.Popularity },
 			{ SortOption.ByCookingTime, (Receipt receipt) => receipt.CookingTime },

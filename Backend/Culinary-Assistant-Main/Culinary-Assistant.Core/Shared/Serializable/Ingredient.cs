@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.Shared.Serializable
 {
-	public record Ingredient(string Name, int NumericValue, Measure Measure);
+	public record Ingredient(string Name, double NumericValue, Measure Measure);
 }
