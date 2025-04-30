@@ -153,7 +153,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				mapped.ReceiptNames = [];
 				var coversMap = new Dictionary<string, string>();
 				foreach (var receipt in original.Receipts)
-					coversMap.Add(receipt.MainPictureUrl, receipt.Title.Value);
+					coversMap[receipt.MainPictureUrl] = receipt.Title.Value;
 				foreach (var cover in mapped.Covers)
 				{
 					if (!coversMap.ContainsKey(cover.Url))

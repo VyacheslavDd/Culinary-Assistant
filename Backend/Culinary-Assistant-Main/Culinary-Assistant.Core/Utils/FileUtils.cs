@@ -9,6 +9,6 @@ namespace Culinary_Assistant.Core.Utils
 	public static class FileUtils
 	{
 		public static string GenerateUniqueNameForFileName(string fileName)
-			=> Path.GetFileNameWithoutExtension(fileName) + DateTime.Now.Ticks + Path.GetExtension(fileName);
+			=> Path.GetFileNameWithoutExtension(fileName) + DateTime.Now.Ticks + Guid.NewGuid().ToString() + Path.GetExtension(fileName);
 	}
 }

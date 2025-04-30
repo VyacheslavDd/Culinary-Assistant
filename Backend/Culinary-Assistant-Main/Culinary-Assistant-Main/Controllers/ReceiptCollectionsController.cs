@@ -120,7 +120,7 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(AuthenthicationFilter))]
 		public async Task<IActionResult> LikeReceiptCollectionAsync([FromRoute] Guid id)
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContext(HttpContext.User);
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
 			var res = await _collectionLikesService.AddAsync(new LikeInDTO(userId, id));
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
