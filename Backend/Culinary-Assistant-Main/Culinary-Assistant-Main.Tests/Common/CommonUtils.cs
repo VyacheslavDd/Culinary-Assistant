@@ -78,5 +78,17 @@ namespace Culinary_Assistant_Main.Tests.Common
 			mapperMock.Setup(m => m.Map<AuthUserOutDTO>(It.IsAny<User>())).Returns(new AuthUserOutDTO());
 			return mapperMock.Object;
 		}
+
+		public static async Task<Guid> GetUserGuidByLoginAsync(CulinaryAppContext context, string login)
+		{
+			var user = await context.Users.FirstAsync(u => u.Login.Value == login);
+			return user.Id;
+		}
+
+		public static async Task<Guid> GetReceiptGuidByNameAsync(CulinaryAppContext context, string name)
+		{
+			var receipt = await context.Receipts.FirstAsync(r => r.Title.Value == name);
+			return receipt.Id;
+		}
 	}
 }

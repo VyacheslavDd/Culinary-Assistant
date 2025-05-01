@@ -28,11 +28,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Filters
 		public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
 		{
 			var accessToken = context.HttpContext.Request.Cookies[MiscellaneousConstants.AccessTokenCookie];
-			if (accessToken == null)
-			{
-				await Write401ResponseAsync(context, "Отсутствует AccessToken!");
-				return;
-			}
 			var accessTokenValidationResult = TokenUtils.ValidateToken(accessToken, _secretKey);
 			if (accessTokenValidationResult.IsSuccess)
 			{

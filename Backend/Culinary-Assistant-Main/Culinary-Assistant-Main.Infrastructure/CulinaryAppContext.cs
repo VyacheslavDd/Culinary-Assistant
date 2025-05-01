@@ -22,6 +22,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 		public virtual DbSet<ReceiptCollection> ReceiptCollections { get; set; }
 		public virtual DbSet<ReceiptLike> ReceiptLikes { get; set; }
 		public virtual DbSet<ReceiptCollectionLike> ReceiptCollectionLikes { get; set; }
+		public virtual DbSet<ReceiptFavourite> FavouritedReceiptsInfo { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

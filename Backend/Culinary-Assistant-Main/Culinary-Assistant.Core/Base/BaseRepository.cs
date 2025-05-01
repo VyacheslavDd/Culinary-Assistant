@@ -27,7 +27,7 @@ namespace Core.Base
 			return await _dbSet.Where(selector).FirstOrDefaultAsync(cancellationToken);
 		}
 
-		public virtual IQueryable<T> GetAllBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default)
+		public virtual IQueryable<T> GetAllBySelector(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default)
 		{
 			return _dbSet.Where(selector);
 		}
