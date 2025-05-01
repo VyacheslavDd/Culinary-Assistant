@@ -86,6 +86,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var mappedCollection = _mapper.Map<ReceiptCollectionFullOutDTO>(collection);
 			mappedCollection.User = _mapper.Map<ShortUserOutDTO>(collection.User);
 			mappedCollection.Receipts = _mapper.Map<List<ShortReceiptOutDTO>>(collection.Receipts);
+			_receiptCollectionsService.SetReceiptCovers(collection, mappedCollection);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, [mappedCollection]);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedCollection.Receipts);

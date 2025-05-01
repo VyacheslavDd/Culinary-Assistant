@@ -10,5 +10,6 @@ namespace Culinary_Assistant_Main.Domain.Repositories
 {
 	public interface IReceiptCollectionsRepository : IRepository<ReceiptCollection>
 	{
+		Task LoadReceiptsAsync(ReceiptCollection receiptCollection);
 	}
 }

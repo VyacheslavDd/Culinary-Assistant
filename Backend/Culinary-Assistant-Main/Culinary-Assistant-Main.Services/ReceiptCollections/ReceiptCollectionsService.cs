@@ -1,5 +1,6 @@
 ﻿using Core.Base;
 using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.ReceiptCollection.Interfaces;
 using Culinary_Assistant.Core.Filters;
@@ -27,6 +28,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		BaseService<ReceiptCollection, ReceiptCollectionInModelDTO, ReceiptCollectionUpdateDTO>(repository, logger), IReceiptCollectionsService
 	{
 		private readonly IElasticReceiptsCollectionsService _elasticReceiptCollectionsService = elasticReceiptCollectionsService;
+		private readonly IReceiptCollectionsRepository _receiptCollectionsRepository = repository;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly IUsersService _usersService = usersService;
 
@@ -51,7 +53,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			foreach (var receiptCollection in receiptCollections)
 			{
 				await _repository.LoadReferenceAsync(receiptCollection, rc => rc.User);
-				await _repository.LoadCollectionAsync(receiptCollection, rc => rc.Receipts);
+				await _receiptCollectionsRepository.LoadReceiptsAsync(receiptCollection);
 			}
 			var entitiesResponse = ApplyPaginationToEntities(receiptCollections, filter);
 			return Result.Success(entitiesResponse);
@@ -63,7 +65,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			if (receiptCollection != null)
 			{
 				await _repository.LoadReferenceAsync(receiptCollection, rc => rc.User);
-				await _repository.LoadCollectionAsync(receiptCollection, rc => rc.Receipts);
+				await _receiptCollectionsRepository.LoadReceiptsAsync(receiptCollection);
 			}
 			return receiptCollection;
 		}
@@ -150,19 +152,30 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			{
 				var original = originals[i];
 				var mapped = mappedCollections[i];
+				mapped.Covers = [];
 				mapped.ReceiptNames = [];
-				var coversMap = new Dictionary<string, string>();
+				var takeCounter = Math.Min(MiscellaneousConstants.ReceiptCollectionMaxCoversCount, original.Receipts.Count);
+				var counter = 0;
 				foreach (var receipt in original.Receipts)
-					coversMap[receipt.MainPictureUrl] = receipt.Title.Value;
-				foreach (var cover in mapped.Covers)
 				{
-					if (!coversMap.ContainsKey(cover.Url))
-					{
-						mapped.ReceiptNames.Add("Рецепт");
-						continue;
-					}
-					mapped.ReceiptNames.Add(coversMap[cover.Url]);
+					mapped.Covers.Add(new FilePath(receipt.MainPictureUrl));
+					mapped.ReceiptNames.Add(receipt.Title.Value);
+					counter++;
+					if (counter >= takeCounter) break;
 				}
+			}
+		}
+
+		public void SetReceiptCovers(ReceiptCollection original, ReceiptCollectionFullOutDTO mappedCollection)
+		{
+			mappedCollection.Covers = [];
+			var takeCounter = Math.Min(MiscellaneousConstants.ReceiptCollectionMaxCoversCount, original.Receipts.Count);
+			var counter = 0;
+			foreach (var receipt in original.Receipts)
+			{
+				mappedCollection.Covers.Add(new FilePath(receipt.MainPictureUrl));
+				counter++;
+				if (counter >= takeCounter) break;
 			}
 		}
 	}
