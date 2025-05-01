@@ -1,7 +1,11 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant.Core.Utils;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Services.Favourites;
+using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +17,13 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/users")]
 	[ApiController]
-	public class UsersController(IUsersService usersService, IReceiptsService receiptsService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+	public class UsersController(IUsersService usersService, IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> receiptLikesService,
+		IFavouriteReceiptsService favouriteReceiptsService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
+		private readonly ILikesService<ReceiptLike, Receipt> _receiptLikesService = receiptLikesService;
 		private readonly IMapper _mapper = mapper;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 
@@ -73,6 +80,29 @@ namespace Culinary_Assistant_Main.Controllers
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedUser]);
 			return Ok(mappedUser);
+		}
+
+		/// <summary>
+		/// Получить все избранные рецепты пользователя
+		/// </summary>
+		/// <response code="200">Успешное получение всех избранных рецептов пользователя</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpGet]
+		[Route("receipts/favourites")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> GetFavouriteReceiptsAsync(CancellationToken cancellationToken)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var res = await _favouriteReceiptsService.GetAllReceiptsFavouritedForUserAsync(userId, cancellationToken);
+			if (res.IsFailure) return BadRequest(res.Error);
+			if (res.Value.Count == 0) return Ok(new List<Receipt>());
+			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(res.Value);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);
+			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, mappedReceipts);
+			foreach (var mappedReceipt in mappedReceipts)
+				mappedReceipt.IsFavourited = true;
+			return Ok(mappedReceipts);
 		}
 
 		/// <summary>

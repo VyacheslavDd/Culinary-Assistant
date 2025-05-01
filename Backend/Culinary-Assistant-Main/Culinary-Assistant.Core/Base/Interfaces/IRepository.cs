@@ -13,7 +13,7 @@ namespace Core.Base.Interfaces
 	{
 		IQueryable<T> GetAll();
 		Task<T?> GetBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
-		IQueryable<T> GetAllBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
+		IQueryable<T> GetAllBySelector(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
 		IQueryable<T> GetAllWithInclude<TProperty>(Expression<Func<T, TProperty>> includeExpression);
 		Task LoadReferenceAsync<TProperty>(T entity, Expression<Func<T, TProperty?>> referenceExpression) where TProperty: class;
 		Task LoadCollectionAsync<TProperty>(T entity, Expression<Func<T, IEnumerable<TProperty>>> collectionExpression) where TProperty: class;
