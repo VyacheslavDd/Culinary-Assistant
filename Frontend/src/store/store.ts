@@ -7,11 +7,13 @@ import {
 import userReducer from './user.slice';
 import ingredientsReducer from './ingredients.slice';
 import mainPageReducer from './main-page.slice';
+import collectionsPageReducer from './collections-page.slice';
 
 export const rootReducer = combineReducers({
     user: userReducer,
     ingredients: ingredientsReducer,
     mainPage: mainPageReducer,
+    collectionsPage: collectionsPageReducer,
 });
 
 const store = configureStore({

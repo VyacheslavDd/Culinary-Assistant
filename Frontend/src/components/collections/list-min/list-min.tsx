@@ -1,24 +1,21 @@
+import { ShortCollection } from 'types/short-collections.type';
 import { CardCollMin } from '..';
 import styles from './list-min.module.scss';
 
 type props = {
     theme: 'light' | 'dark';
-    items?: string[];
+    items?: ShortCollection[];
 };
 
 export function ListMinCollections(props: props) {
-    const { theme } = props;
+    const { theme, items = [] } = props;
     return (
         <ul className={styles.list}>
-            <li className={styles.item}>
-                <CardCollMin theme={theme} />
-            </li>
-            <li className={styles.item}>
-                <CardCollMin theme={theme} />
-            </li>
-            <li className={styles.item}>
-                <CardCollMin theme={theme} />
-            </li>
+            {items.map((item) => (
+                <li className={styles.item} key={item.id}>
+                    <CardCollMin theme={theme} data={item} />
+                </li>
+            ))}
         </ul>
     );
 }

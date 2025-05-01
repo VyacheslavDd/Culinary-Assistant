@@ -16,6 +16,7 @@
     font-family: 'TildaSans';
     font-size: var(--font-size-20);
     font-weight: 400;
+    line-height: 140%;
     color: black;
 
     &:focus {
@@ -47,7 +48,7 @@
     font-family: 'TildaSans';
     font-size: var(--font-size-20);
     font-weight: 400;
-    transform: all 0.3s ease;
+    transition: all 0.2s ease;
 
     &:hover {
         transform: scale(1.02);

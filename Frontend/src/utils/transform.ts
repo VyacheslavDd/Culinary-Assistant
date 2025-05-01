@@ -1,4 +1,6 @@
 import { Category, CookingDifficulty, Measure } from 'types';
+import { format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export function transformDifficulty(difficulty: CookingDifficulty): string {
     switch (difficulty) {
@@ -72,4 +74,13 @@ export function transformMeasure(measure: Measure): string {
         default:
             return '';
     }
+}
+
+export function transformCreatedAt(dateString: string): string {
+    if (!dateString || dateString.startsWith('0001-01-01')) {
+        return 'Дата не указана';
+    }
+
+    const date = parseISO(dateString);
+    return `Опубликована ${format(date, 'd MMMM yyyy', { locale: ru })}`;
 }

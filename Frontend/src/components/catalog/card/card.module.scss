@@ -69,6 +69,8 @@
 
     .icon {
         display: inline-block;
+        background-color: transparent;
+        border: none;
         background-image: url('../../../assets/svg/unfav.svg');
         background-size: cover;
         background-repeat: no-repeat;

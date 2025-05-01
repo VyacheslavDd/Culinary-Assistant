@@ -1,24 +1,29 @@
 import styles from './search.module.scss';
 import search from '../../assets/svg/search.svg';
-import { useDispatch, useSelector } from 'store/store';
-import {
-    fetchRecipes,
-    selectFilter,
-    updateFilter,
-} from 'store/main-page.slice';
 
-export function Search() {
-    const filter = useSelector(selectFilter);
-    const dispatch = useDispatch();
+type props = {
+    onClick: () => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    value: string;
+    isFindShows?: boolean;
+};
+
+export function Search(props: props) {
+    const { onClick, onChange, value, isFindShows = true } = props;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(updateFilter({ SearchByTitle: e.target.value }));
+        onChange(e);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            dispatch(fetchRecipes());
+            onClick();
         }
+    };
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        onClick();
     };
 
     return (
@@ -29,17 +34,15 @@ export function Search() {
                 type='text'
                 placeholder='Что хотите найти?'
                 className={styles.input}
-                value={filter.SearchByTitle}
+                value={value}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
             />
-
-            <button
-                className={styles.button}
-                onClick={() => dispatch(fetchRecipes())}
-            >
-                Найти
-            </button>
+            {isFindShows && (
+                <button className={styles.button} onClick={handleClick}>
+                    Найти
+                </button>
+            )}
         </div>
     );
 }

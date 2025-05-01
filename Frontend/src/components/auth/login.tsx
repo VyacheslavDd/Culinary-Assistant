@@ -23,6 +23,7 @@ export function Login() {
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         const { name, value } = e.target;
         setFormData((prev) => ({
             ...prev,
