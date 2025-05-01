@@ -59,8 +59,9 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: start;
+    gap: 1vw;
 
     .item {
         list-style: none;

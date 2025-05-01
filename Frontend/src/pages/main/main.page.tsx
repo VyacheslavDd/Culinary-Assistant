@@ -1,12 +1,10 @@
 import MainBack from 'components/backgrounds/main-back';
 import styles from './main.module.scss';
 import { Catalog } from 'components/catalog/catalog';
-import ScrollToTop from 'components/common/scrollToTop';
 import { Filter } from './filter';
 import { useDispatch, useSelector } from 'store/store';
 import {
     fetchRecipes,
-    selectFilter,
     selectMainPageLoading,
     selectPage,
     selectRecipes,

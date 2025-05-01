@@ -9,6 +9,7 @@ import {
     transformCookingTime,
 } from 'utils/transform';
 import { useNavigate } from 'react-router-dom';
+import { ButtonWrapper } from 'components/common';
 
 type CatalogCardProps = {
     recipe: ShortRecipe;
@@ -23,15 +24,16 @@ export function CatalogCard(props: CatalogCardProps) {
         mainPictureUrl,
         cookingTime,
         cookingDifficulty,
-        // category,
         calories,
-        // tags,
-        // popularity,
         rating,
     } = recipe;
 
     const handleClick = () => {
         navigate(`/recipe/${id}`);
+    };
+
+    const handleButtonClick = () => {
+        console.log('Добавлено в избранное');
     };
 
     return (
@@ -47,7 +49,9 @@ export function CatalogCard(props: CatalogCardProps) {
             <div className={styles.description}>
                 <div className={styles.name}>
                     <p className={styles.title}>{title}</p>
-                    <span className={`${styles.icon}`}></span>
+                    <ButtonWrapper onAuthenticatedAction={handleButtonClick}>
+                        <button className={styles.icon}></button>
+                    </ButtonWrapper>
                 </div>
                 <div className={styles.infoContainer}>
                     <p className={styles.info}>

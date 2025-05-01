@@ -77,7 +77,7 @@ function ReceiptPage() {
                             <Ingredients ingredients={recipe.ingredients} />
                         </div>
                         <div className={styles.reviewContainer}>
-                            <ButtonsReceipt />
+                            <ButtonsReceipt name={recipe.title} />
                             <Ratings />
                             <Review />
                             <Reviews />
