@@ -3,13 +3,21 @@ import styles from './header.module.scss';
 import profile_photo from '../../../assets/img/profile_photo.png';
 import edit from '../../../assets/svg/edit.svg';
 import exit from '../../../assets/svg/exit.svg';
-import { selectUser } from 'store/user.slice';
-import { useSelector } from 'store/store';
+import { logoutUser, selectUser } from 'store/user.slice';
+import { useDispatch, useSelector } from 'store/store';
+import { useNavigate } from 'react-router-dom';
 
 export function HeaderProfile() {
     const user = useSelector(selectUser);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { login, email, phone, pictureUrl } = user!;
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        navigate('/');
+    };
 
     return (
         <div className={styles.mainContainer}>
@@ -30,6 +38,7 @@ export function HeaderProfile() {
                                 </button>
                                 <button
                                     className={`${styles.button} ${styles.exit}`}
+                                    onClick={handleLogout}
                                 >
                                     <img src={exit} alt='exit' />
                                     Выйти

@@ -13,5 +13,6 @@ export type ShortRecipe = {
     tags: Tag[];
     popularity: number;
     rating: number;
-    category: Category
+    category: Category;
+    isLiked: boolean;
 };

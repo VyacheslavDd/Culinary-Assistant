@@ -95,6 +95,10 @@ export function IngredientsContent() {
                     <li>Ничего не найдено</li>
                 )}
             </ul>
+            <div className={styles.selectContainer}>
+                <input type='checkbox' className={styles.checkbox} />
+                <p>Искать только с этими продуктами</p>
+            </div>
         </div>
     );
 }

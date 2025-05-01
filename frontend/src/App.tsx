@@ -5,7 +5,7 @@ import LoginPage from 'pages/login/login.page';
 import MainPage from 'pages/main/main.page';
 import ReceiptPage from 'pages/receipt/receipt.page';
 import CollectionsPage from 'pages/collections/collections.page';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
 // import { ProtectedRoute } from 'utils/protected-route';
 import { CollectionPage } from 'pages/collection/collection.page';
 import RegisterPage from 'pages/register/register.page';
@@ -16,6 +16,8 @@ import { useEffect } from 'react';
 import { useDispatch } from 'store/store';
 import { fetchRecipes } from 'store/main-page.slice';
 import { ProtectedRoute } from 'utils/protected-route';
+import { checkUser } from 'store/user.slice';
+import MyRecipesPage from 'pages/my-recipes/my-recipes.page';
 
 function App() {
     const location = useLocation();
@@ -25,15 +27,9 @@ function App() {
     const authPages = ['/login', '/register', '/pass-recovery'];
     const isAuthPage = authPages.includes(pathname);
 
-    // useEffect(() => {
-    //     dispatch(
-    //         fetchRecipes({
-    //             Page: 1,
-    //             Limit: 10,
-    //             SearchByTitle: 'Вишн',
-    //         })
-    //     );
-    // }, [dispatch]);
+    useEffect(() => {
+        dispatch(checkUser());
+    }, [dispatch]);
 
     return (
         <div className='App'>
@@ -42,16 +38,22 @@ function App() {
                 <Route path='/' element={<MainPage />} />
                 <Route path='/recipe/:id' element={<ReceiptPage />} />
                 <Route path='/collections' element={<CollectionsPage />} />
-                <Route path='/collection' element={<CollectionPage />} />
+                <Route path='/collection/:id' element={<CollectionPage />} />
                 <Route
                     path='/profile'
                     element={
                         <ProtectedRoute>
-                            <ProfilePage />
+                            <Outlet />
                         </ProtectedRoute>
                     }
-                />
-                <Route path='/my-collection' element={<MyCollectionsPage />} />
+                >
+                    <Route index element={<ProfilePage />} />
+                    <Route path='my-recipes' element={<MyRecipesPage />} />
+                    <Route
+                        path='my-collections'
+                        element={<MyCollectionsPage />}
+                    />
+                </Route>
                 <Route
                     path='/login'
                     element={

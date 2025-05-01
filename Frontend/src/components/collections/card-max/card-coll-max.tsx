@@ -1,20 +1,37 @@
 import styles from './card-coll-max.module.scss';
 import favIcon from '../../../assets/svg/coll_fav_dark.svg';
-import photo from '../../../assets/img/Photo.png';
 import { useNavigate } from 'react-router-dom';
+import { ShortCollection } from 'types/short-collections.type';
+import { transformCreatedAt } from 'utils/transform';
 
-export function CardCollMax() {
+type props = {
+    data: ShortCollection;
+};
+
+export function CardCollMax(props: props) {
+    const { data } = props;
     const navigate = useNavigate();
 
     const handleClick = () => {
-        navigate('/collection');
+        navigate(`/collection/${data.id}`);
     };
+
+    const MAX_RECIPES_DISPLAY = 6;
+    const combinedRecipes = (data.covers || []).map((cover, index) => ({
+        url: cover.url,
+        title: data.receiptNames?.[index] || 'Без названия',
+    }));
+
+    const displayedRecipes = combinedRecipes.slice(0, MAX_RECIPES_DISPLAY);
+    const remainingCount = combinedRecipes.length - MAX_RECIPES_DISPLAY;
+    const placeholdersCount = MAX_RECIPES_DISPLAY - displayedRecipes.length;
+
     return (
         <div className={styles.mainContainer} onClick={handleClick}>
             <div className={styles.info}>
                 <div className={styles.title}>
-                    <div className={styles.name}>Подборка 1</div>
-                    <p>от MaryDanilova</p>
+                    <div className={styles.name}>{data.title}</div>
+                    <p>от {data.userLogin}</p>
                 </div>
 
                 <div className={styles.rating}>
@@ -22,51 +39,36 @@ export function CardCollMax() {
                         className={styles.icon}
                         style={{ backgroundImage: `url(${favIcon})` }}
                     ></span>
-                    <span>224</span>
+                    <span>{data.popularity}</span>
                 </div>
             </div>
+
             <ul className={styles.list}>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li className={styles.item}>
-                    <div className={styles.title}>
-                        Овсянка на кокосовом молоке
-                    </div>
-                    <img src={photo} alt='receipt' className={styles.img} />
-                </li>
-                <li>
-                    <div className={styles.more}>+8</div>
-                </li>
+                {displayedRecipes.map((recipe, index) => (
+                    <li className={styles.item} key={recipe.title || index}>
+                        <div className={styles.title}>{recipe.title}</div>
+                        <img
+                            src={recipe.url}
+                            alt='Название рецепта'
+                            className={styles.img}
+                        />
+                    </li>
+                ))}
+
+                {Array.from({ length: placeholdersCount }).map((_, index) => (
+                    <li className={styles.item} key={`placeholder-${index}`}>
+                        <div className={styles.placeholder} />
+                    </li>
+                ))}
+
+                {remainingCount > 0 && (
+                    <li className={styles.item}>
+                        <div className={styles.more}>+{remainingCount}</div>
+                    </li>
+                )}
             </ul>
-            <p className={styles.date}>Опубликована 11 апреля 2025</p>
+
+            <p className={styles.date}>{transformCreatedAt(data.createdAt)}</p>
         </div>
     );
 }
