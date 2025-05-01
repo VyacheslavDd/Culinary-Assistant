@@ -8,6 +8,7 @@ using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant.Core.ValueTypes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -20,6 +21,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 	{
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _likes = [];
+		private readonly List<ReceiptFavourite> _favourites = [];
 
 		public Text Title { get; private set; }
 		public Text Description { get; private set; }
@@ -39,6 +41,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> Likes => _likes;
+		public IReadOnlyCollection<ReceiptFavourite> Favourites => _favourites;
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
 		{

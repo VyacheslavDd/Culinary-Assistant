@@ -55,28 +55,6 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		}
 
 		[Test]
-		public void SetNullCovers_WorksCorrectly()
-		{
-			_receiptCollection.SetCovers(null);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.Empty);
-		}
-
-		[Test]
-		public void SetEmptyCoversList_WorksCorrectly()
-		{
-			_receiptCollection.SetCovers([]);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.Empty);
-		}
-
-		[Test]
-		public void CanSet_Covers()
-		{
-			List<FilePath> covers = [new FilePath("1"), new FilePath("2"), new FilePath("3"), new FilePath("4"), new FilePath("5"), new FilePath("6"), new FilePath("7")];
-			_receiptCollection.SetCovers(covers);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"1\"},{\"Url\":\"2\"},{\"Url\":\"3\"},{\"Url\":\"4\"},{\"Url\":\"5\"},{\"Url\":\"6\"}]"));
-		}
-
-		[Test]
 		public void AddReceipts_WorksCorrectly()
 		{
 			var nextReceipt = Receipt.Create(new ReceiptInDTO("Салат", "Вкусный салат", [Tag.Lean], Category.Dinner, CookingDifficulty.Hard,
@@ -84,7 +62,6 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 					[new CookingStep(1, "Первый", "Порезать огурец"), new CookingStep(2, "Второй", "Порезать помидор")],
 					[new FilePath("4")], default)).Value;
 			_receiptCollection.AddReceipts([nextReceipt]);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/600x400\"},{\"Url\":\"https://placehold.co/800x400\"},{\"Url\":\"https://placehold.co/1000x400\"},{\"Url\":\"4\"}]"));
 		}
 
 		[Test]
@@ -97,22 +74,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 			Assert.Multiple(() =>
 			{
 				Assert.That(_receiptCollection.Receipts, Has.Count.EqualTo(1));
-				Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/800x400\"}]"));
 			});
-		}
-
-		[Test]
-		public void DeletingCover_WorksCorrectly()
-		{
-			_receiptCollection.DeleteCoversIfPresented(["https://placehold.co/800x400"]);
-			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/600x400\"},{\"Url\":\"https://placehold.co/1000x400\"}]"));
-		}
-
-		[Test]
-		public void UpdatingCover_WorksCorrectly()
-		{
-			_receiptCollection.UpdateCoverIfPresented("https://placehold.co/800x400", "49");
-			Assert.That(_receiptCollection.ReceiptCovers, Is.EqualTo("[{\"Url\":\"https://placehold.co/600x400\"},{\"Url\":\"49\"},{\"Url\":\"https://placehold.co/1000x400\"}]"));
 		}
 
 		[TestCase("")]
@@ -121,14 +83,6 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		{
 			var titleRes = _receiptCollection.SetTitle(title);
 			Assert.That(titleRes.IsFailure, Is.True);
-		}
-
-		[Test]
-		public void WontHave_MoreCovers_ThanSpecified()
-		{
-			_receiptCollection.AddReceipts(ReceiptsData.Receipts);
-			var covers = JsonSerializer.Deserialize<List<FilePath>>(_receiptCollection.ReceiptCovers);
-			Assert.That(covers, Has.Count.EqualTo(MiscellaneousConstants.ReceiptCollectionMaxCoversCount));
 		}
 	}
 }

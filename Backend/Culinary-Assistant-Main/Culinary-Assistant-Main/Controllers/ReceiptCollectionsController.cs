@@ -8,6 +8,7 @@ using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.Receipts;
@@ -21,13 +22,14 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipt-collections")]
 	[ApiController]
 	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> collectionLikesService,
-		ILikesService<ReceiptLike, Receipt> receiptLikesService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+		ILikesService<ReceiptLike, Receipt> receiptLikesService, IFavouriteReceiptsService favouriteReceiptsService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionLikesService = collectionLikesService;
 		private readonly ILikesService<ReceiptLike, Receipt> _receiptLikesService = receiptLikesService;
+		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IMapper _mapper = mapper;
 
@@ -84,12 +86,14 @@ namespace Culinary_Assistant_Main.Controllers
 			var mappedCollection = _mapper.Map<ReceiptCollectionFullOutDTO>(collection);
 			mappedCollection.User = _mapper.Map<ShortUserOutDTO>(collection.User);
 			mappedCollection.Receipts = _mapper.Map<List<ShortReceiptOutDTO>>(collection.Receipts);
+			_receiptCollectionsService.SetReceiptCovers(collection, mappedCollection);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, [mappedCollection]);
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedCollection.Receipts);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedCollection.User]);
 			await _collectionLikesService.ApplyLikeInfoForUserAsync(User, mappedCollection);
 			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, mappedCollection.Receipts);
+			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, mappedCollection.Receipts);
 			return Ok(mappedCollection);
 		}
 

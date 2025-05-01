@@ -8,8 +8,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Repositories
 {
-	public interface IReceiptCollectionsRepository : IRepository<ReceiptCollection>
+	public interface IFavouriteReceiptsRepository : IRepository<ReceiptFavourite>
 	{
-		Task LoadReceiptsAsync(ReceiptCollection receiptCollection);
 	}
 }

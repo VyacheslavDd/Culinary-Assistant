@@ -80,13 +80,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (updateRequest.CookingSteps != null)
 				results[4] = existingReceipt.SetCookingSteps(updateRequest.CookingSteps);
 			if (updateRequest.PicturesUrls != null)
-			{
-				var oldMainPictureUrl = existingReceipt.MainPictureUrl;
 				results[5] = existingReceipt.SetPictures(updateRequest.PicturesUrls);
-				await _repository.LoadCollectionAsync(existingReceipt, r => r.ReceiptCollections);
-				foreach (var collection in existingReceipt.ReceiptCollections)
-					collection.UpdateCoverIfPresented(oldMainPictureUrl, existingReceipt.MainPictureUrl);
-			}
 			if (!results.All(r => r.IsSuccess)) return Miscellaneous.ResultFailureWithAllFailuresFromResultList(results);
 			existingReceipt.ActualizeUpdatedAtField();
 			var res = await base.NotBulkUpdateAsync(entityId, updateRequest);
@@ -115,9 +109,6 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		{
 			var entity = await GetByGuidAsync(entityId);
 			if (entity != null) {
-				await _repository.LoadCollectionAsync(entity, r => r.ReceiptCollections);
-				foreach (var collection in entity.ReceiptCollections)
-					collection.DeleteCoversIfPresented([entity.MainPictureUrl]);
 				var pictureUrls = JsonSerializer.Deserialize<List<FilePath>>(entity.PicturesUrls).Select(x => x.Url).ToList();
 				await _fileMessagesProducerService.SendRemoveImagesMessageAsync(pictureUrls, BucketConstants.ReceiptsImagesBucketName, _entityTypeName);
 				await _elasticReceiptsService.RemoveReceiptIndexAsync(entity);

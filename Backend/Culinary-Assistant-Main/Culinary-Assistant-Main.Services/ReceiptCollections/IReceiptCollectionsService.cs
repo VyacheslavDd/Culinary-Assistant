@@ -21,5 +21,6 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds);
 		Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds);
 		void SetReceiptNames(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections);
+		void SetReceiptCovers(ReceiptCollection original, ReceiptCollectionFullOutDTO mappedCollection);
 	}
 }
