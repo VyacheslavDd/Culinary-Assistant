@@ -16,6 +16,7 @@ using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
+using System.Threading;
 
 namespace Culinary_Assistant_Main.Controllers
 {
@@ -49,7 +50,7 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
-		/// Получить все коллекции рецептов по фильтру, исключая приватные (за исключением использования UserId)
+		/// Получить все коллекции рецептов по фильтру, не включая приватные (исключение: использование UserId)
 		/// </summary>
 		/// <param name="receiptCollectionsFilter">Название коллекции, страница, лимит на страницу</param>
 		/// <param name="cancellationToken"></param>
@@ -63,9 +64,32 @@ namespace Culinary_Assistant_Main.Controllers
 			var collections = await _receiptCollectionsService.GetAllByFilterAsync(receiptCollectionsFilter, cancellationToken);
 			if (collections.IsFailure) return StatusCode(500, collections.Error);
 			if (collections.Value.Data.Count == 0) return Ok(collections.Value);
-			var mappedCollections = await MapCollectionsAsync(collections.Value.Data, true);
+			var mappedCollections = await MapCollectionsAsync(collections.Value.Data);
 			await _collectionLikesService.ApplyLikesInfoForUserAsync(User, mappedCollections);
 			return Ok(new EntitiesResponseWithCountAndPages<ReceiptCollectionShortOutDTO>(mappedCollections, collections.Value.EntitiesCount, collections.Value.PagesCount));
+		}
+
+		/// <summary>
+		/// Получить рецепты коллекции, используя фильтр
+		/// </summary>
+		/// <param name="id">Guid коллекции</param>
+		/// <param name="receiptsFilter">Фильтр рецептов</param>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Получение рецептов коллекции</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpGet]
+		[Route("{id}/receipts")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> GetReceiptsOfCollectionAsync([FromRoute] Guid id, [FromQuery] ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
+		{
+			var receiptsIdsRes = await _receiptCollectionsService.GetReceiptIdsAsync(id, cancellationToken);
+			if (receiptsIdsRes.IsFailure) return BadRequest(receiptsIdsRes.Error);
+			var receiptsRes = await _receiptsService.GetAllAsync(receiptsFilter, cancellationToken, receiptsIdsRes.Value);
+			if (receiptsRes.IsFailure) return BadRequest(receiptsIdsRes.Error);
+			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(receiptsRes.Value.Data);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await EnrichReceiptsWithDataAsync(mappedReceipts, minioClient, cancellationToken);
+			return Ok(new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receiptsRes.Value.EntitiesCount, receiptsRes.Value.PagesCount));
 		}
 
 		/// <summary>
@@ -89,11 +113,9 @@ namespace Culinary_Assistant_Main.Controllers
 			_receiptCollectionsService.SetReceiptCovers(collection, mappedCollection);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, [mappedCollection]);
-			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedCollection.Receipts);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedCollection.User]);
 			await _collectionLikesService.ApplyLikeInfoForUserAsync(User, mappedCollection);
-			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, mappedCollection.Receipts);
-			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, mappedCollection.Receipts);
+			await EnrichReceiptsWithDataAsync(mappedCollection.Receipts, minioClient, cancellationToken);
 			return Ok(mappedCollection);
 		}
 
@@ -193,14 +215,20 @@ namespace Culinary_Assistant_Main.Controllers
 			return Ok(res.Value);
 		}
 
-		private async Task<List<ReceiptCollectionShortOutDTO>> MapCollectionsAsync(List<ReceiptCollection> receiptCollections, bool includeReceiptNames=false)
+		private async Task<List<ReceiptCollectionShortOutDTO>> MapCollectionsAsync(List<ReceiptCollection> receiptCollections)
 		{
 			var mappedCollections = _mapper.Map<List<ReceiptCollectionShortOutDTO>>(receiptCollections);
-			if (includeReceiptNames)
-				_receiptCollectionsService.SetReceiptNames(receiptCollections, mappedCollections);
+			_receiptCollectionsService.SetReceiptNamesWithCovers(receiptCollections, mappedCollections);
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptCollectionsService.SetPresignedUrlsForReceiptCollectionsAsync(minioClient, mappedCollections);
 			return mappedCollections;
+		}
+
+		private async Task EnrichReceiptsWithDataAsync(List<ShortReceiptOutDTO> receipts, IMinioClient minioClient, CancellationToken cancellationToken)
+		{
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, receipts, cancellationToken);
+			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, receipts);
+			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, receipts);
 		}
 	}
 }

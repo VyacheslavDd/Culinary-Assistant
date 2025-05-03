@@ -95,6 +95,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				await _elasticReceiptCollectionsService.ReindexReceiptCollectionAsync(updateRequest.Title, existingCollection.Id);
 			}
 			existingCollection.SetPrivateState(updateRequest.IsPrivate ?? existingCollection.IsPrivate);
+			existingCollection.SetColor(updateRequest.Color ?? existingCollection.Color);
 			existingCollection.ActualizeUpdatedAtField();
 			return await base.NotBulkUpdateAsync(entityId, updateRequest);
 		}
@@ -146,7 +147,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			}
 		}
 
-		public void SetReceiptNames(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections)
+		public void SetReceiptNamesWithCovers(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections)
 		{
 			for (var i = 0; i < originals.Count; i++)
 			{
@@ -177,6 +178,14 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				counter++;
 				if (counter >= takeCounter) break;
 			}
+		}
+
+		public async Task<Result<List<Guid>>> GetReceiptIdsAsync(Guid receiptCollectionId, CancellationToken cancellationToken = default)
+		{
+			var collection = await GetByGuidAsync(receiptCollectionId, cancellationToken);
+			if (collection == null) return Result.Failure<List<Guid>>("Указана несуществующая коллекция");
+			var receiptIds = collection.Receipts.Select(r => r.Id).ToList();
+			return Result.Success(receiptIds);
 		}
 	}
 }

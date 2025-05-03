@@ -22,7 +22,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[SetUp]
 		public void SetUp()
 		{
-			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Коллекция", false, new Guid(), null);
+			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Коллекция", false, Color.Red, new Guid(), null);
 			var receipts = ReceiptsData.Receipts;
 			_receiptCollection = ReceiptCollection.Create(receiptCollectionDTO).Value;
 			_receiptCollection.AddReceipts(receipts);
