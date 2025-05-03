@@ -19,6 +19,7 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using Culinary_Assistant.Core.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,7 @@ builder.Host.AddSerilog();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
 builder.Services.UseMinioWithoutFileService(builder.Configuration);
+builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
 builder.Services.AddDomain();
 builder.Services.AddCustomServices();

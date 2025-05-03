@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
+using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Favourite;
 using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.Filters;
+using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
@@ -21,11 +24,12 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipts")]
 	[ApiController]
 	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IFavouriteReceiptsService favouriteReceiptsService, IUsersService usersService,
-		IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+		IRedisService redisService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
+		private readonly IRedisService _redisService = redisService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -68,11 +72,18 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetByGuidAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
-			var receipt = await _receiptsService.GetByGuidAsync(id, cancellationToken);
-			if (receipt == null) return NotFound();
-			var mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
+
+			var cachedReceiptRes = await _redisService.GetAsync<FullReceiptOutDTO>(RedisUtils.GetReceiptKey(id), cancellationToken);
+			FullReceiptOutDTO? mappedReceipt = cachedReceiptRes.IsSuccess ? cachedReceiptRes.Value : null;
 			using var minioClient = _minioClientFactory.CreateClient();
-			await _receiptsService.SetPresignedUrlForReceiptAsync(minioClient, mappedReceipt, cancellationToken);
+			if (mappedReceipt == null)
+			{
+				var receipt = await _receiptsService.GetByGuidAsync(id, cancellationToken);
+				if (receipt == null) return NotFound();
+				mappedReceipt = _mapper.Map<FullReceiptOutDTO>(receipt);
+				await _receiptsService.SetPresignedUrlForReceiptAsync(minioClient, mappedReceipt, cancellationToken);
+				await _redisService.SetAsync(RedisUtils.GetReceiptKey(id), mappedReceipt, MiscellaneousConstants.RedisGeneralCacheTimeMinutes);
+			}
 			await _likesService.ApplyLikeInfoForUserAsync(User, mappedReceipt);
 			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, [mappedReceipt]);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedReceipt.User]);

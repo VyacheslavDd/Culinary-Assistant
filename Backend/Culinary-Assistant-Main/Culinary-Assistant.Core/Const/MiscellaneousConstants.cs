@@ -22,9 +22,10 @@ namespace Culinary_Assistant.Core.Const
 
 		public const int AccessTokenExpirationMinutesTime = 15;
 		public const int RefreshTokenExpirationMonthsTime = 1;
+		public const int RedisGeneralCacheTimeMinutes = 2;
+		public const int RedisBigCacheTimeMinutes = 30;
 
 		public const string AccessTokenCookie = "AccessToken";
 		public const string RefreshTokenCookie = "RefreshToken";
-
 	}
 }

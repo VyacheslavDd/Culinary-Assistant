@@ -4,6 +4,7 @@ using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.ReceiptCollection.Interfaces;
 using Culinary_Assistant.Core.Filters;
+using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
@@ -24,12 +25,13 @@ using System.Threading.Tasks;
 namespace Culinary_Assistant_Main.Services.ReceiptCollections
 {
 	public class ReceiptCollectionsService(IReceiptCollectionsRepository repository, IElasticReceiptsCollectionsService elasticReceiptCollectionsService,
-		IReceiptsService receiptsService, IUsersService usersService, ILogger logger) : 
+		IRedisService redisService, IReceiptsService receiptsService, IUsersService usersService, ILogger logger) : 
 		BaseService<ReceiptCollection, ReceiptCollectionInModelDTO, ReceiptCollectionUpdateDTO>(repository, logger), IReceiptCollectionsService
 	{
 		private readonly IElasticReceiptsCollectionsService _elasticReceiptCollectionsService = elasticReceiptCollectionsService;
 		private readonly IReceiptCollectionsRepository _receiptCollectionsRepository = repository;
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly IRedisService _redisService = redisService;
 		private readonly IUsersService _usersService = usersService;
 
 		public async Task<Result<EntitiesResponseWithCountAndPages<ReceiptCollection>>> GetAllByFilterAsync(ReceiptCollectionsFilter filter,
@@ -105,6 +107,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			var existingCollection = await GetByGuidAsync(receiptCollectionId);
 			if (existingCollection == null) return Result.Failure("Невозможно добавить рецепты в несуществующую коллекцию");
 			await AddReceiptsAsync(existingCollection, receiptIds);
+			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId));
 			return Result.Success();
 		}
 
@@ -129,12 +132,14 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			if (existingCollection == null) return Result.Failure("Невозможно удалить рецепты из несуществующей коллекции");
 			existingCollection.RemoveReceipts(receiptIds);
 			await SaveChangesAsync();
+			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId));
 			return Result.Success();
 		}
 
 		public override async Task<Result<string>> BulkDeleteAsync(Guid entityId)
 		{
 			await _elasticReceiptCollectionsService.DeleteReceiptCollectionFromIndexAsync(entityId);
+			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(entityId));
 			return await base.BulkDeleteAsync(entityId);
 		}
 
@@ -182,9 +187,12 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 
 		public async Task<Result<List<Guid>>> GetReceiptIdsAsync(Guid receiptCollectionId, CancellationToken cancellationToken = default)
 		{
+			var receiptIdsRes = await _redisService.GetAsync<List<Guid>>(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId), cancellationToken);
+			if (receiptIdsRes.IsSuccess) return receiptIdsRes;
 			var collection = await GetByGuidAsync(receiptCollectionId, cancellationToken);
 			if (collection == null) return Result.Failure<List<Guid>>("Указана несуществующая коллекция");
 			var receiptIds = collection.Receipts.Select(r => r.Id).ToList();
+			await _redisService.SetAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId), receiptIds, MiscellaneousConstants.RedisBigCacheTimeMinutes);
 			return Result.Success(receiptIds);
 		}
 	}

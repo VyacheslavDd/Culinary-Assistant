@@ -20,14 +20,16 @@ using System.Text.Json;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Const;
 using Minio;
+using Culinary_Assistant.Core.Redis;
 
 namespace Culinary_Assistant_Main.Services.Receipts
 {
-	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService,
+	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService, IRedisService redisService,
 		IReceiptsRepository receiptsRepository, ILogger logger) :
 		BaseService<Receipt, ReceiptInDTO, UpdateReceiptDTO>(receiptsRepository, logger), IReceiptsService
 	{
 		private readonly IUsersService _usersService = usersService;
+		private readonly IRedisService _redisService = redisService;
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
@@ -85,7 +87,10 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			existingReceipt.ActualizeUpdatedAtField();
 			var res = await base.NotBulkUpdateAsync(entityId, updateRequest);
 			if (res.IsSuccess)
+			{
 				await _elasticReceiptsService.ReindexReceiptAsync(existingReceipt);
+				await _redisService.RemoveAsync(RedisUtils.GetReceiptKey(entityId));
+			}
 			return res;
 		}
 
@@ -112,6 +117,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				var pictureUrls = JsonSerializer.Deserialize<List<FilePath>>(entity.PicturesUrls).Select(x => x.Url).ToList();
 				await _fileMessagesProducerService.SendRemoveImagesMessageAsync(pictureUrls, BucketConstants.ReceiptsImagesBucketName, _entityTypeName);
 				await _elasticReceiptsService.RemoveReceiptIndexAsync(entity);
+				await _redisService.RemoveAsync(RedisUtils.GetReceiptKey(entityId));
 				}
 			return await base.NotBulkDeleteAsync(entityId);
 		}

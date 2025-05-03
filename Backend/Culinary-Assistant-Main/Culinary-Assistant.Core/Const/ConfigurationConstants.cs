@@ -16,5 +16,6 @@ namespace Culinary_Assistant.Core.Constants
 		public const string ElasticSearchOptions = "ElasticSearchOptions";
 		public const string FrontendPolicy = "FrontendPolicy";
 		public const string JWTSecretKey = "JWTSecretKey";
+		public const string Redis = "Redis";
 	}
 }

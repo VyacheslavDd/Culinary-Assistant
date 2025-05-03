@@ -36,7 +36,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			elasticService.Setup(es => es.GetReceiptsCollectionsIdsAsync(It.IsAny<string>()))
 				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
 			var usersService = new UsersService(usersRepository, logger);
-			_receiptCollectionsService = new ReceiptCollectionsService(receiptCollectionsRepository, elasticService.Object, receiptsService, usersService, logger);
+			var redisService = CommonUtils.MockRedisService();
+			_receiptCollectionsService = new ReceiptCollectionsService(receiptCollectionsRepository, elasticService.Object, redisService, receiptsService, usersService, logger);
 			var seedService = new SeedService(usersRepository, logger);
 			_adminId = await seedService.CreateAdministratorUserAsync();
 			await CreateReceiptCollectionsAsync();

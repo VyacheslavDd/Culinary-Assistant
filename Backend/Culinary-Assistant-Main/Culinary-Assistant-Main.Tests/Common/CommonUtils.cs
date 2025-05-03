@@ -23,6 +23,8 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant_Main.Domain.Models;
+using Culinary_Assistant.Core.Redis;
+using CSharpFunctionalExtensions;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -61,8 +63,9 @@ namespace Culinary_Assistant_Main.Tests.Common
 			producerService.Setup(ps => ps.SendRemoveImagesMessageAsync(It.IsAny<List<string>>(), It.IsAny<string>(), It.IsAny<string>())).Returns(Task.CompletedTask);
 			var elasticServiceMock = new Mock<IElasticReceiptsService>();
 			elasticServiceMock.Setup(esm => esm.GetReceiptIdsBySearchParametersAsync(It.IsAny<ReceiptsFilterForElasticSearch>()))
-				.Returns(Task.FromResult(CSharpFunctionalExtensions.Result.Success<List<Guid>>([Guid.Empty])));
-			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, receiptsRepository, logger);
+				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
+			var redisService = MockRedisService();
+			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, redisService, receiptsRepository, logger);
 		}
 
 		public static IUsersService MockUsersService(IUsersRepository usersRepository)
@@ -70,6 +73,18 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var logger = MockLogger();
 			var usersService = new UsersService(usersRepository, logger);
 			return usersService;
+		}
+
+		public static IRedisService MockRedisService()
+		{
+			var redisService = new Mock<IRedisService>();
+			SetupRedisServiceGetMethodWithType<Receipt>(redisService);
+			return redisService.Object;
+		}
+
+		public static void SetupRedisServiceGetMethodWithType<T>(Mock<IRedisService> mock)
+		{
+			mock.Setup(rs => rs.GetAsync<T>(It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(Task.FromResult(Result.Failure<T>("error")));
 		}
 
 		public static IMapper MockMapper()
