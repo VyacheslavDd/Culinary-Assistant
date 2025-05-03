@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Culinary_Assistant.Core.Enums;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -67,7 +68,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var userId = await GetUserIdAsync();
 			var receipts = ReceiptsData.Receipts;
-			var receiptCollection = ReceiptCollection.Create(new ReceiptCollectionInModelDTO("First", false, userId, null)).Value;
+			var receiptCollection = ReceiptCollection.Create(new ReceiptCollectionInModelDTO("First", false, Color.Red, userId, null)).Value;
 			receipts.ForEach(r => r.SetUserId(userId));
 			await _dbContext.Receipts.AddRangeAsync(receipts);
 			await _dbContext.ReceiptCollections.AddAsync(receiptCollection);

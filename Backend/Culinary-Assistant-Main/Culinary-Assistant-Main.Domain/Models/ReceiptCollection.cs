@@ -2,6 +2,7 @@
 using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
+using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.ValueTypes;
 using System;
@@ -23,6 +24,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public int Popularity { get; private set; }
+		public Color Color { get; private set; }
 		public DateTime CreatedAt { get; private set; }
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
@@ -35,6 +37,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 			if (titleRes.IsFailure) return Result.Failure<ReceiptCollection>(titleRes.Error);
 			receiptCollection.IsPrivate = receiptCollectionInModelDTO.IsPrivate;
 			receiptCollection.SetUserId(receiptCollectionInModelDTO.UserId);
+			receiptCollection.SetColor(receiptCollectionInModelDTO.Color);
 			receiptCollection.ActualizeUpdatedAtField();
 			receiptCollection.CreatedAt = DateTime.UtcNow;
 			return Result.Success(receiptCollection);
@@ -78,6 +81,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void AddPopularity()
 		{
 			Popularity += 1;
+		}
+
+		public void SetColor(Color color)
+		{
+			Color = color;
 		}
 
 		public void ActualizeUpdatedAtField()
