@@ -12,6 +12,7 @@ using Culinary_Assistant_Main.Tests.Data;
 using Culinary_Assistant.Core.Filters;
 using Moq;
 using Microsoft.EntityFrameworkCore;
+using Culinary_Assistant.Core.Enums;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -109,7 +110,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task CreateAsync_CreatesEmptyCollection()
 		{
-			var receiptCollectionDto = new ReceiptCollectionInModelDTO("Fourth", false, _adminId, null);
+			var receiptCollectionDto = new ReceiptCollectionInModelDTO("Fourth", false, Color.Red, _adminId, null);
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionDto);
 			var collections = await _receiptCollectionsService.GetAllAsync();
 			Assert.Multiple(() =>
@@ -122,7 +123,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task CreateAsync_CreatesCollectionWithReceipts_AndMakeRelations()
 		{
-			var receiptCollectionDto = new ReceiptCollectionInModelDTO("Fourth", false, _adminId, [_receiptIds[1]]);
+			var receiptCollectionDto = new ReceiptCollectionInModelDTO("Fourth", false, Color.Red, _adminId, [_receiptIds[1]]);
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionDto);
 			var receiptEntry = await _context.Receipts.FirstOrDefaultAsync(r => r.Id == _receiptIds[1]);
 			await _context.Receipts.Entry(receiptEntry).Collection(r => r.ReceiptCollections).LoadAsync();
@@ -137,7 +138,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task CreateAsync_Failures_WithNotExistingUser()
 		{
-			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Fourth", false, Guid.Empty, null);
+			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("Fourth", false, Color.Red, Guid.Empty, null);
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionDTO);
 			Assert.That(res.IsFailure, Is.True);
 		}
@@ -145,7 +146,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task CreateAsync_Failures_WithWrongDTOData()
 		{
-			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("", false, _adminId, null);
+			var receiptCollectionDTO = new ReceiptCollectionInModelDTO("", false, Color.Red, _adminId, null);
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionDTO);
 			Assert.That(res.IsFailure, Is.True);
 		}
@@ -154,7 +155,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task UpdateAsync_UpdatesReceiptCollection()
 		{
 			var collectionId = await GetReceiptCollectionGuid(2);
-			var updateCollectionDTO = new ReceiptCollectionUpdateDTO("MEOW", null);
+			var updateCollectionDTO = new ReceiptCollectionUpdateDTO("MEOW", null, Color.Orange);
 			var res = await _receiptCollectionsService.NotBulkUpdateAsync(collectionId, updateCollectionDTO);
 			var collection = await _receiptCollectionsService.GetByGuidAsync(collectionId);
 			Assert.Multiple(() =>
@@ -162,6 +163,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 				Assert.That(res.IsSuccess, Is.True);
 				Assert.That(collection.Title.Value, Is.EqualTo("MEOW"));
 				Assert.That(collection.IsPrivate, Is.False);
+				Assert.That(collection.Color, Is.EqualTo(Color.Orange));
 			});
 		}
 
@@ -169,7 +171,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task UpdateAsync_Failures_WithNotExistingCollection()
 		{
 			var collectionId = Guid.Empty;
-			var updateDTO = new ReceiptCollectionUpdateDTO("XD", true);
+			var updateDTO = new ReceiptCollectionUpdateDTO("XD", true, null);
 			var res = await _receiptCollectionsService.NotBulkUpdateAsync(collectionId, updateDTO);
 			Assert.That(res.IsFailure, Is.True);
 		}
@@ -178,7 +180,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task UpdateAsync_Failures_WithWrongDTO()
 		{
 			var collectionId = await GetReceiptCollectionGuid(2);
-			var updateDTO = new ReceiptCollectionUpdateDTO("    ", true);
+			var updateDTO = new ReceiptCollectionUpdateDTO("    ", true, null);
 			var res = await _receiptCollectionsService.NotBulkUpdateAsync(collectionId, updateDTO);
 			Assert.That(res.IsFailure, Is.True);
 		}
@@ -273,9 +275,9 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			await _context.Receipts.AddRangeAsync(receipts);
 			List<ReceiptCollectionInModelDTO> receiptCollectionsDTO =
 				[
-					new("First", true, _adminId, null),
-					new("Second", false, _adminId, [_receiptIds[0]]),
-					new("Third", false, _adminId, [_receiptIds[0], _receiptIds[1], _receiptIds[2]])
+					new("First", true, Color.Red, _adminId, null),
+					new("Second", false, Color.Red, _adminId, [_receiptIds[0]]),
+					new("Third", false, Color.Red, _adminId, [_receiptIds[0], _receiptIds[1], _receiptIds[2]])
 				];
 			foreach (var receiptCollectionDTO in receiptCollectionsDTO)
 				await _receiptCollectionsService.CreateAsync(receiptCollectionDTO);

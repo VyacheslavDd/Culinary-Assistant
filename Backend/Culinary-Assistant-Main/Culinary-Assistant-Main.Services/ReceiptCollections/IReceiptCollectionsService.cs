@@ -20,7 +20,8 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		Task SetPresignedUrlsForReceiptCollectionsAsync<T>(IMinioClient minioClient, List<T> receiptCollections) where T: IReceiptCollectionCoversOutDTO;
 		Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds);
 		Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds);
-		void SetReceiptNames(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections);
+		Task<Result<List<Guid>>> GetReceiptIdsAsync(Guid receiptCollectionId, CancellationToken cancellationToken = default);
+		void SetReceiptNamesWithCovers(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections);
 		void SetReceiptCovers(ReceiptCollection original, ReceiptCollectionFullOutDTO mappedCollection);
 	}
 }

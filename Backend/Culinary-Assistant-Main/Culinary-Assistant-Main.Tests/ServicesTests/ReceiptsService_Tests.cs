@@ -64,6 +64,20 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		}
 
 		[Test]
+		public async Task GetAllAsync_With_DefaultFilter_By_CollectionRequirement_WorksCorrectly()
+		{
+			await AddReceiptsToDbContextAsync();
+			var receipts = await _receiptsService.GetAllAsync();
+			List<Guid> receiptIds = [receipts[0].Id, receipts[2].Id];
+			var filteredReceipts = await _receiptsService.GetAllAsync(new ReceiptsFilter(), collectionReceiptIds: receiptIds);
+			Assert.Multiple(() =>
+			{
+				Assert.That(filteredReceipts.IsSuccess, Is.True);
+				Assert.That(filteredReceipts.Value.Data.Select(r => r.Id), Is.EquivalentTo(receiptIds));
+			});
+		}
+
+		[Test]
 		public async Task GetAllAsync_With_Limit_WorksCorrectly()
 		{
 			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Limit: 2));

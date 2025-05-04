@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.DTO.ReceiptCollection.Interfaces;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 		public List<FilePath> Covers { get; set; }
 		public List<string> ReceiptNames { get; set; }
 		public DateTime CreatedAt { get; set; }
+		public Color Color { get; set; }
 		public string UserLogin { get; set; }
 	}
 }

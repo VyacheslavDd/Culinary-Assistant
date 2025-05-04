@@ -38,7 +38,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			{ SortOption.ByCalories, (Receipt receipt) => receipt.Nutrients.Calories }
 		};
 
-		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default)
+		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default, List<Guid>? collectionReceiptsIds = null)
 		{
 			var elasticFilter = new ReceiptsFilterForElasticSearch(receiptsFilter.SearchByTitle, receiptsFilter.SearchByIngredients ?? [], receiptsFilter.StrictIngredientsSearch,
 				receiptsFilter.Page, receiptsFilter.Limit);
@@ -49,7 +49,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				if (idsResult.IsFailure) return Result.Failure<EntitiesResponseWithCountAndPages<Receipt>>(idsResult.Error);
 				requiredReceiptsIds = idsResult.Value;
 			}
-			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, receiptsFilter, cancellationToken);
+			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, collectionReceiptsIds, receiptsFilter, cancellationToken);
 			var sortedReceipts = receiptsFilter.SortOption == null ? filteredReceipts : DoReceiptsSorting(filteredReceipts, receiptsFilter.SortOption, receiptsFilter.IsAscendingSorting);
 			var response = ApplyPaginationToEntities(sortedReceipts, receiptsFilter);
 			return Result.Success(response);
@@ -132,15 +132,17 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			receipt.MainPictureUrl = receipt.PicturesUrls[0].Url;
 		}
 
-		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
+		private async Task<List<Receipt>> DoReceiptsFilteringAsync(List<Guid> requiredIds, List<Guid>? collectionReceiptsIds, ReceiptsFilter receiptsFilter, CancellationToken cancellationToken)
 		{
 			var tags = new HashSet<Tag>(receiptsFilter.Tags ?? []);
 			var categories = new HashSet<Category>(receiptsFilter.Categories ?? []);
 			var difficulties = new HashSet<CookingDifficulty>(receiptsFilter.CookingDifficulties ?? []);
 			var hadEmpty = requiredIds.Count > 0 && requiredIds[0] == Guid.Empty;
-			var idsHashtag = new HashSet<Guid>(requiredIds);
+			var searchForReceiptsInCollectionHashSet = new HashSet<Guid>(collectionReceiptsIds ?? []);
+			var searchForIdsHashSet = new HashSet<Guid>(requiredIds);
 			var data = await _repository.GetAll()
-				.Where(r => hadEmpty || idsHashtag.Contains(r.Id))
+				.Where(r => collectionReceiptsIds == null || searchForReceiptsInCollectionHashSet.Contains(r.Id))
+				.Where(r => hadEmpty || searchForIdsHashSet.Contains(r.Id))
 				.Where(r => receiptsFilter.UserId == null || r.UserId == receiptsFilter.UserId)
 				.Where(r => receiptsFilter.Categories == null || categories.Contains(r.Category))
 				.Where(r => receiptsFilter.CookingDifficulties == null || difficulties.Contains(r.CookingDifficulty))
