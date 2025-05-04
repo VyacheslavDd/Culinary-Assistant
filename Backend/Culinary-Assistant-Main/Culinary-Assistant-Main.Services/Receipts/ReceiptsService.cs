@@ -171,5 +171,14 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				: receipts.OrderByDescending(_orderByExpressions[nonNullableOption]).ToList();
 			return orderedReceipts;
 		}
+
+		public async Task<Result> SetRatingAsync(Guid receiptId, double rating)
+		{
+			var receipt = await _repository.GetBySelectorAsync(r => r.Id == receiptId);
+			if (receipt == null) return Result.Failure("Попытка обновить рейтинг для несуществующего рецепта");
+			receipt.SetRating(rating);
+			await _repository.SaveChangesAsync();
+			return Result.Success();
+		}
 	}
 }

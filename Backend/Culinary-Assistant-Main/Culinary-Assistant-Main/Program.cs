@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
 using Culinary_Assistant.Core.Redis;
+using Culinary_Assistant_Main.Services.RabbitMQ.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Services.AddCors(setup =>
 });
 
 builder.Host.AddSerilog();
+builder.Services.AddHostedService<ReceiptRatingMessagesConsumer>();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
 builder.Services.UseMinioWithoutFileService(builder.Configuration);

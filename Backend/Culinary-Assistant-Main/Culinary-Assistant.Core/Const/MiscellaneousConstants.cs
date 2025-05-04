@@ -15,6 +15,10 @@ namespace Culinary_Assistant.Core.Const
 		public const int ReceiptCollectionMaxCoversCount = 6;
 		public const int FilesByMessage = 3;
 		public const int FileMaxSize = 16777216;
+		public const int RoundRatingToDigits = 1;
+
+		public const int MinReceiptRate = 1;
+		public const int MaxReceiptRate = 10;
 
 		public static HashSet<string> SupportedFileExtensions => [".jpg", ".png", ".gif", ".jpeg"];
 		public const string ReceiptsElasticSearchIndex = "receipts_v2";

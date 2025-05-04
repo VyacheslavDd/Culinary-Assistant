@@ -3,6 +3,7 @@ using System;
 using Culinary_Assistant_Main.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Culinary_Assistant_Main.Infrastructure.Migrations
 {
     [DbContext(typeof(CulinaryAppContext))]
-    partial class CulinaryAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250504145223_nullable user id")]
+    partial class nullableuserid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -410,8 +413,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
 
                     b.HasOne("Culinary_Assistant_Main.Domain.Models.User", "User")
                         .WithMany("ReceiptRates")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Receipt");
 

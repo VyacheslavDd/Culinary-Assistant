@@ -5,6 +5,7 @@ using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Favourite;
 using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
+using Culinary_Assistant.Core.DTO.ReceiptRate;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant.Core.ServicesResponses;
@@ -14,6 +15,7 @@ using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Infrastructure.Filters;
 using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Likes;
+using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -24,12 +26,13 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipts")]
 	[ApiController]
 	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IFavouriteReceiptsService favouriteReceiptsService, IUsersService usersService,
-		IRedisService redisService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+		IRedisService redisService, IReceiptRateService receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
 		private readonly IRedisService _redisService = redisService;
+		private readonly IReceiptRateService _receiptRateService = receiptRateService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -60,6 +63,42 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
+		/// Оценить рецепт
+		/// </summary>
+		/// <param name="id">Guid рецепта</param>
+		/// <param name="receiptRateInDTO">Оценка рецепта</param>
+		/// <response code="204">Успешное оценивание</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpPost]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> RateReceiptAsync([FromRoute] Guid id, [FromBody] ReceiptRateInDTO receiptRateInDTO)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var receiptRateModelDTO = new ReceiptRateModelDTO(userId, id, receiptRateInDTO.Rate);
+			var res = await _receiptRateService.AddOrUpdateAsync(receiptRateModelDTO);
+			if (res.IsFailure) return BadRequest(res.Error);
+			return NoContent();
+		}
+
+		/// <summary>
+		/// Получить оценку пользователя на рецепт
+		/// </summary>
+		/// <param name="id">Guid рецепта</param>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Возврат оценки. 0 на ошибочные данные/отсутствие оценки/неавторизованность, иначе действительная оценка</response>
+		[HttpGet]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> GetRateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var rate = await _receiptRateService.GetAsync(userId, id, cancellationToken);
+			if (rate == null) return Ok(new ReceiptRateOutDTO(0));
+			return Ok(new ReceiptRateOutDTO(rate.Rate));
+		}
+
+		/// <summary>
 		/// Получить отдельный рецепт полностью
 		/// </summary>
 		/// <param name="id">Id рецепта</param>
@@ -72,7 +111,6 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetByGuidAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
-
 			var cachedReceiptRes = await _redisService.GetAsync<FullReceiptOutDTO>(RedisUtils.GetReceiptKey(id), cancellationToken);
 			FullReceiptOutDTO? mappedReceipt = cachedReceiptRes.IsSuccess ? cachedReceiptRes.Value : null;
 			using var minioClient = _minioClientFactory.CreateClient();

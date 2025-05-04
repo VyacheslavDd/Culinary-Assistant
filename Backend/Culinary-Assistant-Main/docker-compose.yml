@@ -19,6 +19,8 @@ services:
     depends_on:
         culinarydb:
            condition: service_healthy
+        rabbitmq:
+           condition: service_healthy
         elasticsearch:
            condition: service_healthy
         redis:

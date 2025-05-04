@@ -5,7 +5,9 @@ using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Files;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
+using Culinary_Assistant_Main.Services.RabbitMQ.ReceiptRates;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
+using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Seed;
@@ -25,6 +27,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 		{
 			services.AddScoped<IFileService, FileService>();
 			services.AddScoped<IFileMessagesProducerService, FileMessagesProducerService>();
+			services.AddScoped<IReceiptRatingMessageProducerService, ReceiptRatingMessageProducerService>();
 			services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IElasticReceiptsService, ElasticReceiptsService>();
@@ -35,6 +38,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<ILikesService<ReceiptLike, Receipt>, ReceiptLikesService>();
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
 			services.AddScoped<IFavouriteReceiptsService, FavouriteReceiptsService>();
+			services.AddScoped<IReceiptRateService, ReceiptRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();
 			return services;

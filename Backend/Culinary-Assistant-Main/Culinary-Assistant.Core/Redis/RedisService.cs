@@ -26,13 +26,13 @@ namespace Culinary_Assistant.Core.Redis
 				if (value == null)
 				{
 					_logger.Information("Ключ {@key}. Объект отсутствует в кеше!", key);
-					return Result.Failure<T>("");
+					return Result.Failure<T>("Объект отсутствует в кеше");
 				}
 				var deserializedValue = JsonSerializer.Deserialize<T>(value);
 				if (deserializedValue == null)
 				{
 					_logger.Information("Ключ {@key}. Что-то пошло не так при десереализации объекта", key);
-					return Result.Failure<T>("");
+					return Result.Failure<T>("Ошибка десериализации");
 				}
 				return Result.Success(deserializedValue);
 			}
@@ -52,7 +52,7 @@ namespace Culinary_Assistant.Core.Redis
 				var serializedValue = JsonSerializer.Serialize(value, _jsonSerializerOptions);
 				await _distrubutedCache.SetStringAsync(key, serializedValue, new DistributedCacheEntryOptions()
 				{
-					SlidingExpiration = TimeSpan.FromMinutes(expiresInMinutes)
+					AbsoluteExpiration = DateTime.UtcNow.AddMinutes(2)
 				});
 				return Result.Success();
 			}
