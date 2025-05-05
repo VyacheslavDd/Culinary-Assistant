@@ -79,7 +79,6 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			{
 				Assert.That(res.IsSuccess, Is.True);
 				Assert.That(likes, Is.EqualTo(1));
-				Assert.That(receipt.Popularity, Is.EqualTo(1));
 			});
 		}
 
@@ -92,7 +91,6 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			{
 				Assert.That(res.IsSuccess, Is.True);
 				Assert.That(likes, Is.EqualTo(1));
-				Assert.That(receipt.Popularity, Is.EqualTo(1));
 			});
 		}
 
@@ -105,7 +103,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			await _receiptLikesService.AddAsync(new LikeInDTO(firstUserId, receiptId));
 			await _receiptLikesService.AddAsync(new LikeInDTO(secondUserId, receiptId));
 			var entity = await _context.Receipts.FirstAsync(r => r.Title.Value == "Суп");
-			Assert.That(entity.Popularity, Is.EqualTo(2));
+			_context.Entry(entity).Collection(rl => rl.Likes);
+			Assert.That(entity.Likes.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -124,6 +123,17 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 				Assert.That(resSecond.IsSuccess, Is.True);
 				Assert.That(resThird.IsSuccess, Is.True);
 			});
+		}
+
+		[Test]
+		public async Task CanSuccessfully_RemoveLikes()
+		{
+			var userId = await CommonUtils.GetUserGuidByLoginAsync(_context, "mybestlogin");
+			var firstReceiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Суп");
+			await _receiptLikesService.AddAsync(new LikeInDTO(userId, firstReceiptId));
+			await _receiptLikesService.RemoveAsync(userId, firstReceiptId);
+			var like = await _receiptLikesService.GetAsync(userId, firstReceiptId);
+			Assert.That(like, Is.Null);
 		}
 
 		[Test]

@@ -14,9 +14,10 @@ namespace Culinary_Assistant_Main.Services.Likes
 {
 	public interface ILikesService<T, TLiked> where T: Like<TLiked> where TLiked : Core.Base.Entity<Guid>
 	{
-		Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : ILikedDTO;
-		Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : ILikedDTO;
+		Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : IFavouritedDTO;
+		Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : IFavouritedDTO;
 		Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO);
+		Task<Result> RemoveAsync(Guid userId, Guid entityId);
 		Task<T?> GetAsync(Guid userId, Guid entityId, CancellationToken cancellationToken = default);
 	}
 }

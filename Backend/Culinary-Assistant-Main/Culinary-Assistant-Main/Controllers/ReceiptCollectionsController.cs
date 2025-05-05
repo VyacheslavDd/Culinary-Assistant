@@ -8,8 +8,8 @@ using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure.Filters;
-using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Likes;
+using Culinary_Assistant_Main.Services.Likes.Abstract;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
@@ -23,14 +23,13 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipt-collections")]
 	[ApiController]
 	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> collectionLikesService,
-		ILikesService<ReceiptLike, Receipt> receiptLikesService, IFavouriteReceiptsService favouriteReceiptsService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+		ILikesService<ReceiptLike, Receipt> receiptLikesService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionLikesService = collectionLikesService;
 		private readonly ILikesService<ReceiptLike, Receipt> _receiptLikesService = receiptLikesService;
-		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IMapper _mapper = mapper;
 
@@ -135,19 +134,37 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
-		/// Поставить лайк на коллекцию рецептов
+		/// Добавить коллекцию рецептов в избранное
 		/// </summary>
 		/// <param name="id">Id коллекции рецептов</param>
-		/// <response code="204">Успешно поставленный лайк</response>
-		/// <response code="400">Некорректные данные или лайк уже поставлен</response>
+		/// <response code="204">Успешное добавление в избранное</response>
+		/// <response code="400">Некорректные данные или коллекция уже в избранном</response>
 		/// <response code="401">Требуется авторизация</response>
 		[HttpPost]
-		[Route("{id}/likes")]
+		[Route("{id}/favourite")]
 		[ServiceFilter(typeof(AuthenthicationFilter))]
-		public async Task<IActionResult> LikeReceiptCollectionAsync([FromRoute] Guid id)
+		public async Task<IActionResult> FavouriteReceiptCollectionAsync([FromRoute] Guid id)
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
 			var res = await _collectionLikesService.AddAsync(new LikeInDTO(userId, id));
+			if (res.IsFailure) return BadRequest(res.Error);
+			return NoContent();
+		}
+
+		/// <summary>
+		/// Удалить коллекцию рецептов из избранного
+		/// </summary>
+		/// <param name="id">Id коллекции рецептов</param>
+		/// <response code="204">Успешное удаление из избранного</response>
+		/// <response code="400">Некорректные данные</response>
+		/// <response code="401">Требуется авторизация</response>
+		[HttpDelete]
+		[Route("{id}/unfavourite")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> UnfavouriteReceiptAsync([FromRoute] Guid id)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
+			var res = await _collectionLikesService.RemoveAsync(userId, id);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
 		}
@@ -228,7 +245,6 @@ namespace Culinary_Assistant_Main.Controllers
 		{
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, receipts, cancellationToken);
 			await _receiptLikesService.ApplyLikesInfoForUserAsync(User, receipts);
-			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, receipts);
 		}
 	}
 }

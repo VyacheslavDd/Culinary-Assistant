@@ -92,5 +92,10 @@ namespace Culinary_Assistant_Main.Domain.Models
 		{
 			UpdatedAt = DateTime.UtcNow;
 		}
+
+		public void ClearLikes()
+		{
+			_likes.Clear();
+		}
 	}
 }

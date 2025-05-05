@@ -18,11 +18,9 @@ namespace Culinary_Assistant_Main.Services.Likes
 	{
 		private readonly IReceiptsRepository _receiptsRepository = receiptsRepository;
 
-		private readonly Action<Receipt> _onLike = (Receipt receipt) => receipt.AddPopularity();
-
 		public override async Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO)
 		{
-			return await AddAsync(likeInDTO, _receiptsRepository, _onLike);
+			return await AddAsync(likeInDTO, _receiptsRepository);
 		}
 	}
 }

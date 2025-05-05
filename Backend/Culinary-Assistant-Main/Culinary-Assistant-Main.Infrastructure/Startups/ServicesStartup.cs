@@ -1,7 +1,6 @@
 ﻿
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure.Filters;
-using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Files;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.RabbitMQ.Images;
@@ -37,7 +36,6 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IReceiptCollectionsService, ReceiptCollectionsService>();
 			services.AddScoped<ILikesService<ReceiptLike, Receipt>, ReceiptLikesService>();
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
-			services.AddScoped<IFavouriteReceiptsService, FavouriteReceiptsService>();
 			services.AddScoped<IReceiptRateService, ReceiptRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();

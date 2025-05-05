@@ -26,17 +26,16 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 
 		public abstract Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO);
 
-		protected async Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO, IRepository<TLiked> repository, Action<TLiked> onLike)
+		protected async Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO, IRepository<TLiked> repository)
 		{
 			var user = await _usersRepository.GetBySelectorAsync(u => u.Id == likeInDTO.UserId);
-			if (user == null) return Result.Failure<Guid>("Несуществующий пользователь не может поставить лайк");
+			if (user == null) return Result.Failure<Guid>("Несуществующий пользователь");
 			var entity = await repository.GetBySelectorAsync(r => r.Id == likeInDTO.EntityId);
-			if (entity == null) return Result.Failure<Guid>("Нельзя поставить лайк на несуществующую сущность");
+			if (entity == null) return Result.Failure<Guid>("Несуществующая сущность");
 			var existingLike = await GetAsync(likeInDTO.UserId, likeInDTO.EntityId);
-			if (existingLike != null) return Result.Failure<Guid>("Лайк уже выставлен на сущность");
+			if (existingLike != null) return Result.Failure<Guid>("Сущность уже в избранном");
 			var like = LikeFactory.Create<T, TLiked>(likeInDTO);
 			var guid = await _repository.AddAsync(like.Value);
-			onLike(entity);
 			await repository.SaveChangesAsync();
 			return Result.Success(guid);
 		}
@@ -46,7 +45,7 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 			return await _repository.GetByUserAndEntityIdsAsync(userId, entityId, cancellationToken);
 		}
 
-		public async Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : ILikedDTO
+		public async Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : IFavouritedDTO
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(user);
 			if (userId == Guid.Empty) return;
@@ -54,16 +53,24 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 			var foundLikedEntitiesHashSet = new HashSet<Guid>(foundLikedEntities);
 			entities.ForEach(e =>
 			{
-				if (foundLikedEntities.Contains(e.Id)) e.IsLiked = true;
+				if (foundLikedEntities.Contains(e.Id)) e.IsFavourited = true;
 			});
 		}
 
-		public async Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : ILikedDTO
+		public async Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : IFavouritedDTO
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(user);
 			if (userId == Guid.Empty) return;
 			var likedEntity = await GetAsync(userId, entity.Id);
-			if (likedEntity != null) entity.IsLiked = true;
+			if (likedEntity != null) entity.IsFavourited = true;
+		}
+
+		public async Task<Result> RemoveAsync(Guid userId, Guid entityId)
+		{
+			var user = await _usersRepository.GetBySelectorAsync(u => u.Id == userId);
+			if (user == null) return Result.Failure("Несуществующий пользователь");
+			await _repository.RemoveAsync(userId, entityId);
+			return Result.Success();
 		}
 	}
 }

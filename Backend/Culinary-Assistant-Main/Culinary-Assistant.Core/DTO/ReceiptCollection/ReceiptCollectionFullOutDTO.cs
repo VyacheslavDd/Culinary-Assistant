@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 {
-	public class ReceiptCollectionFullOutDTO : IReceiptCollectionCoversOutDTO, ILikedDTO
+	public class ReceiptCollectionFullOutDTO : IReceiptCollectionCoversOutDTO, IFavouritedDTO
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
 		public bool IsPrivate { get; set; }
-		public bool IsLiked { get; set; }
+		public bool IsFavourited { get; set; }
 		public int Popularity { get; set; }
 		public List<FilePath> Covers { get; set; }
 		public DateTime CreatedAt { get; set; }

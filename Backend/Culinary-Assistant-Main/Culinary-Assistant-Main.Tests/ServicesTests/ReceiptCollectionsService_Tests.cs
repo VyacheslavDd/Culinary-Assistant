@@ -13,6 +13,8 @@ using Culinary_Assistant.Core.Filters;
 using Moq;
 using Microsoft.EntityFrameworkCore;
 using Culinary_Assistant.Core.Enums;
+using Culinary_Assistant_Main.Services.Likes;
+using Culinary_Assistant.Core.DTO.Like;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -21,6 +23,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 	{
 		private CulinaryAppContext _context;
 		private IReceiptCollectionsService _receiptCollectionsService;
+		private ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionsLikesService;
 		private Guid _adminId;
 		private List<Guid> _receiptIds;
 
@@ -32,12 +35,14 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_context);
 			var receiptsService = CommonUtils.MockReceiptsService(_context, usersRepository, logger);
 			var receiptCollectionsRepository = new ReceiptCollectionsRepository(_context);
+			var receiptCollectionLikesRepository = new ReceiptCollectionLikesRepository(_context);
 			var elasticService = new Mock<IElasticReceiptsCollectionsService>();
 			elasticService.Setup(es => es.GetReceiptsCollectionsIdsAsync(It.IsAny<string>()))
 				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
 			var usersService = new UsersService(usersRepository, logger);
 			var redisService = CommonUtils.MockRedisService();
 			_receiptCollectionsService = new ReceiptCollectionsService(receiptCollectionsRepository, elasticService.Object, redisService, receiptsService, usersService, logger);
+			_collectionsLikesService = new ReceiptCollectionLikesService(receiptCollectionLikesRepository, usersRepository, receiptCollectionsRepository);
 			var seedService = new SeedService(usersRepository, logger);
 			_adminId = await seedService.CreateAdministratorUserAsync();
 			await CreateReceiptCollectionsAsync();
@@ -165,6 +170,22 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 				Assert.That(collection.Title.Value, Is.EqualTo("MEOW"));
 				Assert.That(collection.IsPrivate, Is.False);
 				Assert.That(collection.Color, Is.EqualTo(Color.Orange));
+			});
+		}
+
+		[Test]
+		public async Task MakingCollectionPrivate_RemovesItsLikes()
+		{
+			var collectionId = await GetReceiptCollectionGuid(2);
+			await _collectionsLikesService.AddAsync(new LikeInDTO(_adminId, collectionId));
+			var likeBefore = await _collectionsLikesService.GetAsync(_adminId, collectionId);
+			var res = await _receiptCollectionsService.NotBulkUpdateAsync(collectionId, new ReceiptCollectionUpdateDTO(null, true, null));
+			var likeAfter = await _collectionsLikesService.GetAsync(_adminId, collectionId);
+			Assert.Multiple(() =>
+			{
+				Assert.That(likeBefore, Is.Not.Null);
+				Assert.That(res.IsSuccess, Is.True);
+				Assert.That(likeAfter, Is.Null);
 			});
 		}
 

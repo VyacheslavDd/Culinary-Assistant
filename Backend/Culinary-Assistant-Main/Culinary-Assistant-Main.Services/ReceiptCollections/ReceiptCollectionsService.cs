@@ -99,6 +99,11 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			existingCollection.SetPrivateState(updateRequest.IsPrivate ?? existingCollection.IsPrivate);
 			existingCollection.SetColor(updateRequest.Color ?? existingCollection.Color);
 			existingCollection.ActualizeUpdatedAtField();
+			if (existingCollection.IsPrivate)
+			{
+				await _repository.LoadCollectionAsync(existingCollection, rc => rc.Likes);
+				existingCollection.ClearLikes();
+			}
 			return await base.NotBulkUpdateAsync(entityId, updateRequest);
 		}
 

@@ -21,7 +21,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 	{
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _likes = [];
-		private readonly List<ReceiptFavourite> _favourites = [];
 		private readonly List<ReceiptRate> _rates = [];
 
 		public Text Title { get; private set; }
@@ -42,7 +41,6 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> Likes => _likes;
-		public IReadOnlyCollection<ReceiptFavourite> Favourites => _favourites;
 		public IReadOnlyCollection<ReceiptRate> Rates => _rates;
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
