@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class ReceiptRate : Rate<ReceiptRate, Receipt>
+	public class ReceiptCollectionRate : Rate<ReceiptCollectionRate, ReceiptCollection>
 	{
 	}
 }

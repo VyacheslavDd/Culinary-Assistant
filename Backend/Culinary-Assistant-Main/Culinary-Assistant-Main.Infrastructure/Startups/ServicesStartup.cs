@@ -7,6 +7,7 @@ using Culinary_Assistant_Main.Services.RabbitMQ.Images;
 using Culinary_Assistant_Main.Services.RabbitMQ.ReceiptRates;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.ReceiptRates;
+using Culinary_Assistant_Main.Services.ReceiptRates.Abstract;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Seed;
@@ -20,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Infrastructure.Startups
 {
-	public static class ServicesStartup
+    public static class ServicesStartup
 	{
 		public static IServiceCollection AddCustomServices(this IServiceCollection services)
 		{
@@ -36,7 +37,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<ILikesService<ReceiptLike, Receipt>, ReceiptLikesService>();
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
 			services.AddScoped<IReceiptCollectionsService, ReceiptCollectionsService>();
-			services.AddScoped<IReceiptRateService, ReceiptRateService>();
+			services.AddScoped<IRateService<ReceiptRate, Receipt>, ReceiptRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();
 			return services;

@@ -25,12 +25,12 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipts")]
 	[ApiController]
 	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService,
-		IRedisService redisService, IReceiptRateService receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+		IRedisService redisService, IRateService<ReceiptRate, Receipt> receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IRedisService _redisService = redisService;
-		private readonly IReceiptRateService _receiptRateService = receiptRateService;
+		private readonly IRateService<ReceiptRate, Receipt> _receiptRateService = receiptRateService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -69,10 +69,10 @@ namespace Culinary_Assistant_Main.Controllers
 		[HttpPost]
 		[Route("{id}/rate")]
 		[ServiceFilter(typeof(AuthenthicationFilter))]
-		public async Task<IActionResult> RateReceiptAsync([FromRoute] Guid id, [FromBody] ReceiptRateInDTO receiptRateInDTO)
+		public async Task<IActionResult> RateReceiptAsync([FromRoute] Guid id, [FromBody] RateInDTO receiptRateInDTO)
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
-			var receiptRateModelDTO = new ReceiptRateModelDTO(userId, id, receiptRateInDTO.Rate);
+			var receiptRateModelDTO = new RateModelDTO(userId, id, receiptRateInDTO.Rate);
 			var res = await _receiptRateService.AddOrUpdateAsync(receiptRateModelDTO);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
@@ -91,8 +91,8 @@ namespace Culinary_Assistant_Main.Controllers
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
 			var rate = await _receiptRateService.GetAsync(userId, id, cancellationToken);
-			if (rate == null) return Ok(new ReceiptRateOutDTO(0));
-			return Ok(new ReceiptRateOutDTO(rate.Rate));
+			if (rate == null) return Ok(new RateOutDTO(0));
+			return Ok(new RateOutDTO(rate.Rating));
 		}
 
 		/// <summary>

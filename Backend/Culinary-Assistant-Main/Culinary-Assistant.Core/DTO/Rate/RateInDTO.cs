@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.ReceiptRate
 {
-	public record ReceiptRateInDTO(int Rate);
+	public record RateInDTO(int Rate);
 }

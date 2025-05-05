@@ -3,6 +3,7 @@ using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.ProducerServices;
 using Culinary_Assistant_Main.Domain.Models;
+using Culinary_Assistant_Main.Domain.Models.Abstract;
 using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.RabbitMQ.Consumers
 {
-	public class ReceiptRatingMessagesConsumer(IOptions<RabbitMQOptions> options, IServiceScopeFactory serviceScopeFactory, ILogger logger) : BaseConsumerService(options, serviceScopeFactory)
+    public class ReceiptRatingMessagesConsumer(IOptions<RabbitMQOptions> options, IServiceScopeFactory serviceScopeFactory, ILogger logger) : BaseConsumerService(options, serviceScopeFactory)
 	{
 		private readonly ILogger _logger = logger;
 
@@ -39,7 +40,7 @@ namespace Culinary_Assistant_Main.Services.RabbitMQ.Consumers
 			{
 				using var scope = _serviceScopeFactory.CreateScope();
 				var receiptsService = scope.ServiceProvider.GetRequiredService<IReceiptsService>();
-				var receiptRatesService = scope.ServiceProvider.GetRequiredService<IReceiptRateService>();
+				var receiptRatesService = scope.ServiceProvider.GetRequiredService<IRateService<ReceiptRate, Receipt>>();
 				var messageString = Encoding.UTF8.GetString(e.Body.ToArray());
 				var isGuid = Guid.TryParse(messageString, out Guid receiptId);
 				if (!isGuid)
@@ -53,7 +54,7 @@ namespace Culinary_Assistant_Main.Services.RabbitMQ.Consumers
 					_logger.Error("Ошибка обработки рейтинга рецепта {@id}. Несуществующий рецепт!", receiptId);
 					return;
 				}
-				var receiptRates = await receiptRatesService.GetAllRatesForReceiptAsync(receiptId);
+				var receiptRates = await receiptRatesService.GetAllRatesForEntityAsync(receiptId);
 				var rating = CalculateRating(receiptRates);
 				var setRatingRes = await receiptsService.SetRatingAsync(receiptId, rating);
 				if (setRatingRes.IsFailure)
@@ -72,7 +73,7 @@ namespace Culinary_Assistant_Main.Services.RabbitMQ.Consumers
 		private static double CalculateRating(List<ReceiptRate> rates)
 		{
 			if (rates.Count == 0) return 0.0;
-			var sumRate = rates.Sum(r => r.Rate);
+			var sumRate = rates.Sum(r => r.Rating);
 			return (double)sumRate / rates.Count;
 		}
 	}

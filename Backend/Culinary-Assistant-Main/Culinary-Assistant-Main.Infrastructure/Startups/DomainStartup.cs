@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Infrastructure.Startups
 {
-	public static class DomainStartup
+    public static class DomainStartup
 	{
 		public static IServiceCollection AddDomain(this IServiceCollection services)
 		{
@@ -19,7 +19,8 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IReceiptCollectionsRepository, ReceiptCollectionsRepository>();
 			services.AddScoped<ILikesRepository<ReceiptLike, Receipt>, ReceiptLikesRepository>();
 			services.AddScoped<ILikesRepository<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesRepository>();
-			services.AddScoped<IReceiptRatesRepository, ReceiptRatesRepository>();
+			services.AddScoped<IRatesRepository<ReceiptRate, Receipt>, ReceiptRatesRepository>();
+			services.AddScoped<IRatesRepository<ReceiptCollectionRate, ReceiptCollection>, ReceiptCollectionRatesRepository>();
 			return services;
 		}
 	}

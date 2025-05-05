@@ -20,6 +20,7 @@ namespace Culinary_Assistant.Core.DTO.ReceiptCollection
 		public List<FilePath> Covers { get; set; }
 		public List<string> ReceiptNames { get; set; }
 		public DateTime CreatedAt { get; set; }
+		public double Rating { get; set; }
 		public Color Color { get; set; }
 		public string UserLogin { get; set; }
 	}

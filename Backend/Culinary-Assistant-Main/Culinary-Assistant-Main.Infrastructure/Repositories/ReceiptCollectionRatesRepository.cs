@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Infrastructure.Repositories
 {
-	public class ReceiptRatesRepository(CulinaryAppContext context) : RatesRepository<ReceiptRate, Receipt>(context, context.ReceiptRates)
+	public class ReceiptCollectionRatesRepository(CulinaryAppContext context) : RatesRepository<ReceiptCollectionRate, ReceiptCollection>(context, context.ReceiptCollectionRates)
 	{
 	}
 }

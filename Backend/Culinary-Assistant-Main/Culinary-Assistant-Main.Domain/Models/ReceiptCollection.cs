@@ -18,17 +18,20 @@ namespace Culinary_Assistant_Main.Domain.Models
 	{
 		private readonly List<Receipt> _receipts = [];
 		private readonly List<ReceiptCollectionLike> _likes = [];
+		private readonly List<ReceiptCollectionRate> _rates = [];
 
 		public Text Title { get; private set; }
 		public bool IsPrivate { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public int Popularity { get; private set; }
+		public double Rating { get; private set; }
 		public Color Color { get; private set; }
 		public DateTime CreatedAt { get; private set; }
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 		public IReadOnlyCollection<ReceiptCollectionLike> Likes => _likes;
+		public IReadOnlyCollection<ReceiptCollectionRate> Rates => _rates;
 
 		public static Result<ReceiptCollection> Create(ReceiptCollectionInModelDTO receiptCollectionInModelDTO)
 		{
@@ -96,6 +99,11 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void ClearLikes()
 		{
 			_likes.Clear();
+		}
+
+		public void SetRating(double rating)
+		{
+			Rating = Math.Round(rating, MiscellaneousConstants.RoundRatingToDigits);
 		}
 	}
 }
