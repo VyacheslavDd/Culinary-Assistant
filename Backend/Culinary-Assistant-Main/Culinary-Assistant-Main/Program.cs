@@ -42,6 +42,7 @@ builder.Services.AddCors(setup =>
 
 builder.Host.AddSerilog();
 builder.Services.AddHostedService<ReceiptRatingMessagesConsumer>();
+builder.Services.AddHostedService<CollectionRatingMessagesConsumer>();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
 builder.Services.UseMinioWithoutFileService(builder.Configuration);

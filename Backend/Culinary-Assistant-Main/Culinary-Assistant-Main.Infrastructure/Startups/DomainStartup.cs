@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant_Main.Domain.Models;
+﻿using Core.Base.Interfaces;
+using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +15,13 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 	{
 		public static IServiceCollection AddDomain(this IServiceCollection services)
 		{
-			services.AddScoped<IReceiptsRepository, ReceiptsRepository>();
+			services.AddScoped<ReceiptsRepository>();
+			services.AddScoped<IReceiptsRepository>(sp => sp.GetRequiredService<ReceiptsRepository>());
+			services.AddScoped<IRepository<Receipt>>(sp => sp.GetRequiredService<ReceiptsRepository>());
 			services.AddScoped<IUsersRepository, UsersRepository>();
-			services.AddScoped<IReceiptCollectionsRepository, ReceiptCollectionsRepository>();
+			services.AddScoped<ReceiptCollectionsRepository>();
+			services.AddScoped<IReceiptCollectionsRepository>(sp => sp.GetRequiredService<ReceiptCollectionsRepository>());
+			services.AddScoped<IRepository<ReceiptCollection>>(sp => sp.GetRequiredService<ReceiptCollectionsRepository>());
 			services.AddScoped<ILikesRepository<ReceiptLike, Receipt>, ReceiptLikesRepository>();
 			services.AddScoped<ILikesRepository<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesRepository>();
 			services.AddScoped<IRatesRepository<ReceiptRate, Receipt>, ReceiptRatesRepository>();

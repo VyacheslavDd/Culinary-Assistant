@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.RabbitMQ.ReceiptRates
 {
-	public interface IReceiptRatingMessageProducerService
+	public interface IRatingMessageProducerService<T>
 	{
-		Task SendUpdateReceiptRatingMessageAsync(Guid receiptId);
+		Task SendUpdateRatingMessageAsync(Guid entityId);
 	}
 }

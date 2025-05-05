@@ -5,6 +5,7 @@ using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.ValueTypes;
+using Culinary_Assistant_Main.Domain.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class ReceiptCollection : Core.Base.Entity<Guid>
+	public class ReceiptCollection : Core.Base.Entity<Guid>, IRateable
 	{
 		private readonly List<Receipt> _receipts = [];
 		private readonly List<ReceiptCollectionLike> _likes = [];

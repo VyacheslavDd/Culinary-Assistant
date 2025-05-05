@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.ReceiptRates
 {
-	public class ReceiptRateService(IReceiptRatingMessageProducerService receiptRatingMessageProducerService, IRatesRepository<ReceiptRate, Receipt> ratesRepository,
+	public class ReceiptRateService(IRatingMessageProducerService<Receipt> receiptRatingMessageProducerService, IRatesRepository<ReceiptRate, Receipt> ratesRepository,
 		IReceiptsRepository receiptsRepository, IUsersRepository usersRepository) :
 		RateService<ReceiptRate, Receipt>(ratesRepository, usersRepository, receiptsRepository)
 	{
-		private readonly IReceiptRatingMessageProducerService _receiptRatingMessageProducerService = receiptRatingMessageProducerService;
+		private readonly IRatingMessageProducerService<Receipt> _receiptRatingMessageProducerService = receiptRatingMessageProducerService;
 
 		public override async Task<Result> AddOrUpdateAsync(RateModelDTO rateModelDTO)
 		{
@@ -27,9 +27,9 @@ namespace Culinary_Assistant_Main.Services.ReceiptRates
 		{
 			receipt.AddPopularity();
 			await _entitiesRepository.SaveChangesAsync();
-			await _receiptRatingMessageProducerService.SendUpdateReceiptRatingMessageAsync(receipt.Id);
+			await _receiptRatingMessageProducerService.SendUpdateRatingMessageAsync(receipt.Id);
 		}
 
-		private async Task OnRepeatedRate(Receipt receipt) => await _receiptRatingMessageProducerService.SendUpdateReceiptRatingMessageAsync(receipt.Id);
+		private async Task OnRepeatedRate(Receipt receipt) => await _receiptRatingMessageProducerService.SendUpdateRatingMessageAsync(receipt.Id);
 	}
 }

@@ -3,7 +3,6 @@ using Culinary_Assistant.Core.Options;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Services.RabbitMQ.ReceiptRates.Abstract;
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -13,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.RabbitMQ.ReceiptRates
 {
-	public class ReceiptRatingMessageProducerService(IOptions<RabbitMQOptions> options, ILogger logger) : RatingMessageProducerService<Receipt>(options, logger)
+	public class CollectionRatingMessageProducerService(IOptions<RabbitMQOptions> options, ILogger logger) : RatingMessageProducerService<ReceiptCollection>(options, logger)
 	{
-		public override async Task SendUpdateRatingMessageAsync(Guid receiptId)
+		public override async Task SendUpdateRatingMessageAsync(Guid collectionId)
 		{
-			await SendUpdateReceiptRatingMessageAsync(receiptId, RabbitMQConstants.UpdateReceiptRatingRoutingKey);
+			await SendUpdateReceiptRatingMessageAsync(collectionId, RabbitMQConstants.UpdateCollectionRatingRoutingKey);
 		}
 	}
 }

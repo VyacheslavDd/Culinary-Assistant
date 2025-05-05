@@ -27,7 +27,8 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 		{
 			services.AddScoped<IFileService, FileService>();
 			services.AddScoped<IFileMessagesProducerService, FileMessagesProducerService>();
-			services.AddScoped<IReceiptRatingMessageProducerService, ReceiptRatingMessageProducerService>();
+			services.AddScoped<IRatingMessageProducerService<Receipt>, ReceiptRatingMessageProducerService>();
+			services.AddScoped<IRatingMessageProducerService<ReceiptCollection>, CollectionRatingMessageProducerService>();
 			services.AddScoped<IUsersService, UsersService>();
 			services.AddScoped<IAuthService, AuthService>();
 			services.AddScoped<IElasticReceiptsService, ElasticReceiptsService>();
@@ -38,6 +39,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
 			services.AddScoped<IReceiptCollectionsService, ReceiptCollectionsService>();
 			services.AddScoped<IRateService<ReceiptRate, Receipt>, ReceiptRateService>();
+			services.AddScoped<IRateService<ReceiptCollectionRate, ReceiptCollection>, CollectionRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();
 			return services;

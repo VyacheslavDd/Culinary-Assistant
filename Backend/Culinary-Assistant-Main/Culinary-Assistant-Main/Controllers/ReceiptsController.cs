@@ -86,7 +86,7 @@ namespace Culinary_Assistant_Main.Controllers
 		/// <response code="200">Возврат оценки. 0 на ошибочные данные/отсутствие оценки/неавторизованность, иначе действительная оценка</response>
 		[HttpGet]
 		[Route("{id}/rate")]
-		[ServiceFilter(typeof(AuthenthicationFilter))]
+		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetRateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
 		{
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);

@@ -2,6 +2,7 @@
 using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
+using Culinary_Assistant.Core.DTO.ReceiptRate;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.ServicesResponses;
@@ -11,6 +12,7 @@ using Culinary_Assistant_Main.Infrastructure.Filters;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.Likes.Abstract;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
+using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Http;
@@ -23,13 +25,15 @@ namespace Culinary_Assistant_Main.Controllers
 	[Route("api/receipt-collections")]
 	[ApiController]
 	public class ReceiptCollectionsController(IReceiptCollectionsService receiptCollectionsService, IMinioClientFactory minioClientFactory, ILikesService<ReceiptCollectionLike, ReceiptCollection> collectionLikesService,
-		ILikesService<ReceiptLike, Receipt> receiptLikesService, IUsersService usersService, IReceiptsService receiptsService, IMapper mapper) : ControllerBase
+		ILikesService<ReceiptLike, Receipt> receiptLikesService, IRateService<ReceiptCollectionRate, ReceiptCollection> collectionRatesService, IUsersService usersService,
+		IReceiptsService receiptsService, IMapper mapper) : ControllerBase
 	{
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionLikesService = collectionLikesService;
 		private readonly ILikesService<ReceiptLike, Receipt> _receiptLikesService = receiptLikesService;
+		private readonly IRateService<ReceiptCollectionRate, ReceiptCollection> _collectionRatesService = collectionRatesService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IMapper _mapper = mapper;
 
@@ -119,6 +123,23 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
+		/// Получить оценку пользователя на коллекцию рецептов
+		/// </summary>
+		/// <param name="id">Guid коллекции</param>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Возврат оценки. Может быть 0 в случае неавторизованности или неправильного Guid рецепта</response>
+		[HttpGet]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> GetUserRateForCollectionAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var rate = await _collectionRatesService.GetAsync(userId, id, cancellationToken);
+			if (rate == null) return Ok(new RateOutDTO(0));
+			return Ok(new RateOutDTO(rate.Rating));
+		}
+
+		/// <summary>
 		/// Создать коллекцию рецептов
 		/// </summary>
 		/// <param name="receiptCollectionInModelDTO">Информация о новой коллекции. Можно создать без рецептов или с ними сразу</param>
@@ -131,6 +152,24 @@ namespace Culinary_Assistant_Main.Controllers
 			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionInModelDTO);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return Created("api/receipt-collections", res.Value);
+		}
+
+		/// <summary>
+		/// Оценить коллекцию рецептов
+		/// </summary>
+		/// <param name="id">Guid коллекции</param>
+		/// <param name="rateInDTO">Оценка коллекции</param>
+		/// <response code="204">Успешное оценивание коллекции</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpPost]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> RateCollectionAsync([FromRoute] Guid id, [FromBody] RateInDTO rateInDTO)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var rateRes = await _collectionRatesService.AddOrUpdateAsync(new RateModelDTO(userId, id, rateInDTO.Rate));
+			if (rateRes.IsFailure) return BadRequest(rateRes.Error);
+			return NoContent();
 		}
 
 		/// <summary>

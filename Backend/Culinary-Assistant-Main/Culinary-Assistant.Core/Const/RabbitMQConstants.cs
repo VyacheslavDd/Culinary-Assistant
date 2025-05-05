@@ -15,7 +15,9 @@ namespace Culinary_Assistant.Core.Const
 		public const string RemoveUploadsRoutingKey = "#.remove.#";
 
 		public const string RatingExchangeName = "RatingExchange";
-		public const string UpdateRatingQueue = "UpdateRatingQueue";
-		public const string UpdateRatingRoutingKey = "rating.update.#";
+		public const string UpdateReceiptRatingQueue = "UpdateReceiptRatingQueue";
+		public const string UpdateReceiptRatingRoutingKey = "receipt.update.rating";
+		public const string UpdateCollectionRatingQueue = "UpdateCollectionRatingQueue";
+		public const string UpdateCollectionRatingRoutingKey = "collection.update.rating";
 	}
 }
