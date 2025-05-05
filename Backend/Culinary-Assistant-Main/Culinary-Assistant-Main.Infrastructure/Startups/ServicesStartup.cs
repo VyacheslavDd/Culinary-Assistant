@@ -33,9 +33,9 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IElasticReceiptsCollectionsService, ElasticReceiptsCollectionsService>();
 			services.AddScoped<IReceiptsService, ReceiptsService>();
 			services.AddScoped<ISeedService, SeedService>();
-			services.AddScoped<IReceiptCollectionsService, ReceiptCollectionsService>();
 			services.AddScoped<ILikesService<ReceiptLike, Receipt>, ReceiptLikesService>();
 			services.AddScoped<ILikesService<ReceiptCollectionLike, ReceiptCollection>, ReceiptCollectionLikesService>();
+			services.AddScoped<IReceiptCollectionsService, ReceiptCollectionsService>();
 			services.AddScoped<IReceiptRateService, ReceiptRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();

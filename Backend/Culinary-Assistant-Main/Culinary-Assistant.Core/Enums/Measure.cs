@@ -11,6 +11,11 @@ namespace Culinary_Assistant.Core.Enums
 		Gram,
 		Kilogram,
 		Liter,
-		Piece
+		Piece,
+		Milliliter,
+		Pinch,
+		Teaspoon,
+		Tablespoon,
+		Glass
 	}
 }

@@ -16,6 +16,7 @@ namespace Culinary_Assistant_Main.Services.Likes
 	{
 		Task ApplyLikesInfoForUserAsync<TDTO>(ClaimsPrincipal user, List<TDTO> entities) where TDTO : IFavouritedDTO;
 		Task ApplyLikeInfoForUserAsync<TDTO>(ClaimsPrincipal user, TDTO entity) where TDTO : IFavouritedDTO;
+		Task<Result<List<TLiked>>> GetAllLikedEntitiesForUserAsync(ClaimsPrincipal user, CancellationToken cancellationToken);
 		Task<Result<Guid>> AddAsync(LikeInDTO likeInDTO);
 		Task<Result> RemoveAsync(Guid userId, Guid entityId);
 		Task<T?> GetAsync(Guid userId, Guid entityId, CancellationToken cancellationToken = default);

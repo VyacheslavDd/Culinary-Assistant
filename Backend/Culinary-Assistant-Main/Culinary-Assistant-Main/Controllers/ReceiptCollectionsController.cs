@@ -60,7 +60,7 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(EnrichUserFilter))]
 		public async Task<IActionResult> GetAllByFilterAsync([FromQuery] ReceiptCollectionsFilter receiptCollectionsFilter, CancellationToken cancellationToken)
 		{
-			var collections = await _receiptCollectionsService.GetAllByFilterAsync(receiptCollectionsFilter, cancellationToken);
+			var collections = await _receiptCollectionsService.GetAllByFilterAsync(receiptCollectionsFilter, cancellationToken, User);
 			if (collections.IsFailure) return StatusCode(500, collections.Error);
 			if (collections.Value.Data.Count == 0) return Ok(collections.Value);
 			var mappedCollections = await MapCollectionsAsync(collections.Value.Data);

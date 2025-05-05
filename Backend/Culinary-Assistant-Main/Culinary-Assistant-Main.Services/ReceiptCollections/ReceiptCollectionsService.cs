@@ -10,6 +10,7 @@ using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
+using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.ReceiptsCollections;
 using Culinary_Assistant_Main.Services.Users;
@@ -19,23 +20,25 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.ReceiptCollections
 {
 	public class ReceiptCollectionsService(IReceiptCollectionsRepository repository, IElasticReceiptsCollectionsService elasticReceiptCollectionsService,
-		IRedisService redisService, IReceiptsService receiptsService, IUsersService usersService, ILogger logger) : 
+		IRedisService redisService, ILikesService<ReceiptCollectionLike, ReceiptCollection> collectionsLikesService, IReceiptsService receiptsService, IUsersService usersService, ILogger logger) : 
 		BaseService<ReceiptCollection, ReceiptCollectionInModelDTO, ReceiptCollectionUpdateDTO>(repository, logger), IReceiptCollectionsService
 	{
 		private readonly IElasticReceiptsCollectionsService _elasticReceiptCollectionsService = elasticReceiptCollectionsService;
 		private readonly IReceiptCollectionsRepository _receiptCollectionsRepository = repository;
+		private readonly ILikesService<ReceiptCollectionLike, ReceiptCollection> _collectionsLikesService = collectionsLikesService;
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly IRedisService _redisService = redisService;
 		private readonly IUsersService _usersService = usersService;
 
 		public async Task<Result<EntitiesResponseWithCountAndPages<ReceiptCollection>>> GetAllByFilterAsync(ReceiptCollectionsFilter filter,
-			CancellationToken cancellationToken = default)
+			CancellationToken cancellationToken = default, ClaimsPrincipal? User = null)
 		{
 			List<Guid> requiredIds = [Guid.Empty];
 			if (filter.Title != "")
@@ -52,6 +55,17 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				.Where(rc => filter.UserId != null || !rc.IsPrivate)
 				.OrderByDescending(rc => rc.UpdatedAt)
 				.ToListAsync(cancellationToken);
+			if (filter.UserId != null)
+			{
+				var favouritedCollections = await _collectionsLikesService.GetAllLikedEntitiesForUserAsync(User, cancellationToken);
+				if (favouritedCollections.IsSuccess)
+				{
+					var existingReceiptCollectionIds = new HashSet<Guid>(receiptCollections.Select(r => r.Id));
+					foreach (var favouritedCollection in favouritedCollections.Value)
+						if (!existingReceiptCollectionIds.Contains(favouritedCollection.Id))
+							receiptCollections.Add(favouritedCollection);
+				}
+			}
 			foreach (var receiptCollection in receiptCollections)
 			{
 				await _repository.LoadReferenceAsync(receiptCollection, rc => rc.User);

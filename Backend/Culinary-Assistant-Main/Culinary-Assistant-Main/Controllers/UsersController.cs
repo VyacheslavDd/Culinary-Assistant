@@ -81,6 +81,26 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
+		/// Получить все избранные рецепты пользователя
+		/// </summary>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Ответ со всеми избранными рецептами пользователя</response>
+		/// <response code="400">Некорректные данные (Требуется аутентификация)</response>
+		[HttpGet]
+		[Route("receipts/favourites")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> GetFavouriteReceiptsAsync(CancellationToken cancellationToken)
+		{
+			var favouriteReceipts = await _receiptLikesService.GetAllLikedEntitiesForUserAsync(User, cancellationToken);
+			if (favouriteReceipts.IsFailure) return BadRequest(favouriteReceipts.Error);
+			var mappedReceipts = _mapper.Map<List<ShortReceiptOutDTO>>(favouriteReceipts.Value);
+			using var minioClient = _minioClientFactory.CreateClient();
+			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);
+			foreach (var receipt in mappedReceipts) receipt.IsFavourited = true;
+			return Ok(mappedReceipts);
+		}
+
+		/// <summary>
 		/// Обновить информацию о пользователе
 		/// </summary>
 		/// <param name="id">Guid пользователя</param>

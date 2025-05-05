@@ -72,5 +72,17 @@ namespace Culinary_Assistant_Main.Services.Likes.Abstract
 			await _repository.RemoveAsync(userId, entityId);
 			return Result.Success();
 		}
+
+		public async Task<Result<List<TLiked>>> GetAllLikedEntitiesForUserAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(user);
+			if (userId == Guid.Empty) return Result.Failure<List<TLiked>>("Нельзя получить избранные сущности для несуществующего пользователя");
+			var likedEntities = await _repository
+				.GetAll()
+				.Where(e => e.UserId == userId)
+				.Select(e => e.Entity)
+				.ToListAsync(cancellationToken);
+			return Result.Success(likedEntities);
+		}
 	}
 }
