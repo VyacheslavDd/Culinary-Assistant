@@ -105,5 +105,11 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var receipt = await context.Receipts.FirstAsync(r => r.Title.Value == name);
 			return receipt.Id;
 		}
+
+		public static async Task<Guid> GetReceiptCollectionGuidByNameAsync(CulinaryAppContext context, string name)
+		{
+			var receiptCollection = await context.ReceiptCollections.FirstAsync(r => r.Title.Value == name);
+			return receiptCollection.Id;
+		}
 	}
 }
