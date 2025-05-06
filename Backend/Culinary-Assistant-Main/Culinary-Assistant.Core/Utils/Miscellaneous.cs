@@ -41,6 +41,7 @@ namespace Culinary_Assistant.Core.Utils
 
 		public static Guid RetrieveUserIdFromHttpContextUser(ClaimsPrincipal user)
 		{
+			if (user == null) return Guid.Empty;
 			var guidClaim = user.FindFirst("Id");
 			if (guidClaim == null) return Guid.Empty;
 			return Guid.Parse(guidClaim.Value);

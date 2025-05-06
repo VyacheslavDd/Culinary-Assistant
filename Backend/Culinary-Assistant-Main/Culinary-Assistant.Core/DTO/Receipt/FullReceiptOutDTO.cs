@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.Receipt
 {
-	public class FullReceiptOutDTO : ILikedDTO, IFavouritedDTO
+	public class FullReceiptOutDTO : IFavouritedDTO
 	{
 		public Guid Id { get; set; }
 		public string Title { get; set; }
@@ -26,7 +26,6 @@ namespace Culinary_Assistant.Core.DTO.Receipt
 		public CookingDifficulty CookingDifficulty { get; set; }
 		public int Popularity { get; set; }
 		public double Rating { get; set; }
-		public bool IsLiked { get; set; }
 		public bool IsFavourited { get; set; }
 		public string MainPictureUrl { get; set; }
 		public List<FilePath> PicturesUrls { get; set; }

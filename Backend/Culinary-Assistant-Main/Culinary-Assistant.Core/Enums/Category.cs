@@ -8,8 +8,18 @@ namespace Culinary_Assistant.Core.Enums
 {
 	public enum Category
 	{
-		Soups,
+		Soup,
 		Dinner,
-		Breakfast
+		Breakfast,
+		Lunch,
+		MainCourse,
+		Pasta,
+		Drink,
+		SideDish,
+		Dessert,
+		Appetizer,
+		Pastry,
+		Salad,
+		Sauce
 	}
 }

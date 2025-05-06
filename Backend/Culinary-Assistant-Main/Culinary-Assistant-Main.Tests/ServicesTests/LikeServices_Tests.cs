@@ -57,7 +57,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var userId = await CommonUtils.GetUserGuidByLoginAsync(_context, "mybestlogin");
 			var receiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Суп");
-			var collectionId = await GetReceiptCollectionGuidByNameAsync(_context, "First");
+			var collectionId = await CommonUtils.GetReceiptCollectionGuidByNameAsync(_context, "First");
 			await _context.ReceiptLikes.AddAsync(LikeFactory.Create<ReceiptLike, Receipt>(new LikeInDTO(userId, receiptId)).Value);
 			await _context.ReceiptCollectionLikes.AddAsync(LikeFactory.Create<ReceiptCollectionLike, ReceiptCollection>(new LikeInDTO(userId, collectionId)).Value);
 			await _context.SaveChangesAsync();
@@ -79,20 +79,18 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			{
 				Assert.That(res.IsSuccess, Is.True);
 				Assert.That(likes, Is.EqualTo(1));
-				Assert.That(receipt.Popularity, Is.EqualTo(1));
 			});
 		}
 
 		[Test]
 		public async Task CanSuccessfully_PutLikeOnReceiptCollection()
 		{
-			(var res, var likes, var receipt) = await PutLikeAndGetTestingDataAsync(GetReceiptCollectionGuidByNameAsync, _receiptCollectionLikesService, "First",
+			(var res, var likes, var receipt) = await PutLikeAndGetTestingDataAsync(CommonUtils.GetReceiptCollectionGuidByNameAsync, _receiptCollectionLikesService, "First",
 				_context.ReceiptCollectionLikes, _context.ReceiptCollections, r => r.Title.Value == "First");
 			Assert.Multiple(() =>
 			{
 				Assert.That(res.IsSuccess, Is.True);
 				Assert.That(likes, Is.EqualTo(1));
-				Assert.That(receipt.Popularity, Is.EqualTo(1));
 			});
 		}
 
@@ -105,7 +103,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			await _receiptLikesService.AddAsync(new LikeInDTO(firstUserId, receiptId));
 			await _receiptLikesService.AddAsync(new LikeInDTO(secondUserId, receiptId));
 			var entity = await _context.Receipts.FirstAsync(r => r.Title.Value == "Суп");
-			Assert.That(entity.Popularity, Is.EqualTo(2));
+			_context.Entry(entity).Collection(rl => rl.Likes);
+			Assert.That(entity.Likes.Count, Is.EqualTo(2));
 		}
 
 		[Test]
@@ -114,7 +113,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var userId = await CommonUtils.GetUserGuidByLoginAsync(_context, "mybestlogin");
 			var firstReceiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Суп");
 			var secondReceiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Салат");
-			var collectionId = await GetReceiptCollectionGuidByNameAsync(_context, "First");
+			var collectionId = await CommonUtils.GetReceiptCollectionGuidByNameAsync(_context, "First");
 			var resFirst = await _receiptLikesService.AddAsync(new LikeInDTO(userId, firstReceiptId));
 			var resSecond = await _receiptLikesService.AddAsync(new LikeInDTO(userId, secondReceiptId));
 			var resThird = await _receiptCollectionLikesService.AddAsync(new LikeInDTO(userId, collectionId));
@@ -124,6 +123,17 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 				Assert.That(resSecond.IsSuccess, Is.True);
 				Assert.That(resThird.IsSuccess, Is.True);
 			});
+		}
+
+		[Test]
+		public async Task CanSuccessfully_RemoveLikes()
+		{
+			var userId = await CommonUtils.GetUserGuidByLoginAsync(_context, "mybestlogin");
+			var firstReceiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Суп");
+			await _receiptLikesService.AddAsync(new LikeInDTO(userId, firstReceiptId));
+			await _receiptLikesService.RemoveAsync(userId, firstReceiptId);
+			var like = await _receiptLikesService.GetAsync(userId, firstReceiptId);
+			Assert.That(like, Is.Null);
 		}
 
 		[Test]
@@ -175,7 +185,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var userId = await CommonUtils.GetUserGuidByLoginAsync(_context, "mybestlogin");
 			var receiptId = await CommonUtils.GetReceiptGuidByNameAsync(_context, "Суп");
-			var collectionId = await GetReceiptCollectionGuidByNameAsync(_context, "First");
+			var collectionId = await CommonUtils.GetReceiptCollectionGuidByNameAsync(_context, "First");
 			var receiptFirstLikeRes = await _receiptLikesService.AddAsync(new LikeInDTO(userId, receiptId));
 			var receiptSecondLikeRes = await _receiptLikesService.AddAsync(new LikeInDTO(userId, receiptId));
 			var collectionFirstLikeRes = await _receiptCollectionLikesService.AddAsync(new LikeInDTO(userId, collectionId));
@@ -199,12 +209,6 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var likes = dbSetLikes.Count();
 			var entity = await dbSetEntities.FirstAsync(searchExpression);
 			return Tuple.Create(res, likes, entity);
-		}
-
-		private async Task<Guid> GetReceiptCollectionGuidByNameAsync(CulinaryAppContext context, string name)
-		{
-			var receiptCollection = await _context.ReceiptCollections.FirstAsync(r => r.Title.Value == name);
-			return receiptCollection.Id;
 		}
 	}
 }

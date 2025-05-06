@@ -20,10 +20,11 @@ using System.Text.Json;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Const;
 using Minio;
+using Culinary_Assistant.Core.Redis;
 
 namespace Culinary_Assistant_Main.Services.Receipts
 {
-	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService,
+	public class ReceiptsService(IUsersService usersService, IFileMessagesProducerService fileMessagesProducerService, IElasticReceiptsService elasticReceiptsService, 
 		IReceiptsRepository receiptsRepository, ILogger logger) :
 		BaseService<Receipt, ReceiptInDTO, UpdateReceiptDTO>(receiptsRepository, logger), IReceiptsService
 	{
@@ -31,11 +32,12 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		private readonly IFileMessagesProducerService _fileMessagesProducerService = fileMessagesProducerService;
 		private readonly IElasticReceiptsService _elasticReceiptsService = elasticReceiptsService;
 
-		private readonly Dictionary<SortOption, Func<Receipt, double>> _orderByExpressions = new()
+		private readonly Dictionary<ReceiptSortOption?, Func<Receipt, double>> _orderByExpressions = new()
 		{
-			{ SortOption.ByPopularity, (Receipt receipt) => receipt.Popularity },
-			{ SortOption.ByCookingTime, (Receipt receipt) => receipt.CookingTime },
-			{ SortOption.ByCalories, (Receipt receipt) => receipt.Nutrients.Calories }
+			{ ReceiptSortOption.ByPopularity, (Receipt receipt) => receipt.Popularity },
+			{ ReceiptSortOption.ByCookingTime, (Receipt receipt) => receipt.CookingTime },
+			{ ReceiptSortOption.ByCalories, (Receipt receipt) => receipt.Nutrients.Calories },
+			{ ReceiptSortOption.ByRating, (Receipt receipt) => receipt.Rating },
 		};
 
 		public async Task<Result<EntitiesResponseWithCountAndPages<Receipt>>> GetAllAsync(ReceiptsFilter receiptsFilter, CancellationToken cancellationToken = default, List<Guid>? collectionReceiptsIds = null)
@@ -50,7 +52,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				requiredReceiptsIds = idsResult.Value;
 			}
 			var filteredReceipts = await DoReceiptsFilteringAsync(requiredReceiptsIds, collectionReceiptsIds, receiptsFilter, cancellationToken);
-			var sortedReceipts = receiptsFilter.SortOption == null ? filteredReceipts : DoReceiptsSorting(filteredReceipts, receiptsFilter.SortOption, receiptsFilter.IsAscendingSorting);
+			var sortedReceipts = DoSorting(filteredReceipts, receiptsFilter.SortOption, _orderByExpressions, receiptsFilter.IsAscendingSorting);
 			var response = ApplyPaginationToEntities(sortedReceipts, receiptsFilter);
 			return Result.Success(response);
 		}
@@ -158,12 +160,13 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			return filteredByTags;
 		}
 
-		private List<Receipt> DoReceiptsSorting(List<Receipt> receipts, SortOption? sortOption, bool isAscendingSorting)
+		public async Task<Result> SetRatingAsync(Guid receiptId, double rating)
 		{
-			var nonNullableOption = (SortOption)sortOption;
-			var orderedReceipts = isAscendingSorting ? receipts.OrderBy(_orderByExpressions[nonNullableOption]).ToList()
-				: receipts.OrderByDescending(_orderByExpressions[nonNullableOption]).ToList();
-			return orderedReceipts;
+			var receipt = await _repository.GetBySelectorAsync(r => r.Id == receiptId);
+			if (receipt == null) return Result.Failure("Попытка обновить рейтинг для несуществующего рецепта");
+			receipt.SetRating(rating);
+			await _repository.SaveChangesAsync();
+			return Result.Success();
 		}
 	}
 }

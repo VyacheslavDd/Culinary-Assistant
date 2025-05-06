@@ -6,6 +6,8 @@ using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant.Core.ValueTypes;
+using Culinary_Assistant_Main.Domain.Models.Abstract;
+using Culinary_Assistant_Main.Domain.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -17,11 +19,11 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class Receipt : Core.Base.Entity<Guid>
+    public class Receipt : Core.Base.Entity<Guid>, IRateable
 	{
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _likes = [];
-		private readonly List<ReceiptFavourite> _favourites = [];
+		private readonly List<ReceiptRate> _rates = [];
 
 		public Text Title { get; private set; }
 		public Text Description { get; private set; }
@@ -41,7 +43,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> Likes => _likes;
-		public IReadOnlyCollection<ReceiptFavourite> Favourites => _favourites;
+		public IReadOnlyCollection<ReceiptRate> Rates => _rates;
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
 		{
@@ -162,7 +164,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 
 		public void SetRating(double rating)
 		{
-			Rating = rating;
+			Rating = Math.Round(rating, MiscellaneousConstants.RoundRatingToDigits);
 		}
 
 		/// <summary>

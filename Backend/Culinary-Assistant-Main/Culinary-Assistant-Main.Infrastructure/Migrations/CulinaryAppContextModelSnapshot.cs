@@ -95,6 +95,9 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.Property<int>("Popularity")
                         .HasColumnType("integer");
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -130,25 +133,29 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.ToTable("ReceiptCollectionLikes", "MainAppSchema");
                 });
 
-            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptFavourite", b =>
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptCollectionRate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ReceiptId")
-                        .HasColumnType("uuid");
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ReceiptCollectionId");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReceiptId");
+                    b.HasIndex("EntityId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavouritedReceiptsInfo", "MainAppSchema");
+                    b.ToTable("ReceiptCollectionRates", "MainAppSchema");
                 });
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptLike", b =>
@@ -171,6 +178,31 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ReceiptLikes", "MainAppSchema");
+                });
+
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ReceiptId");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EntityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ReceiptRates", "MainAppSchema");
                 });
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.User", b =>
@@ -338,21 +370,20 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptFavourite", b =>
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptCollectionRate", b =>
                 {
-                    b.HasOne("Culinary_Assistant_Main.Domain.Models.Receipt", "Receipt")
-                        .WithMany("Favourites")
-                        .HasForeignKey("ReceiptId")
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.ReceiptCollection", "Entity")
+                        .WithMany("Rates")
+                        .HasForeignKey("EntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Culinary_Assistant_Main.Domain.Models.User", "User")
-                        .WithMany("FavouritedReceipts")
+                        .WithMany("CollectionRates")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
-                    b.Navigation("Receipt");
+                    b.Navigation("Entity");
 
                     b.Navigation("User");
                 });
@@ -370,6 +401,24 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Entity");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptRate", b =>
+                {
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.Receipt", "Entity")
+                        .WithMany("Rates")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Culinary_Assistant_Main.Domain.Models.User", "User")
+                        .WithMany("ReceiptRates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Entity");
 
@@ -454,25 +503,29 @@ namespace Culinary_Assistant_Main.Infrastructure.Migrations
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.Receipt", b =>
                 {
-                    b.Navigation("Favourites");
-
                     b.Navigation("Likes");
+
+                    b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.ReceiptCollection", b =>
                 {
                     b.Navigation("Likes");
+
+                    b.Navigation("Rates");
                 });
 
             modelBuilder.Entity("Culinary_Assistant_Main.Domain.Models.User", b =>
                 {
-                    b.Navigation("FavouritedReceipts");
+                    b.Navigation("CollectionRates");
 
                     b.Navigation("ReceiptCollectionLikes");
 
                     b.Navigation("ReceiptCollections");
 
                     b.Navigation("ReceiptLikes");
+
+                    b.Navigation("ReceiptRates");
 
                     b.Navigation("Receipts");
                 });

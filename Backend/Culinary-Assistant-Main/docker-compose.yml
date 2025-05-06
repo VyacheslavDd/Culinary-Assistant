@@ -19,7 +19,11 @@ services:
     depends_on:
         culinarydb:
            condition: service_healthy
+        rabbitmq:
+           condition: service_healthy
         elasticsearch:
+           condition: service_healthy
+        redis:
            condition: service_healthy
 
   culinary-assistant-images:
@@ -122,6 +126,23 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+
+  redis:
+    restart: always
+    container_name: Redis
+    ports:
+        - "6379:6379"
+    image: redis:latest
+    volumes:
+        - "./volumes/redis:/data"
+    networks:
+        - culinary-network
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 5s
+        timeout: 5s
+        retries: 30
 
   miniobucketscreator:
     container_name: BucketsCreator

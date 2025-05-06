@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
+using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Favourite;
 using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
+using Culinary_Assistant.Core.DTO.ReceiptRate;
 using Culinary_Assistant.Core.Filters;
+using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Infrastructure.Filters;
-using Culinary_Assistant_Main.Services.Favourites;
 using Culinary_Assistant_Main.Services.Likes;
+using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +24,12 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IFavouriteReceiptsService favouriteReceiptsService, IUsersService usersService,
-		IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService,
+		IRateService<ReceiptRate, Receipt> receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
-		private readonly IFavouriteReceiptsService _favouriteReceiptsService = favouriteReceiptsService;
+		private readonly IRateService<ReceiptRate, Receipt> _receiptRateService = receiptRateService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -50,9 +54,44 @@ namespace Culinary_Assistant_Main.Controllers
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptsService.SetPresignedUrlsForReceiptsAsync(minioClient, mappedReceipts, cancellationToken);
 			await _likesService.ApplyLikesInfoForUserAsync(User, mappedReceipts);
-			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, mappedReceipts);
 			var mappedResponse = new EntitiesResponseWithCountAndPages<ShortReceiptOutDTO>(mappedReceipts, receipts.Value.EntitiesCount, receipts.Value.PagesCount);
 			return Ok(mappedResponse);
+		}
+
+		/// <summary>
+		/// Оценить рецепт
+		/// </summary>
+		/// <param name="id">Guid рецепта</param>
+		/// <param name="receiptRateInDTO">Оценка рецепта</param>
+		/// <response code="204">Успешное оценивание</response>
+		/// <response code="400">Некорректные данные</response>
+		[HttpPost]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(AuthenthicationFilter))]
+		public async Task<IActionResult> RateReceiptAsync([FromRoute] Guid id, [FromBody] RateInDTO receiptRateInDTO)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var receiptRateModelDTO = new RateModelDTO(userId, id, receiptRateInDTO.Rate);
+			var res = await _receiptRateService.AddOrUpdateAsync(receiptRateModelDTO);
+			if (res.IsFailure) return BadRequest(res.Error);
+			return NoContent();
+		}
+
+		/// <summary>
+		/// Получить оценку пользователя на рецепт
+		/// </summary>
+		/// <param name="id">Guid рецепта</param>
+		/// <param name="cancellationToken"></param>
+		/// <response code="200">Возврат оценки. 0 на ошибочные данные/отсутствие оценки/неавторизованность, иначе действительная оценка</response>
+		[HttpGet]
+		[Route("{id}/rate")]
+		[ServiceFilter(typeof(EnrichUserFilter))]
+		public async Task<IActionResult> GetRateAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+		{
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
+			var rate = await _receiptRateService.GetAsync(userId, id, cancellationToken);
+			if (rate == null) return Ok(new RateOutDTO(0));
+			return Ok(new RateOutDTO(rate.Rating));
 		}
 
 		/// <summary>
@@ -74,7 +113,6 @@ namespace Culinary_Assistant_Main.Controllers
 			using var minioClient = _minioClientFactory.CreateClient();
 			await _receiptsService.SetPresignedUrlForReceiptAsync(minioClient, mappedReceipt, cancellationToken);
 			await _likesService.ApplyLikeInfoForUserAsync(User, mappedReceipt);
-			await _favouriteReceiptsService.ApplyFavouritesInfoToReceiptsDataAsync(User, [mappedReceipt]);
 			await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedReceipt.User]);
 			return Ok(mappedReceipt);
 		}
@@ -96,24 +134,6 @@ namespace Culinary_Assistant_Main.Controllers
 		}
 
 		/// <summary>
-		/// Поставить лайк на рецепт
-		/// </summary>
-		/// <param name="id">Id рецепта</param>
-		/// <response code="204">Успешно поставленный лайк</response>
-		/// <response code="400">Некорректные данные или лайк уже поставлен</response>
-		/// <response code="401">Требуется авторизация</response>
-		[HttpPost]
-		[Route("{id}/likes")]
-		[ServiceFilter(typeof(AuthenthicationFilter))]
-		public async Task<IActionResult> LikeReceiptAsync([FromRoute] Guid id)
-		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
-			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
-			if (res.IsFailure) return BadRequest(res.Error);
-			return NoContent();
-		}
-
-		/// <summary>
 		/// Добавить рецепт в избранное
 		/// </summary>
 		/// <param name="id">Id рецепта</param>
@@ -125,8 +145,8 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(AuthenthicationFilter))]
 		public async Task<IActionResult> FavouriteReceiptAsync([FromRoute] Guid id)
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
-			var res = await _favouriteReceiptsService.AddAsync(new FavouriteInDTO(userId, id));
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
+			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
 		}
@@ -143,8 +163,8 @@ namespace Culinary_Assistant_Main.Controllers
 		[ServiceFilter(typeof(AuthenthicationFilter))]
 		public async Task<IActionResult> UnfavouriteReceiptAsync([FromRoute] Guid id)
 		{
-			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(User);
-			var res = await _favouriteReceiptsService.RemoveAsync(userId, id);
+			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
+			var res = await _likesService.RemoveAsync(userId, id);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return NoContent();
 		}
