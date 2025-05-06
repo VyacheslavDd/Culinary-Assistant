@@ -149,7 +149,7 @@ namespace Culinary_Assistant_Main.Controllers
 		[Route("")]
 		public async Task<IActionResult> CreateAsync([FromBody] ReceiptCollectionInModelDTO receiptCollectionInModelDTO)
 		{
-			var res = await _receiptCollectionsService.CreateAsync(receiptCollectionInModelDTO);
+			var res = await _receiptCollectionsService.CreateWithNameCheckAsync(receiptCollectionInModelDTO);
 			if (res.IsFailure) return BadRequest(res.Error);
 			return Created("api/receipt-collections", res.Value);
 		}
