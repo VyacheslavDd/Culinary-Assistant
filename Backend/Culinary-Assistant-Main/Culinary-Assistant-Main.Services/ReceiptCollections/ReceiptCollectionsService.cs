@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.ReceiptCollection.Interfaces;
+using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Filters;
 using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant.Core.ServicesResponses;
@@ -36,6 +37,13 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly IRedisService _redisService = redisService;
 		private readonly IUsersService _usersService = usersService;
+
+		private readonly Dictionary<CollectionSortOption?, Func<ReceiptCollection, double>> _orderByExpressions = new()
+		{
+			{ CollectionSortOption.ByPopularity, (ReceiptCollection receiptCollection) => receiptCollection.Popularity },
+			{ CollectionSortOption.ByRating, (ReceiptCollection receiptCollection) => receiptCollection.Rating },
+			{ CollectionSortOption.ByDate, (ReceiptCollection receiptCollection) => receiptCollection.CreatedAt.Ticks },
+		};
 
 		public async Task<Result<EntitiesResponseWithCountAndPages<ReceiptCollection>>> GetAllByFilterAsync(ReceiptCollectionsFilter filter,
 			CancellationToken cancellationToken = default, ClaimsPrincipal? User = null)
@@ -71,7 +79,8 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				await _repository.LoadReferenceAsync(receiptCollection, rc => rc.User);
 				await _receiptCollectionsRepository.LoadReceiptsAsync(receiptCollection);
 			}
-			var entitiesResponse = ApplyPaginationToEntities(receiptCollections, filter);
+			var sortedCollections = DoSorting(receiptCollections, filter.SortOption, _orderByExpressions, filter.IsAscendingSorting);
+			var entitiesResponse = ApplyPaginationToEntities(sortedCollections, filter);
 			return Result.Success(entitiesResponse);
 		}
 

@@ -152,7 +152,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task GetAllAsync_WithSorting_WorksCorrectly()
 		{
 			await _culinaryAppContext.SaveChangesAsync();
-			var sortedReceipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SortOption: SortOption.ByCookingTime, IsAscendingSorting: false));
+			var sortedReceipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SortOption: ReceiptSortOption.ByCookingTime, IsAscendingSorting: false));
 			var receiptsData = sortedReceipts.Data;
 			Assert.Multiple(() =>
 			{

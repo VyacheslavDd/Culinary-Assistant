@@ -64,8 +64,7 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var elasticServiceMock = new Mock<IElasticReceiptsService>();
 			elasticServiceMock.Setup(esm => esm.GetReceiptIdsBySearchParametersAsync(It.IsAny<ReceiptsFilterForElasticSearch>()))
 				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
-			var redisService = MockRedisService();
-			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, redisService, receiptsRepository, logger);
+			return new ReceiptsService(usersService, producerService.Object, elasticServiceMock.Object, receiptsRepository, logger);
 		}
 
 		public static IUsersService MockUsersService(IUsersRepository usersRepository)

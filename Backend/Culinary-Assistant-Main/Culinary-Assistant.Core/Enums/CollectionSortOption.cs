@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.Enums
 {
-	public enum SortOption
+	public enum CollectionSortOption
 	{
-		ByCookingTime,
 		ByPopularity,
-		ByCalories
+		ByDate,
+		ByRating
 	}
 }
