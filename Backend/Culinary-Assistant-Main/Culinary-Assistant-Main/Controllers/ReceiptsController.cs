@@ -14,6 +14,7 @@ using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Infrastructure.Filters;
 using Culinary_Assistant_Main.Services.Likes;
+using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.ReceiptRates;
 using Culinary_Assistant_Main.Services.Receipts;
 using Culinary_Assistant_Main.Services.Users;
@@ -24,10 +25,11 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService,
+	public class ReceiptsController(IReceiptsService receiptsService, IReceiptCollectionsService receiptCollectionsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService,
 		IRateService<ReceiptRate, Receipt> receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
+		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IRateService<ReceiptRate, Receipt> _receiptRateService = receiptRateService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
@@ -148,6 +150,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
 			var res = await _likesService.AddAsync(new LikeInDTO(userId, id));
 			if (res.IsFailure) return BadRequest(res.Error);
+			await _receiptCollectionsService.AddFavouritedReceiptToFavouriteReceiptsCollectionAsync(id, userId);
 			return NoContent();
 		}
 
@@ -166,6 +169,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
 			var res = await _likesService.RemoveAsync(userId, id);
 			if (res.IsFailure) return BadRequest(res.Error);
+			await _receiptCollectionsService.RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(id);
 			return NoContent();
 		}
 

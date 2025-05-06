@@ -31,5 +31,7 @@ namespace Culinary_Assistant.Core.Const
 
 		public const string AccessTokenCookie = "AccessToken";
 		public const string RefreshTokenCookie = "RefreshToken";
+
+		public const string FavouriteReceiptsCollectionName = "Избранное";
 	}
 }

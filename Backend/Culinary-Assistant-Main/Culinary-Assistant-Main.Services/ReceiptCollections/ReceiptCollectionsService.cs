@@ -73,6 +73,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 						if (!existingReceiptCollectionIds.Contains(favouritedCollection.Id))
 							receiptCollections.Add(favouritedCollection);
 				}
+				MoveFavouriteReceiptsCollectionToFront(receiptCollections);
 			}
 			foreach (var receiptCollection in receiptCollections)
 			{
@@ -95,6 +96,13 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			return receiptCollection;
 		}
 
+		public async Task<Result<Guid>> CreateWithNameCheckAsync(ReceiptCollectionInModelDTO entityCreateRequest, bool autoSave = true, bool allowFavouriteName = false)
+		{
+			if (entityCreateRequest.Title == MiscellaneousConstants.FavouriteReceiptsCollectionName && !allowFavouriteName)
+				return Result.Failure<Guid>("Данное имя зарезервировано под коллекцию избранных рецептов");
+			return await CreateAsync(entityCreateRequest, autoSave);
+		}
+
 		public override async Task<Result<Guid>> CreateAsync(ReceiptCollectionInModelDTO entityCreateRequest, bool autoSave = true)
 		{
 			var user = await _usersService.GetByGuidAsync(entityCreateRequest.UserId);
@@ -113,8 +121,11 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		{
 			var existingCollection = await _repository.GetBySelectorAsync(rc => rc.Id == entityId);
 			if (existingCollection == null) return Result.Failure("Попытка обновить несуществующую коллекцию рецептов");
+			if (existingCollection.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && updateRequest?.IsPrivate == false)
+				return Result.Failure("Коллекцию избранных рецептов нельзя сделать публичной!");
 			if (updateRequest.Title != null)
 			{
+				if (updateRequest.Title == MiscellaneousConstants.FavouriteReceiptsCollectionName) return Result.Failure("Данное имя зарезервировано под коллекцию избранных рецептов");
 				var setTitleResult = existingCollection.SetTitle(updateRequest.Title);
 				if (setTitleResult.IsFailure) return Result.Failure(setTitleResult.Error);
 				await _elasticReceiptCollectionsService.ReindexReceiptCollectionAsync(updateRequest.Title, existingCollection.Id);
@@ -130,10 +141,12 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			return await base.NotBulkUpdateAsync(entityId, updateRequest);
 		}
 
-		public async Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds)
+		public async Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds, bool allowFavouriteReceiptsCollection = false)
 		{
 			var existingCollection = await GetByGuidAsync(receiptCollectionId);
 			if (existingCollection == null) return Result.Failure("Невозможно добавить рецепты в несуществующую коллекцию");
+			if (existingCollection.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && !allowFavouriteReceiptsCollection)
+				return Result.Failure("Нельзя вручную добавлять рецепты в коллекцию избранных рецептов");
 			await AddReceiptsAsync(existingCollection, receiptIds);
 			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId));
 			return Result.Success();
@@ -154,10 +167,12 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			await SaveChangesAsync();
 		}
 
-		public async Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds)
+		public async Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds, bool allowFavouriteReceiptsCollection = false)
 		{
 			var existingCollection = await GetByGuidAsync(receiptCollectionId);
 			if (existingCollection == null) return Result.Failure("Невозможно удалить рецепты из несуществующей коллекции");
+			if (existingCollection.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && !allowFavouriteReceiptsCollection)
+				return Result.Failure("Нельзя вручную удалять рецепты из коллекции избранных рецептов");
 			existingCollection.RemoveReceipts(receiptIds);
 			await SaveChangesAsync();
 			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId));
@@ -166,9 +181,18 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 
 		public override async Task<Result<string>> BulkDeleteAsync(Guid entityId)
 		{
+			var isFavouriteReceiptsCollection = await IsFavouriteReceiptsCollection(entityId);
+			if (isFavouriteReceiptsCollection) return Result.Failure<string>("Нельзя удалить коллекцию избранных рецептов");
 			await _elasticReceiptCollectionsService.DeleteReceiptCollectionFromIndexAsync(entityId);
 			await _redisService.RemoveAsync(RedisUtils.GetCollectionReceiptIdsKey(entityId));
 			return await base.BulkDeleteAsync(entityId);
+		}
+
+		public override async Task<Result<string>> NotBulkDeleteAsync(Guid entityId)
+		{
+			var isFavouriteReceiptsCollection = await IsFavouriteReceiptsCollection(entityId);
+			if (isFavouriteReceiptsCollection) return Result.Failure<string>("Нельзя удалить коллекцию избранных рецептов");
+			return await base.NotBulkDeleteAsync(entityId);
 		}
 
 		public async Task SetPresignedUrlsForReceiptCollectionsAsync<T>(IMinioClient minioClient, List<T> receiptCollections) where T: IReceiptCollectionCoversOutDTO
@@ -222,6 +246,54 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 			var receiptIds = collection.Receipts.Select(r => r.Id).ToList();
 			await _redisService.SetAsync(RedisUtils.GetCollectionReceiptIdsKey(receiptCollectionId), receiptIds, MiscellaneousConstants.RedisBigCacheTimeMinutes);
 			return Result.Success(receiptIds);
+		}
+
+		private static void MoveFavouriteReceiptsCollectionToFront(List<ReceiptCollection> receiptCollections)
+		{
+			var favouriteCollectionIndex = receiptCollections.FindIndex(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName);
+			if (favouriteCollectionIndex == -1) return;
+			var favourite = receiptCollections[favouriteCollectionIndex];
+			for (var i = favouriteCollectionIndex; i > 0; i--)
+				receiptCollections[i] = receiptCollections[i - 1];
+			receiptCollections[0] = favourite;
+		}
+
+		private async Task<bool> IsFavouriteReceiptsCollection(Guid collectionId)
+		{
+			var collection = await _repository.GetBySelectorAsync(rc => rc.Id == collectionId);
+			if (collection == null) return false;
+			if (collection.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName) return true;
+			return false;
+		}
+
+		public async Task AddFavouritedReceiptToFavouriteReceiptsCollectionAsync(Guid receiptId, Guid userId)
+		{
+			var collectionRes = await CreateOrGetFavouriteReceiptsCollectionGuidAsync(userId);
+			if (collectionRes.IsFailure)
+			{
+				_logger.Error("Не удалось создать коллекцию избранных рецептов для пользователя {@id}: {@error}", userId, collectionRes.Error);
+				return;
+			}
+			var addReceiptRes = await AddReceiptsAsyncUsingReceiptCollectionId(collectionRes.Value, [receiptId], true);
+			if (addReceiptRes.IsFailure)
+				_logger.Error("Не удалось добавить рецепт в коллекцию избранных рецептов {@id}: {@error}", collectionRes.Value, addReceiptRes.Error);
+		}
+
+		public async Task RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(Guid receiptId)
+		{
+			var collectionGuid = (await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName))?.Id ?? Guid.Empty;
+			var removeReceiptRes = await RemoveReceiptsAsync(collectionGuid, [receiptId], true);
+			if (removeReceiptRes.IsFailure)
+				_logger.Error("Не удалось удалить рецепт из коллекции избранных рецептов {@id}: {@error}", collectionGuid, removeReceiptRes.Error);
+		}
+
+		private async Task<Result<Guid>> CreateOrGetFavouriteReceiptsCollectionGuidAsync(Guid userId)
+		{
+			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName);
+			if (collection != null) return Result.Success(collection.Id);
+			var collectionInDTO = new ReceiptCollectionInModelDTO(MiscellaneousConstants.FavouriteReceiptsCollectionName, true, Color.Yellow, userId, null);
+			var res = await CreateAsync(collectionInDTO);
+			return res;
 		}
 	}
 }
