@@ -122,8 +122,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[Test]
 		public async Task GetAllAsync_ByCategory_WorksCorrectly()
 		{
-			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Categories: [Category.Soups]));
-			Assert.That(receipts.Data.All(r => r.Category == Category.Soups), Is.True);
+			var receipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(Categories: [Category.Soup]));
+			Assert.That(receipts.Data.All(r => r.Category == Category.Soup), Is.True);
 		}
 
 		[Test]
@@ -152,7 +152,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		public async Task GetAllAsync_WithSorting_WorksCorrectly()
 		{
 			await _culinaryAppContext.SaveChangesAsync();
-			var sortedReceipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SortOption: SortOption.ByCookingTime, IsAscendingSorting: false));
+			var sortedReceipts = await GetReceiptsWithFilterAsync(new ReceiptsFilter(SortOption: ReceiptSortOption.ByCookingTime, IsAscendingSorting: false));
 			var receiptsData = sortedReceipts.Data;
 			Assert.Multiple(() =>
 			{

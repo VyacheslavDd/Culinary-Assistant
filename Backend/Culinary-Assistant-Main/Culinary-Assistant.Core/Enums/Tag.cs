@@ -9,6 +9,13 @@ namespace Culinary_Assistant.Core.Enums
 	public enum Tag
 	{
 		Vegetarian,
-		Lean
+		Lenten,
+		GlutenFree,
+		LactoseFree,
+		KetoDiet,
+		Vegan,
+		Diabetic,
+		LowCalorie,
+		Festive
 	}
 }

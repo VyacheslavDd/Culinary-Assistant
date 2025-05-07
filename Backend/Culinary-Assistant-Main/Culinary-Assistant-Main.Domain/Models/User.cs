@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant.Core.ValueTypes;
+using Culinary_Assistant_Main.Domain.Models.Abstract;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,14 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class User : Core.Base.Entity<Guid>
+    public class User : Core.Base.Entity<Guid>
 	{
 		private readonly List<Receipt> _receipts = [];
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _receiptLikes = [];
 		private readonly List<ReceiptCollectionLike> _receiptCollectionLikes = [];
-		private readonly List<ReceiptFavourite> _favouritedReceipts = [];
+		private readonly List<ReceiptRate> _receiptRates = [];
+		private readonly List<ReceiptCollectionRate> _collectionRates = [];
 
 		public Login Login { get; private set; }
 		public Phone Phone { get; private set; }
@@ -30,7 +32,8 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> ReceiptLikes => _receiptLikes;
 		public IReadOnlyCollection<ReceiptCollectionLike> ReceiptCollectionLikes => _receiptCollectionLikes;
-		public IReadOnlyCollection<ReceiptFavourite> FavouritedReceipts => _favouritedReceipts;
+		public IReadOnlyCollection<ReceiptRate> ReceiptRates => _receiptRates;
+		public IReadOnlyCollection<ReceiptCollectionRate> CollectionRates => _collectionRates;
 
 		public static Result<User> Create(UserInDTO userInDTO)
 		{

@@ -1,5 +1,6 @@
 ﻿using Culinary_Assistant.Core.Options;
 using Culinary_Assistant_Main.Domain.Models;
+using Culinary_Assistant_Main.Domain.Models.Abstract;
 using Culinary_Assistant_Main.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Infrastructure
 {
-	public class CulinaryAppContext(DbContextOptions<CulinaryAppContext> dbContextOptions, IOptions<ConnectionOptions> connectionOptions, bool isTesting=false) 
+    public class CulinaryAppContext(DbContextOptions<CulinaryAppContext> dbContextOptions, IOptions<ConnectionOptions> connectionOptions, bool isTesting=false) 
 		: DbContext(dbContextOptions)
 	{
 		private readonly ConnectionOptions _connectionOptions = connectionOptions.Value;
@@ -22,7 +23,8 @@ namespace Culinary_Assistant_Main.Infrastructure
 		public virtual DbSet<ReceiptCollection> ReceiptCollections { get; set; }
 		public virtual DbSet<ReceiptLike> ReceiptLikes { get; set; }
 		public virtual DbSet<ReceiptCollectionLike> ReceiptCollectionLikes { get; set; }
-		public virtual DbSet<ReceiptFavourite> FavouritedReceiptsInfo { get; set; }
+		public virtual DbSet<ReceiptRate> ReceiptRates { get; set; }
+		public virtual DbSet<ReceiptCollectionRate> ReceiptCollectionRates { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -32,6 +34,8 @@ namespace Culinary_Assistant_Main.Infrastructure
 			new ReceiptCollectionModelConfiguration().Configure(modelBuilder.Entity<ReceiptCollection>());
 			new ReceiptCollectionLikeConfiguration().Configure(modelBuilder.Entity<ReceiptCollectionLike>());
 			new ReceiptLikeConfiguration().Configure(modelBuilder.Entity<ReceiptLike>());
+			new ReceiptRateConfiguration().Configure(modelBuilder.Entity<ReceiptRate>());
+			new ReceiptCollectionRateConfiguration().Configure(modelBuilder.Entity<ReceiptCollectionRate>());
 			base.OnModelCreating(modelBuilder);
 		}
 

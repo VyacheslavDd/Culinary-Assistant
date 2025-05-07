@@ -11,6 +11,7 @@ namespace Culinary_Assistant_Main.Domain.Repositories
 	{
 		IQueryable<T> GetAll();
 		Task<Guid> AddAsync(T like);
+		Task RemoveAsync(Guid userId, Guid entityId);
 		Task<T?> GetByUserAndEntityIdsAsync(Guid userId, Guid entityId, CancellationToken cancellationToken = default);
 	}
 }

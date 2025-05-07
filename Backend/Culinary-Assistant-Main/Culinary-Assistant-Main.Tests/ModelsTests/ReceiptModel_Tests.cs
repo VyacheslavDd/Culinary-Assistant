@@ -21,7 +21,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 			List<Ingredient> ingredients = [new Ingredient("Ingredient 1", 1, Measure.Gram)];
 			List<CookingStep> steps = [new CookingStep(1, "Первый", "Chill")];
 			List<FilePath> pictureUrls = [new FilePath("http://picture.com")];
-			var receiptInDTO = new ReceiptInDTO("Receipt", "Description Receipt", [], Category.Soups, CookingDifficulty.Easy, 60, ingredients, steps, pictureUrls, Guid.Empty);
+			var receiptInDTO = new ReceiptInDTO("Receipt", "Description Receipt", [], Category.Soup, CookingDifficulty.Easy, 60, ingredients, steps, pictureUrls, Guid.Empty);
 			_receipt = Receipt.Create(receiptInDTO).Value;
 		}
 
@@ -57,7 +57,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void SetTags_WorksCorrectly()
 		{
-			_receipt.SetTags([Tag.Vegetarian, Tag.Lean]);
+			_receipt.SetTags([Tag.Vegetarian, Tag.Lenten]);
 			Assert.That(_receipt.Tags, Is.EqualTo("0|1"));
 		}
 

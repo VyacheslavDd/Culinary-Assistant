@@ -31,5 +31,15 @@ namespace Culinary_Assistant_Main.Infrastructure.Repositories.Abstract
 		{
 			return await _dbSet.FirstOrDefaultAsync(l => l.UserId == userId && l.LikedEntityId == entityId, cancellationToken);
 		}
+
+		public async Task RemoveAsync(Guid userId, Guid entityId)
+		{
+			var favouritedEntity = await GetByUserAndEntityIdsAsync(userId, entityId);
+			if (favouritedEntity != null)
+			{
+				_dbSet.Remove(favouritedEntity);
+				await _context.SaveChangesAsync();
+			}
+		}
 	}
 }

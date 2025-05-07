@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Culinary_Assistant.Core.ServicesResponses;
 using Culinary_Assistant.Core.Filters;
+using Culinary_Assistant.Core.Enums;
 
 namespace Core.Base
 {
@@ -76,6 +77,14 @@ namespace Core.Base
 			var pagesCount = (int)Math.Ceiling((double)entities.Count / paginationFilter.Limit);
 			var currentPage = entities.Skip((paginationFilter.Page - 1) * paginationFilter.Limit).Take(paginationFilter.Limit).ToList();
 			return new EntitiesResponseWithCountAndPages<T>(currentPage, entities.Count, pagesCount);
+		}
+
+		public List<T> DoSorting<TOption, TOptionType>(List<T> entities, TOption? sortOption, Dictionary<TOption?, Func<T, TOptionType>> orderByExpressions, bool isAscendingSorting)
+		{
+			if (sortOption == null) return entities;
+			var orderedEntities = isAscendingSorting ? entities.OrderBy(orderByExpressions[sortOption]).ToList()
+				: entities.OrderByDescending(orderByExpressions[sortOption]).ToList();
+			return orderedEntities;
 		}
 	}
 }

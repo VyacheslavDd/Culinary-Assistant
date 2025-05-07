@@ -57,7 +57,7 @@ namespace Culinary_Assistant_Main.Tests.ModelsTests
 		[Test]
 		public void AddReceipts_WorksCorrectly()
 		{
-			var nextReceipt = Receipt.Create(new ReceiptInDTO("Салат", "Вкусный салат", [Tag.Lean], Category.Dinner, CookingDifficulty.Hard,
+			var nextReceipt = Receipt.Create(new ReceiptInDTO("Салат", "Вкусный салат", [Tag.Lenten], Category.Dinner, CookingDifficulty.Hard,
 					50, [new Ingredient("Огурец", 3, Measure.Piece), new Ingredient("Помидор", 2, Measure.Piece)],
 					[new CookingStep(1, "Первый", "Порезать огурец"), new CookingStep(2, "Второй", "Порезать помидор")],
 					[new FilePath("4")], default)).Value;

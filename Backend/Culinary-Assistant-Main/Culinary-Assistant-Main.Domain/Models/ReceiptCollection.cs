@@ -5,6 +5,7 @@ using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.ValueTypes;
+using Culinary_Assistant_Main.Domain.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,21 +15,24 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class ReceiptCollection : Core.Base.Entity<Guid>
+	public class ReceiptCollection : Core.Base.Entity<Guid>, IRateable
 	{
 		private readonly List<Receipt> _receipts = [];
 		private readonly List<ReceiptCollectionLike> _likes = [];
+		private readonly List<ReceiptCollectionRate> _rates = [];
 
 		public Text Title { get; private set; }
 		public bool IsPrivate { get; private set; }
 		public Guid UserId { get; private set; }
 		public User User { get; private set; }
 		public int Popularity { get; private set; }
+		public double Rating { get; private set; }
 		public Color Color { get; private set; }
 		public DateTime CreatedAt { get; private set; }
 		public DateTime UpdatedAt { get; private set; }
 		public IReadOnlyCollection<Receipt> Receipts => _receipts;
 		public IReadOnlyCollection<ReceiptCollectionLike> Likes => _likes;
+		public IReadOnlyCollection<ReceiptCollectionRate> Rates => _rates;
 
 		public static Result<ReceiptCollection> Create(ReceiptCollectionInModelDTO receiptCollectionInModelDTO)
 		{
@@ -91,6 +95,16 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public void ActualizeUpdatedAtField()
 		{
 			UpdatedAt = DateTime.UtcNow;
+		}
+
+		public void ClearLikes()
+		{
+			_likes.Clear();
+		}
+
+		public void SetRating(double rating)
+		{
+			Rating = Math.Round(rating, MiscellaneousConstants.RoundRatingToDigits);
 		}
 	}
 }

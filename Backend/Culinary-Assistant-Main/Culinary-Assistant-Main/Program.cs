@@ -19,6 +19,8 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
+using Culinary_Assistant.Core.Redis;
+using Culinary_Assistant_Main.Services.RabbitMQ.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,9 +41,12 @@ builder.Services.AddCors(setup =>
 });
 
 builder.Host.AddSerilog();
+builder.Services.AddHostedService<ReceiptRatingMessagesConsumer>();
+builder.Services.AddHostedService<CollectionRatingMessagesConsumer>();
 builder.Services.AddDbContext<CulinaryAppContext>();
 builder.Services.AddAutoMapper(typeof(CulinaryAppMapper).Assembly);
 builder.Services.UseMinioWithoutFileService(builder.Configuration);
+builder.Services.AddRedis(builder.Configuration);
 builder.Services.AddFluentValidationAutoValidation().AddValidatorsFromAssemblyContaining<CulinaryAppContext>();
 builder.Services.AddDomain();
 builder.Services.AddCustomServices();

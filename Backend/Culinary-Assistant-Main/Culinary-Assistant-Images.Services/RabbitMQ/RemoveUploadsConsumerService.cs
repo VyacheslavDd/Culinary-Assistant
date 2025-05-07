@@ -28,7 +28,7 @@ namespace Culinary_Assistant_Images.Services.RabbitMQ
 
 			var consumer = new AsyncEventingBasicConsumer(_channel);
 			consumer.ReceivedAsync += OnReceived;
-			await _channel.BasicConsumeAsync(RabbitMQConstants.RemoveImagesQueue, true, consumer, cancellationToken);
+			await _channel.BasicConsumeAsync(RabbitMQConstants.RemoveImagesQueue, false, consumer, cancellationToken);
 		}
 
 		public override async Task OnReceived(object sender, BasicDeliverEventArgs e)
@@ -37,6 +37,7 @@ namespace Culinary_Assistant_Images.Services.RabbitMQ
 			var fileService = scope.ServiceProvider.GetRequiredService<IFileService>();
 			var filesData = JsonSerializer.Deserialize<RemoveFilesData>(Encoding.UTF8.GetString(e.Body.ToArray()));
 			await fileService.DeleteFilesAsync(filesData.BucketName, filesData.ImagesUrls);
+			await _channel.BasicAckAsync(e.DeliveryTag, multiple: false);
 		}
 	}
 }
