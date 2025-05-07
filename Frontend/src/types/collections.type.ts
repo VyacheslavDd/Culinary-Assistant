@@ -1,3 +1,4 @@
+import { Color } from './color.enum';
 import { ShortRecipe } from './short-recipe.type';
 import { ShortUser } from './short-user.type';
 
@@ -11,4 +12,5 @@ export type Collection = {
     user: ShortUser;
     receipts: ShortRecipe[];
     createdAt: string;
+    color: Color;
 };

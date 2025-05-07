@@ -86,10 +86,7 @@ export function OtherCollHeader(props: props) {
                                 Поделиться
                             </button>
                         </div>
-                        <p>
-                            Опубликована{' '}
-                            {transformCreatedAt(collection.createdAt)}
-                        </p>
+                        <p>{transformCreatedAt(collection.createdAt)}</p>
                     </div>
                 </div>
             </LayoutHeader>

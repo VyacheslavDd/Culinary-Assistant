@@ -11,7 +11,6 @@ type Props = {
     color: 'white' | 'blue';
     name: string;
     icon: IconName;
-    onClick: () => void;
 };
 
 const icons: Record<IconName, string> = {
@@ -20,28 +19,12 @@ const icons: Record<IconName, string> = {
     sort: sort_icon,
 };
 
-export function ButtonLayout(props: Props) {
-    const { children, color, name, icon, onClick } = props;
+export function ButtonLayoutWithoutButton(props: Props) {
+    const { children, color, name, icon } = props;
     const [open, setOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const toggleMenu = () => setOpen(!open);
-
-    useEffect(() => {
-        if (open && dropdownRef.current) {
-            const dropdownBottom = dropdownRef.current.getBoundingClientRect().bottom;
-            const docBottom = document.documentElement.getBoundingClientRect().bottom;
-    
-            if (dropdownBottom > docBottom) {
-                const spaceNeeded = dropdownBottom - docBottom;
-                document.body.style.paddingBottom = `${spaceNeeded + 20}px`;
-            }
-        }
-    
-        return () => {
-            document.body.style.paddingBottom = '';
-        };
-    }, [open]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -58,12 +41,6 @@ export function ButtonLayout(props: Props) {
         };
     }, []);
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        onClick();
-        setOpen(false);
-    };
-
     return (
         <div className={styles.mainContainer} ref={dropdownRef}>
             <button
@@ -74,18 +51,7 @@ export function ButtonLayout(props: Props) {
                 {name}
             </button>
 
-            {open && (
-                <div className={styles.dropdown}>
-                    {children}
-                    <button
-                        className={`${styles.button} ${styles.apply}`}
-                        onClick={handleClick}
-                    >
-                        Применить
-                    </button>
-                </div>
-                
-            )}
+            {open && <div className={styles.dropdown}>{children}</div>}
         </div>
     );
 }

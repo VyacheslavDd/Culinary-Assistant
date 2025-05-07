@@ -2,7 +2,7 @@ import styles from './best.module.scss';
 import left from '../../../assets/svg/button_left.svg';
 import right from '../../../assets/svg/button_right.svg';
 import { ListMinCollections } from '../list-min/list-min';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 import { useState } from 'react';
 
 type props = {

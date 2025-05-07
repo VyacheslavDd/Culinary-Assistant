@@ -11,7 +11,7 @@ import { CollectionPage } from 'pages/collection/collection.page';
 import RegisterPage from 'pages/register/register.page';
 import PassRecoveryPage from 'pages/pass-recovery/pass-recovery.page';
 import { ProfilePage } from 'pages/profile/profile.page';
-import MyCollectionsPage from 'pages/my-collections/my-collection.page';
+import MyCollectionsPage from 'pages/my-collections/my-collections.page';
 import { useEffect } from 'react';
 import { useDispatch } from 'store/store';
 import { fetchRecipes } from 'store/main-page.slice';

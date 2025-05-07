@@ -3,7 +3,7 @@ import { ReactComponent as PlusIcon } from '../../../assets/svg/button_plus.svg'
 import { NavLink } from 'react-router';
 import { CardCollMin } from '../card-min/card-coll-min';
 import { CardNew } from '../card-new/card-new';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 
 type props = {
     items: ShortCollection[];

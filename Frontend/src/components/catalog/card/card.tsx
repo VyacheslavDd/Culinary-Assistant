@@ -10,6 +10,10 @@ import {
 } from 'utils/transform';
 import { useNavigate } from 'react-router-dom';
 import { ButtonWrapper } from 'components/common';
+import { favoriteRecipeApi, unfavouriteRecipeApi } from 'store/api';
+import fav from '../../../assets/svg/fav.svg';
+import unfav from '../../../assets/svg/unfav.svg';
+import { useState } from 'react';
 
 type CatalogCardProps = {
     recipe: ShortRecipe;
@@ -17,6 +21,8 @@ type CatalogCardProps = {
 
 export function CatalogCard(props: CatalogCardProps) {
     const navigate = useNavigate();
+    const [isHovered, setIsHovered] = useState(false);
+
     const { recipe } = props;
     const {
         id,
@@ -26,14 +32,27 @@ export function CatalogCard(props: CatalogCardProps) {
         cookingDifficulty,
         calories,
         rating,
+        isFavourited,
     } = recipe;
+
+    const [favourited, setFavourited] = useState(isFavourited);
 
     const handleClick = () => {
         navigate(`/recipe/${id}`);
     };
 
-    const handleButtonClick = () => {
-        console.log('Добавлено в избранное');
+    const handleButtonClick = async () => {
+        try {
+            if (favourited) {
+                await unfavouriteRecipeApi(id);
+                setFavourited(false);
+            } else {
+                await favoriteRecipeApi(id);
+                setFavourited(true);
+            }
+        } catch (error) {
+            console.error('Ошибка при обновлении избранного:', error);
+        }
     };
 
     return (
@@ -50,7 +69,42 @@ export function CatalogCard(props: CatalogCardProps) {
                 <div className={styles.name}>
                     <p className={styles.title}>{title}</p>
                     <ButtonWrapper onAuthenticatedAction={handleButtonClick}>
-                        <button className={styles.icon}></button>
+                        <button
+                            className={styles.icon}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleButtonClick();
+                            }}
+                        >
+                            <img
+                                src={fav}
+                                alt='fav icon'
+                                className={`${styles.iconImage} ${
+                                    favourited && !isHovered
+                                        ? styles.visible
+                                        : favourited && isHovered
+                                        ? styles.hidden
+                                        : !favourited && isHovered
+                                        ? styles.visible
+                                        : styles.hidden
+                                }`}
+                            />
+                            <img
+                                src={unfav}
+                                alt='unfav icon'
+                                className={`${styles.iconImage} ${
+                                    favourited && isHovered
+                                        ? styles.visible
+                                        : favourited && !isHovered
+                                        ? styles.hidden
+                                        : !favourited && !isHovered
+                                        ? styles.visible
+                                        : styles.hidden
+                                }`}
+                            />
+                        </button>
                     </ButtonWrapper>
                 </div>
                 <div className={styles.infoContainer}>

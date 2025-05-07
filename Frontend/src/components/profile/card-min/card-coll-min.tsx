@@ -2,7 +2,8 @@ import styles from './card-coll-min.module.scss';
 import favIconLight from '../../../assets/svg/coll_fav_light.svg';
 import favIconDark from '../../../assets/svg/coll_fav_dark.svg';
 import { useNavigate } from 'react-router-dom';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
+import { COLORS } from 'mocks/colors';
 
 type PropsCardCollMin = {
     theme: 'dark' | 'light';
@@ -27,7 +28,11 @@ export function CardCollMin(props: PropsCardCollMin) {
 
     return (
         <div className={styles.mainContainer} onClick={handleClick}>
-            <div className={styles.title}>{data.title}</div>
+            <div className={styles.title}  style={{
+                                backgroundColor: COLORS.find(
+                                    (item) => item.value === data.color
+                                )?.color,
+                            }}>{data.title}</div>
             <div className={styles.list}>
                 {recipeImages.map((recipe, index) => (
                     <div className={styles.item} key={index}>

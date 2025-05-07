@@ -54,7 +54,6 @@
     min-width: 30px;
     min-height: 30px;
     border-radius: 50%;
-    background-color: var(--blue);
     border: 0.1vw solid #d9d9d9;
 }
 
@@ -183,4 +182,98 @@ button {
     flex-direction: row;
     gap: 1.05vw;
     align-items: center;
+}
+
+// Изменение коллекции
+
+.containerEdit {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 400;
+    color: black;
+    padding-bottom: 0.6vw;
+    align-items: flex-start;
+
+    .edit {
+        display: flex;
+        flex-direction: column;
+        gap: 1.05vw;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5vw;
+
+        .button {
+            font-weight: 500;
+            transition: all 0.2s ease;
+
+            &:hover {
+                transform: scale(1.02);
+            }
+        }
+    }
+
+    .close {
+        color: var(--pink);
+    }
+
+    .inputContainer {
+        display: flex;
+        flex-direction: row;
+        gap: 1.5vw;
+        align-items: center;
+        justify-content: space-between;
+
+        label {
+            cursor: default;
+        }
+
+        .input {
+            box-sizing: border-box;
+            width: 20.4vw;
+            border: none;
+            font-family: 'TildaSans';
+            font-size: var(--font-size-20);
+            font-weight: 400;
+            color: var(--black);
+            padding: 0.625vw;
+
+            &:focus {
+                outline: none;
+                border: none;
+            }
+        }
+    }
+
+    .colors {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 0.52vw;
+        list-style: none;
+
+        .button {
+            width: 2.1vw;
+            height: 2.1vw;
+            min-width: 25px;
+            min-height: 25px;
+            border-radius: 50%;
+            border: none;
+            background-color: green;
+        }
+
+        .selected {
+            border: 0.05vw solid rgba(0, 0, 0, 0.4);
+            background-image: url('../../../assets/svg/check_black.svg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 60%;
+        }
+    }
 }

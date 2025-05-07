@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import styles from './content.module.scss';
-import { updateFilter } from 'store/main-page.slice';
+import { selectFilter, updateFilter } from 'store/main-page.slice';
 import { useDispatch } from 'store/store';
+import { useSelector } from 'react-redux';
+import { selectIngredients } from 'store/ingredients.slice';
 
 const INGREDIENTS = [
     'Ананас',
@@ -43,7 +45,7 @@ export function IngredientsContent() {
     const dispatch = useDispatch();
     const [query, setQuery] = useState('');
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
-        []
+        useSelector(selectFilter).SearchByIngredients
     );
 
     const toggleIngredient = (ingredient: string) => {
@@ -57,7 +59,7 @@ export function IngredientsContent() {
     useEffect(() => {
         dispatch(
             updateFilter({
-                SearchByIngredients: selectedIngredients.join(', '),
+                SearchByIngredients: selectedIngredients,
             })
         );
     }, [selectedIngredients, dispatch]);
@@ -96,8 +98,20 @@ export function IngredientsContent() {
                 )}
             </ul>
             <div className={styles.selectContainer}>
-                <input type='checkbox' className={styles.checkbox} />
-                <p>Искать только с этими продуктами</p>
+                <input
+                    type='checkbox'
+                    id='select'
+                    className={styles.checkbox}
+                    checked={useSelector(selectFilter).StrictIngredientsSearch}
+                    onChange={(e) =>
+                        dispatch(
+                            updateFilter({
+                                StrictIngredientsSearch: e.target.checked,
+                            })
+                        )
+                    }
+                />
+                <label htmlFor='select'>Искать только с этими продуктами</label>
             </div>
         </div>
     );

@@ -10,7 +10,7 @@ import {
     registerUserApi,
     RegisterUserData,
 } from './api';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 
 type TUserState = {
     user: User | null;
