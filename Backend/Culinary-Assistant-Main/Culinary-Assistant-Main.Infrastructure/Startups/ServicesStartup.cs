@@ -42,6 +42,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Startups
 			services.AddScoped<IRateService<ReceiptCollectionRate, ReceiptCollection>, CollectionRateService>();
 			services.AddScoped<AuthenthicationFilter>();
 			services.AddScoped<EnrichUserFilter>();
+			services.AddScoped<CorrelatingUserFilter>();
 			return services;
 		}
 	}
