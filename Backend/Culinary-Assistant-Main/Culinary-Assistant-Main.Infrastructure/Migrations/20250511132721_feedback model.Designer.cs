@@ -3,6 +3,7 @@ using System;
 using Culinary_Assistant_Main.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Culinary_Assistant_Main.Infrastructure.Migrations
 {
     [DbContext(typeof(CulinaryAppContext))]
-    partial class CulinaryAppContextModelSnapshot : ModelSnapshot
+    [Migration("20250511132721_feedback model")]
+    partial class feedbackmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

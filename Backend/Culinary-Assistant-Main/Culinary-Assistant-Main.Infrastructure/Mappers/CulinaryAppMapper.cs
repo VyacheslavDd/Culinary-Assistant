@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.Const;
+using Culinary_Assistant.Core.DTO.Feedback;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.ReceiptCollection;
 using Culinary_Assistant.Core.DTO.User;
@@ -25,6 +26,7 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 			MapUsers();
 			MapReceipts();
 			MapReceiptCollections();
+			MapFeedbacks();
 		}
 
 		private void MapUsers()
@@ -77,6 +79,12 @@ namespace Culinary_Assistant_Main.Infrastructure.Mappers
 
 			CreateMap<ReceiptCollection, ReceiptCollectionFullOutDTO>()
 				.ForMember(dto => dto.Title, opt => opt.MapFrom(rc => rc.Title.Value));
+		}
+
+		public void MapFeedbacks()
+		{
+			CreateMap<Feedback, FeedbackOutDTO>()
+				.ForMember(dto => dto.Text, opt => opt.MapFrom(f => f.Text.Value));
 		}
 	}
 }
