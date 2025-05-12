@@ -3,43 +3,8 @@ import styles from './content.module.scss';
 import { selectFilter, updateFilter } from 'store/main-page.slice';
 import { useDispatch } from 'store/store';
 import { useSelector } from 'react-redux';
-import { selectIngredients } from 'store/ingredients.slice';
+import { INGREDIENTS } from 'mocks/filter';
 
-const INGREDIENTS = [
-    'Ананас',
-    'Артишок',
-    'Айва',
-    'Баклажан',
-    'Банан',
-    'Батат',
-    'Груша',
-    'Гранат',
-    'Дыня',
-    'Ежевика',
-    'Инжир',
-    'Киви',
-    'Клубника',
-    'Кокос',
-    'Лимон',
-    'Манго',
-    'Малина',
-    'Нектарин',
-    'Огурец',
-    'Персик',
-    'Помело',
-    'Ревень',
-    'Слива',
-    'Томат',
-    'Тыква',
-    'Уксус',
-    'Финик',
-    'Хурма',
-    'Цуккини',
-    'Черника',
-    'Чеснок',
-    'Шпинат',
-    'Яблоко',
-];
 
 export function IngredientsContent() {
     const dispatch = useDispatch();

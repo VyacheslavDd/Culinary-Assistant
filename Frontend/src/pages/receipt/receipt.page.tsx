@@ -62,7 +62,7 @@ function ReceiptPage() {
 
     return (
         <>
-            <ScrollToTop />{' '}
+            <ScrollToTop />
             <div className={styles.background}>
                 <div className={styles.mainContainer}>
                     <div className={styles.backContainer}>

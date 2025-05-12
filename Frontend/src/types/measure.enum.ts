@@ -4,4 +4,8 @@ export enum Measure {
     liter = 'liter',
     milliliter = 'milliliter',
     piece = 'piece',
+    pinch = 'pinch',
+    teaspoon = 'teaspoon',
+    tablespoon = 'tablespoon',
+    glass = 'glass',
 }

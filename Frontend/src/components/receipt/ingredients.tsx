@@ -18,7 +18,7 @@ export function Ingredients(props: props) {
     const getAdjustedIngredient = (ingredient: Ingredient) => {
         return {
             ...ingredient,
-            numericValue: ingredient.numericValue * counter,
+            numericValue: parseFloat((ingredient.numericValue * counter).toFixed(2)),
         };
     };
 

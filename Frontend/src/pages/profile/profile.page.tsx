@@ -4,11 +4,17 @@ import { MyCollection } from 'components/profile';
 import { Catalog } from 'components/catalog/catalog';
 import { useSelector } from 'store/store';
 import { selectUserCollections, selectUserRecipes } from 'store/user.slice';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { ReactComponent as PlusIcon } from '../../assets/svg/button_plus.svg';
 
 export function ProfilePage() {
     const myRecipes = useSelector(selectUserRecipes);
     const myCollections = useSelector(selectUserCollections);
+    const navigate = useNavigate();
+
+    const handleNewRecipe = () => {
+        navigate('/recipe/new');
+    };
 
     return (
         <div className={styles.mainContainer}>
@@ -18,7 +24,15 @@ export function ProfilePage() {
                 {myRecipes.length > 0 && (
                     <div className={styles.catalog}>
                         <div className={styles.header}>
-                            <h3 className={styles.h3}>Мои рецепты</h3>
+                            <div className={styles.title}>
+                                <h3 className={styles.h3}>Мои рецепты</h3>
+                                <button
+                                    className={styles.button}
+                                    onClick={handleNewRecipe}
+                                >
+                                    <PlusIcon />
+                                </button>
+                            </div>
 
                             <NavLink
                                 to='/profile/my-recipes'

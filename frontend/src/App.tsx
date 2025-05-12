@@ -18,6 +18,7 @@ import { fetchRecipes } from 'store/main-page.slice';
 import { ProtectedRoute } from 'utils/protected-route';
 import { checkUser } from 'store/user.slice';
 import MyRecipesPage from 'pages/my-recipes/my-recipes.page';
+import { EditRecipePage } from 'pages/edit-recipe/edit-recipe';
 
 function App() {
     const location = useLocation();
@@ -37,6 +38,8 @@ function App() {
             <Routes location={location}>
                 <Route path='/' element={<MainPage />} />
                 <Route path='/recipe/:id' element={<ReceiptPage />} />
+                <Route path='/recipe/new' element={<EditRecipePage />} />
+                <Route path='/recipe/:id/edit' element={<EditRecipePage />} />
                 <Route path='/collections' element={<CollectionsPage />} />
                 <Route path='/collection/:id' element={<CollectionPage />} />
                 <Route

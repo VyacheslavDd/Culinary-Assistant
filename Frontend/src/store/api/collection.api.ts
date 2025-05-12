@@ -3,6 +3,7 @@ import qs from 'qs';
 import { Category, CookingDifficulty, Tag } from 'types';
 import { Collection } from 'types/collections.type';
 import { ShortCollection } from 'types/short-collection.type';
+import { getEnumValueByString } from 'utils/transform';
 
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
 
@@ -78,34 +79,31 @@ export const getCollectionByIdApi = async (id: string): Promise<Collection> => {
                 withCredentials: true
             }
         );
+
         const data = response.data;
+
         const collection: Collection = {
             ...data,
             receipts: data.receipts.map((receipt) => {
                 return {
                     ...receipt,
-                    category:
-                        typeof receipt.category === 'string'
-                            ? Category[
-                                  receipt.category as keyof typeof Category
-                              ]
-                            : Category.hot,
-                    cookingDifficulty:
-                        typeof receipt.cookingDifficulty === 'string'
-                            ? CookingDifficulty[
-                                  receipt.cookingDifficulty as keyof typeof CookingDifficulty
-                              ]
-                            : CookingDifficulty.easy,
+                    category: typeof receipt.category === 'string'
+                        ? getEnumValueByString(Category, receipt.category) ?? Category.mainCourse
+                        : Category.mainCourse,
+                    cookingDifficulty: typeof receipt.cookingDifficulty === 'string'
+                        ? getEnumValueByString(CookingDifficulty, receipt.cookingDifficulty) ?? CookingDifficulty.easy
+                        : CookingDifficulty.easy,
                     tags: Array.isArray(receipt.tags)
                         ? (receipt.tags
-                              .map((value) => Tag[value as keyof typeof Tag])
-                              .filter(Boolean) as Tag[])
+                            .map((tag) => getEnumValueByString(Tag, tag))
+                            .filter(Boolean) as Tag[])
                         : [],
                 };
             }),
         };
 
         return collection;
+
     } catch (error) {
         if (axios.isAxiosError(error)) {
             if (typeof error.response?.data === 'string') {
@@ -118,9 +116,11 @@ export const getCollectionByIdApi = async (id: string): Promise<Collection> => {
 
             throw new Error('Getting collection going wrong');
         }
+
         throw new Error('Unknown error occurred');
     }
 };
+
 
 //Получение списка коллекций у пользователя
 export const getCollectionsByUserApi = async (data: {

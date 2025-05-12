@@ -146,6 +146,8 @@ export const userSlice = createSlice({
         selectIsAuthChecked: (state) => state.isAuthChecked,
         selectUserError: (state) => state.error,
         selectUserLoading: (state) => state.isLoading,
+        selectRecipeById: (state, id) =>
+            state.recipes.find((item) => item.id === id),
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -255,6 +257,7 @@ export const {
     selectIsAuthChecked,
     selectUserError,
     selectUserLoading,
+    selectRecipeById
 } = userSlice.selectors;
 
 export default userSlice.reducer;

@@ -93,7 +93,9 @@ export function MyCollHeader(props: props) {
     };
 
     const handleEdit = () => {
-        setIsEditing(true);
+        if (collection.title !== 'Избранное') {
+            setIsEditing(true);
+        }
     };
 
     const handleCloseEdit = () => {
@@ -135,30 +137,43 @@ export function MyCollHeader(props: props) {
                                     ></div>
                                 </div>
                                 <div className={styles.buttons}>
-                                    <button
-                                        className={styles.button}
-                                        onClick={handleEdit}
-                                    >
-                                        <img src={edit} alt='edit' />
-                                        Изм.
-                                    </button>
-                                    <div className={styles.publish}>
-                                        <Toggle
-                                            isActive={!editCollection.isPrivate}
-                                            onToggleChange={handleToggleChange}
-                                        />
-                                        <span>Опубликовать</span>
-                                    </div>
-                                    <div className={styles.fav}>
-                                        <img
-                                            src={fav}
-                                            alt='favorite'
-                                            className={styles.icon}
-                                        />
-                                        <span>{collection.popularity}</span>
-                                    </div>
+                                    {collection.title !== 'Избранное' ? (
+                                        <>
+                                            <button
+                                                className={styles.button}
+                                                onClick={handleEdit}
+                                            >
+                                                <img src={edit} alt='edit' />
+                                                Изм.
+                                            </button>
+                                            <div className={styles.publish}>
+                                                <Toggle
+                                                    isActive={
+                                                        !editCollection.isPrivate
+                                                    }
+                                                    onToggleChange={
+                                                        handleToggleChange
+                                                    }
+                                                />
+                                                <span>Опубликовать</span>
+                                            </div>
+                                            <div className={styles.fav}>
+                                                <img
+                                                    src={fav}
+                                                    alt='favorite'
+                                                    className={styles.icon}
+                                                />
+                                                <span>
+                                                    {collection.popularity}
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <></>
+                                    )}
                                 </div>
                             </div>
+
                             <div className={styles.shareContainer}>
                                 <button
                                     className='button'
@@ -169,16 +184,20 @@ export function MyCollHeader(props: props) {
                                     ></span>
                                     Поделиться
                                 </button>
-                                <button
-                                    className={`button ${styles.deleteButton} `}
-                                    onClick={handleDelete}
-                                    disabled={isDeleting}
-                                >
-                                    <span
-                                        className={`icon ${styles.delete}`}
-                                    ></span>
-                                    Удалить подборку
-                                </button>
+                                {collection.title !== 'Избранное' ? (
+                                    <button
+                                        className={`button ${styles.deleteButton} `}
+                                        onClick={handleDelete}
+                                        disabled={isDeleting}
+                                    >
+                                        <span
+                                            className={`icon ${styles.delete}`}
+                                        ></span>
+                                        Удалить подборку
+                                    </button>
+                                ) : (
+                                    <></>
+                                )}
                             </div>
                         </>
                     )}

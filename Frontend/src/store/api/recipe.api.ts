@@ -11,6 +11,7 @@ import {
     ShortUser,
     Tag,
 } from 'types';
+import { getEnumValueByString } from 'utils/transform';
 
 export type TRecipesData = {
     Page: number;
@@ -95,46 +96,50 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
                 withCredentials: true,
             }
         );
+
         const data = response.data;
+
         const recipe: Recipe = {
             ...data,
             category:
                 typeof data.category === 'string'
-                    ? Category[data.category as keyof typeof Category]
-                    : Category.hot,
+                    ? getEnumValueByString(Category, data.category) ??
+                      Category.mainCourse
+                    : Category.mainCourse,
+
             cookingDifficulty:
                 typeof data.cookingDifficulty === 'string'
-                    ? CookingDifficulty[
-                          data.cookingDifficulty as keyof typeof CookingDifficulty
-                      ]
+                    ? getEnumValueByString(
+                          CookingDifficulty,
+                          data.cookingDifficulty
+                      ) ?? CookingDifficulty.easy
                     : CookingDifficulty.easy,
+
             tags: Array.isArray(data.tags)
                 ? (data.tags
-                      .map((value) => Tag[value as keyof typeof Tag])
+                      .map((tag) => getEnumValueByString(Tag, tag))
                       .filter(Boolean) as Tag[])
                 : [],
+
             cookingSteps: Array.isArray(data.cookingSteps)
-                ? data.cookingSteps.map(
-                      (step: CookingStep) => step as CookingStep
-                  )
+                ? data.cookingSteps.map((step) => step as CookingStep)
                 : [],
+
             ingredients: Array.isArray(data.ingredients)
-                ? data.ingredients.map(
-                      (ing: Ingredient) =>
-                          ({
-                              name: String(ing.name),
-                              measure:
-                                  typeof ing.measure === 'string'
-                                      ? Measure[
-                                            ing.measure as keyof typeof Measure
-                                        ] || Measure.piece
-                                      : Measure.piece,
-                              numericValue: Number(ing.numericValue),
-                          } as Ingredient)
-                  )
+                ? data.ingredients.map((ing) => ({
+                      name: String(ing.name),
+                      measure:
+                          typeof ing.measure === 'string'
+                              ? getEnumValueByString(Measure, ing.measure) ??
+                                Measure.piece
+                              : Measure.piece,
+                      numericValue: Number(ing.numericValue),
+                  }))
                 : [],
+
             user: data.user as ShortUser,
         };
+
         console.log(recipe);
 
         return recipe;
@@ -150,6 +155,7 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
 
             throw new Error('Getting recipe going wrong');
         }
+
         throw new Error('Unknown error occurred');
     }
 };
@@ -300,5 +306,102 @@ export const getRecipesByUserApi = async (data: {
             throw new Error('Getting users recipes going wrong');
         }
         throw new Error('Unknown error occurred');
+    }
+};
+
+// Загрузка фотографии рецепта
+export const uploadRecipeImage = async (file?: File): Promise<string> => {
+    try {
+        if (!file) {
+            return '';
+        }
+
+        const formData = new FormData();
+        formData.append('Files', file);
+
+        const response = await axios.post<{ url: string }[]>(
+            `${apiUrl}api/files/receipts`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+
+        return response.data[0].url;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Image upload failed');
+        }
+
+        throw new Error('Unknown error occurred during image upload');
+    }
+};
+
+export interface CreateRecipeDto {
+    title: string;
+    description: string;
+    tags: string[];
+    category: string;
+    cookingDifficulty: string;
+    cookingTime: number;
+    ingredients: Ingredient[];
+    cookingSteps: CookingStep[];
+    picturesUrls: {
+        url: string;
+    }[];
+    userId: string;
+}
+
+// Добавление нового рецепта
+export const createRecipe = async (
+    recipe: CreateRecipeDto,
+    imageFile?: File
+): Promise<string> => {
+    try {
+        const imageUrl = await uploadRecipeImage(imageFile);
+
+        let recipeWithImage: CreateRecipeDto = {
+            ...recipe,
+        };
+
+        if (imageUrl) {
+            recipeWithImage = {
+                ...recipeWithImage,
+                picturesUrls: [{ url: imageUrl }],
+            };
+        }
+
+        const response = await axios.post<string>(
+            `${apiUrl}api/receipts`,
+            recipeWithImage,
+            {
+                headers: {
+                    'Content-Type': 'application/json-patch+json',
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(
+                error.response?.data?.message || 'Recipe creation failed'
+            );
+        }
+        throw new Error('Unknown error during recipe creation');
     }
 };

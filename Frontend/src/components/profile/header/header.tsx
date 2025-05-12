@@ -1,11 +1,11 @@
 import { LayoutHeader } from 'components/layout';
 import styles from './header.module.scss';
-import profile_photo from '../../../assets/img/profile_photo.png';
 import edit from '../../../assets/svg/edit.svg';
 import exit from '../../../assets/svg/exit.svg';
 import { logoutUser, selectUser } from 'store/user.slice';
 import { useDispatch, useSelector } from 'store/store';
 import { useNavigate } from 'react-router-dom';
+import default_user from '../../../assets/img/default-user.png';
 
 export function HeaderProfile() {
     const user = useSelector(selectUser);
@@ -19,12 +19,13 @@ export function HeaderProfile() {
         navigate('/');
     };
 
+
     return (
         <div className={styles.mainContainer}>
             <LayoutHeader>
                 <div className={styles.container}>
                     <img
-                        src={profile_photo}
+                        src={pictureUrl === 'none' ? default_user : pictureUrl}
                         alt='profile'
                         className={styles.img}
                     />

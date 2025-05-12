@@ -4,6 +4,7 @@ import fav from '../../../assets/svg/coll_fav_dark.svg';
 import { Collection } from 'types/collections.type';
 import { transformCreatedAt } from 'utils/transform';
 import { ButtonWrapper } from 'components/common';
+import default_user from '../../../assets/img/default-user.png';
 
 type props = {
     collection: Collection;
@@ -11,6 +12,7 @@ type props = {
 
 export function OtherCollHeader(props: props) {
     const { collection } = props;
+    console.log(collection.user.pictureUrl)
 
     const handleFavourite = () => {
         console.log('Добавить в избранное');
@@ -52,7 +54,7 @@ export function OtherCollHeader(props: props) {
                         <div className={styles.buttons}>
                             <div className={styles.profile}>
                                 <img
-                                    src={collection.user.pictureUrl}
+                                    src={collection.user.pictureUrl === "none" ? default_user : collection.user.pictureUrl}
                                     alt='profile'
                                     className={styles.img}
                                 />
