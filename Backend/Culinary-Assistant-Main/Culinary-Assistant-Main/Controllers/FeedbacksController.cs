@@ -2,13 +2,14 @@
 using Culinary_Assistant.Core.DTO.Feedback;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Infrastructure.Filters.Abstract;
 using Culinary_Assistant_Main.Services.Feedbacks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Culinary_Assistant_Main.Controllers
 {
-	[Route("api/feedbacks")]
+    [Route("api/feedbacks")]
 	[ApiController]
 	public class FeedbacksController(IFeedbacksService feedbacksService, IMapper mapper) : ControllerBase
 	{

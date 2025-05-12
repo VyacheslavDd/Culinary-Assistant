@@ -1,6 +1,7 @@
 ﻿
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Infrastructure.Filters.Abstract;
 using Culinary_Assistant_Main.Services.Feedbacks;
 using Culinary_Assistant_Main.Services.Files;
 using Culinary_Assistant_Main.Services.Likes;

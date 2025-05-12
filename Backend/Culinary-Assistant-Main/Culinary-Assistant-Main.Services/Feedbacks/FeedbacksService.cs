@@ -77,6 +77,7 @@ namespace Culinary_Assistant_Main.Services.Feedbacks
 			if (feedback == null) return Result.Failure("Попытка обновить несуществующий отзыв");
 			var textUpdateRes = feedback.SetText(updateRequest.Text);
 			if (textUpdateRes.IsFailure) return Result.Failure(textUpdateRes.Error);
+			feedback.UpdateRedactedDate();
 			return await base.NotBulkUpdateAsync(feedbackId, updateRequest);
 		}
 

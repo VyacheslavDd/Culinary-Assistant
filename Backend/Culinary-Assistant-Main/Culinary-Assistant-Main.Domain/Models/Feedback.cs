@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.DTO.Feedback;
 using Culinary_Assistant.Core.ValueTypes;
+using Culinary_Assistant_Main.Domain.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-	public class Feedback : Core.Base.Entity<Guid>
+	public class Feedback : Core.Base.Entity<Guid>, IHasUserId
 	{
 		public Text Text { get; private set; }
 		public DateTime UpdatedAt { get; private set; }

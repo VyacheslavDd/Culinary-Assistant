@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-    public class Receipt : Core.Base.Entity<Guid>, IRateable
+    public class Receipt : Core.Base.Entity<Guid>, IRateable, IHasUserId
 	{
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _likes = [];
