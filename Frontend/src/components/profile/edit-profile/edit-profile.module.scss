@@ -1,0 +1,122 @@
+.mainContainer {
+    width: 24.5vw;
+    padding: 1.05vw;
+    display: flex;
+    flex-direction: column;
+    gap: 2.1vw;
+    font-family: 'TildaSans';
+    font-weight: 400;
+    font-size: var(--font-size-20);
+    color: black;
+}
+
+.photoContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+
+    .photo {
+        width: 35%;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+        object-fit: cover;
+        min-width: 100px;
+    }
+}
+
+.title {
+    font-size: var(--font-size-32);
+    font-weight: 500;
+    justify-self: center;
+    align-self: center;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.56vw;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.05vw;
+}
+
+.input {
+    width: 100%;
+    border: none;
+    background-color: white;
+    font-size: var(--font-size-20);
+    font-family: 'TildaSans';
+    color: black;
+    padding: 0.52vw 0.65vw;
+    border-radius: 0.42vw;
+
+    &:focus {
+        border: 0.05vw solid var(--pink);
+        outline: none;
+    }
+}
+
+.buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .check {
+        color: white;
+        fill: white;
+       
+    }
+
+    .button {
+        font-size: var(--font-size-20);
+        border: none;
+        border-radius: 0.42vw;
+        justify-content: center;
+        padding: 0.5vw;
+        width: 48%;
+        display: flex;
+        gap: 0.2vw;
+        font-weight: 400;
+        cursor: pointer;
+        align-items: center;
+    }
+
+
+
+    .admit {
+        background-color: var(--blue);
+        color: white;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: var(--blue-hover);
+        }
+
+        &:active {
+            background-color: var(--blue-active);
+        }
+    }
+
+    .close {
+        border: 0.08vw solid var(--pink);
+        color: var(--pink);
+        background-color: transparent;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: var(--pink-hover);
+            color: var(--pink-hover);
+        }
+
+        &:active {
+            border-color: var(--pink-active);
+            color: var(--pink-active);
+        }
+    }
+}

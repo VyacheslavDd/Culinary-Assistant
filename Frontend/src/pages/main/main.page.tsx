@@ -11,6 +11,10 @@ import {
 } from 'store/main-page.slice';
 import { useEffect } from 'react';
 import { Preloader } from 'components/preloader';
+import { EditProfile } from 'components/profile/edit-profile/edit-profile';
+
+// import { AddToCollectionOverlay } from 'components/common/add-to-collection/add-to-collection';
+// import { NewCollectionOverlay } from 'components/profile';
 
 function MainPage() {
     const dispatch = useDispatch();
@@ -29,6 +33,8 @@ function MainPage() {
                 <Filter />
                 {isLoading ? <Preloader /> : <Catalog recipes={recipes} />}
             </main>
+            {/* <NewCollectionOverlay/> */}
+            {/* <AddToCollectionOverlay/> */}
         </div>
     );
 }

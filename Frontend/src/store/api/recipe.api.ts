@@ -161,34 +161,34 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
 };
 
 // Поставить лайк рецепту
-export const likeRecipeApi = async (id: string): Promise<void> => {
-    try {
-        await axios.post(
-            `${apiUrl}api/receipts/${id}/likes`,
-            {},
-            {
-                headers: {
-                    Accept: '*/*',
-                },
-                withCredentials: true,
-            }
-        );
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (typeof error.response?.data === 'string') {
-                throw new Error(error.response.data);
-            }
+// export const likeRecipeApi = async (id: string): Promise<void> => {
+//     try {
+//         await axios.post(
+//             `${apiUrl}api/receipts/${id}/likes`,
+//             {},
+//             {
+//                 headers: {
+//                     Accept: '*/*',
+//                 },
+//                 withCredentials: true,
+//             }
+//         );
+//     } catch (error) {
+//         if (axios.isAxiosError(error)) {
+//             if (typeof error.response?.data === 'string') {
+//                 throw new Error(error.response.data);
+//             }
 
-            if (error.response?.data?.message) {
-                throw new Error(error.response.data.message);
-            }
+//             if (error.response?.data?.message) {
+//                 throw new Error(error.response.data.message);
+//             }
 
-            throw new Error('Adding to favorites failed');
-        }
+//             throw new Error('Adding to favorites failed');
+//         }
 
-        throw new Error('Unknown error occurred');
-    }
-};
+//         throw new Error('Unknown error occurred');
+//     }
+//};
 
 // Добавить рецепт в избранное
 export const favoriteRecipeApi = async (id: string): Promise<void> => {
@@ -253,6 +253,7 @@ export const deleteRecipeApi = async (id: string): Promise<string> => {
             headers: {
                 Accept: '*/*',
             },
+            withCredentials: true,
         });
 
         return response.data;
@@ -403,5 +404,73 @@ export const createRecipe = async (
             );
         }
         throw new Error('Unknown error during recipe creation');
+    }
+};
+
+// Поставить оценку рецепту
+export const putRateRecipeApi = async (
+    id: string,
+    rate: number
+): Promise<void> => {
+    try {
+        await axios.post(
+            `${apiUrl}api/receipts/${id}/rate`,
+            { rate: rate },
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Putting rate get failed');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+export type rateType = {
+    rate: number;
+};
+
+//Получение оценки пользователя рецепта
+export const getRecipeRateApi = async (id: string): Promise<rateType> => {
+    try {
+        const response = await axios.get<rateType>(
+            `${apiUrl}api/receipts/${id}/rate`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Getting rate of recipe going wrong');
+        }
+        throw new Error('Unknown error occurred');
     }
 };

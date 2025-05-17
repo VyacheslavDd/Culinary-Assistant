@@ -1,15 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './rate.module.scss';
 import favorite from '../../assets/svg/mink_fav.svg';
 import unfavorite from '../../assets/svg/mink.svg';
 
-export function Ratings() {
-    const [rating, setRating] = useState(0);
+type props = {
+    currentRating: number;
+    onRate: (rating: number) => void;
+    disabled?: boolean;
+    title?: string;
+};
+
+export function Ratings(props: props) {
+    const { currentRating, onRate, disabled = false, title = 'рецепт' } = props;
+    const [rating, setRating] = useState(currentRating);
     const [hoverRating, setHoverRating] = useState(0);
+
+    const handleClick = (ratingValue: number) => {
+        if (!disabled) {
+            onRate(ratingValue);
+        }
+    };
+
+    const handleMouseEnter = (ratingValue: number) => {
+        if (!disabled) {
+            setHoverRating(ratingValue);
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (!disabled) {
+            setHoverRating(0);
+        }
+    };
+
+    useEffect(() => {
+        if (currentRating !== rating) {
+            setRating(currentRating);
+        }
+    }, [currentRating, rating]);
 
     return (
         <div className={styles.mainContainer}>
-            <p className={styles.title}>Оцените рецепт</p>
+            <p className={styles.title}>Оцените {title}</p>
             <div className={styles.stars}>
                 {[...Array(10)].map((_, index) => {
                     const ratingValue = index + 1;
@@ -17,9 +49,10 @@ export function Ratings() {
                         <button
                             key={index}
                             className={styles.star}
-                            onClick={() => setRating(ratingValue)}
-                            onMouseEnter={() => setHoverRating(ratingValue)}
-                            onMouseLeave={() => setHoverRating(0)}
+                            onClick={() => handleClick(ratingValue)}
+                            onMouseEnter={() => handleMouseEnter(ratingValue)}
+                            onMouseLeave={handleMouseLeave}
+                            disabled={disabled}
                             aria-label={`Оценка ${ratingValue}`}
                             aria-pressed={ratingValue <= rating}
                         >

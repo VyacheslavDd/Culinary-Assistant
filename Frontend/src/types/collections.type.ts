@@ -6,7 +6,7 @@ export type Collection = {
     id: string;
     title: string;
     isPrivate: boolean;
-    isLiked: false;
+    isFavourited: false;
     popularity: 0;
     covers: { url: string }[];
     user: ShortUser;

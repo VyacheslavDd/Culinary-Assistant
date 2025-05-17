@@ -14,16 +14,19 @@ import { favoriteRecipeApi, unfavouriteRecipeApi } from 'store/api';
 import fav from '../../../assets/svg/fav.svg';
 import unfav from '../../../assets/svg/unfav.svg';
 import { useState } from 'react';
+import { ReactComponent as CloseIcon } from '../../../assets/svg/ingredient_close.svg';
 
 type CatalogCardProps = {
     recipe: ShortRecipe;
+    isEdit?: boolean;
+    onDelete?: (id: string) => void;
 };
 
 export function CatalogCard(props: CatalogCardProps) {
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = useState(false);
 
-    const { recipe } = props;
+    const { recipe, isEdit, onDelete } = props;
     const {
         id,
         title,
@@ -57,6 +60,20 @@ export function CatalogCard(props: CatalogCardProps) {
 
     return (
         <div className={styles.container} onClick={handleClick}>
+            {isEdit ? (
+                <button
+                    className={styles.deleteButton}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(id);
+                    }}
+                >
+                    <CloseIcon className={styles.close} />
+                </button>
+            ) : (
+                <></>
+            )}
+
             <div
                 className={`${styles.rate} 
                 ${rating > 8 ? styles.good : rating < 4 ? styles.bad : ''}

@@ -5,6 +5,18 @@ import { Collection } from 'types/collections.type';
 import { transformCreatedAt } from 'utils/transform';
 import { ButtonWrapper } from 'components/common';
 import default_user from '../../../assets/img/default-user.png';
+import { useEffect, useState } from 'react';
+import {
+    CollectionFavoriteApi,
+    CollectionUnfavoriteApi,
+    getCollectionRateApi,
+    putRateCollectionApi,
+} from 'store/api';
+import { Ratings } from 'components/receipt';
+import { ReactComponent as Favorite } from '../../../assets/svg/fav.svg';
+import { ReactComponent as Unfavorite } from '../../../assets/svg/unfav.svg';
+import { useSelector } from 'store/store';
+import { selectIsAuthenticated } from 'store/user.slice';
 
 type props = {
     collection: Collection;
@@ -12,10 +24,57 @@ type props = {
 
 export function OtherCollHeader(props: props) {
     const { collection } = props;
-    console.log(collection.user.pictureUrl)
+    const [userRating, setUserRating] = useState(0);
+    const [isRatingLoading, setIsRatingLoading] = useState(false);
+    const [isFavourite, setIsFavourite] = useState<boolean>(
+        collection.isFavourited
+    );
+    const [isFavouriteLoading, setIsFavouriteLoading] = useState(false);
+    const isAuth = useSelector(selectIsAuthenticated);
 
-    const handleFavourite = () => {
-        console.log('Добавить в избранное');
+    useEffect(() => {
+        const loadUserRating = async () => {
+            try {
+                const ratingData = await getCollectionRateApi(collection.id);
+                setUserRating(ratingData.rate);
+            } catch (error) {
+                console.error('Ошибка загрузки оценки:', error);
+            }
+        };
+
+        loadUserRating();
+    }, [collection.id]);
+
+    const handleRateCollection = async (rating: number) => {
+        try {
+            setIsRatingLoading(true);
+            await putRateCollectionApi(collection.id, rating);
+            setUserRating(rating);
+        } catch (error) {
+            console.error('Ошибка при сохранении оценки:', error);
+        } finally {
+            setIsRatingLoading(false);
+        }
+    };
+
+    const handleFavourite = async () => {
+        if (!isAuth || isFavouriteLoading) return;
+
+        try {
+            setIsFavouriteLoading(true);
+
+            if (isFavourite) {
+                await CollectionUnfavoriteApi(collection.id);
+                setIsFavourite(false);
+            } else {
+                await CollectionFavoriteApi(collection.id);
+                setIsFavourite(true);
+            }
+        } catch (error) {
+            console.error('Ошибка при изменении статуса избранного:', error);
+        } finally {
+            setIsFavouriteLoading(false);
+        }
     };
 
     const handleShare = () => {
@@ -54,7 +113,11 @@ export function OtherCollHeader(props: props) {
                         <div className={styles.buttons}>
                             <div className={styles.profile}>
                                 <img
-                                    src={collection.user.pictureUrl === "none" ? default_user : collection.user.pictureUrl}
+                                    src={
+                                        collection.user.pictureUrl === 'none'
+                                            ? default_user
+                                            : collection.user.pictureUrl
+                                    }
                                     alt='profile'
                                     className={styles.img}
                                 />
@@ -70,16 +133,27 @@ export function OtherCollHeader(props: props) {
                             </div>
                         </div>
                     </div>
+                    <Ratings
+                        currentRating={userRating}
+                        onRate={handleRateCollection}
+                        disabled={isRatingLoading}
+                        title={'подборку'}
+                    />
                     <div className={styles.description}>
                         <div className={styles.shareContainer}>
                             <ButtonWrapper
                                 onAuthenticatedAction={handleFavourite}
                             >
-                                <button className='button'>
-                                    <span
-                                        className={`icon ${styles.like}`}
-                                    ></span>
-                                    Нравится
+                                <button
+                                    className='button'
+                                    disabled={isFavouriteLoading}
+                                >
+                                    {isFavourite ? (
+                                        <Favorite className={`icon`} />
+                                    ) : (
+                                        <Unfavorite className={`icon`} />
+                                    )}
+                                    {isFavourite ? 'Не нравится' : 'Нравится'}
                                 </button>
                             </ButtonWrapper>
 

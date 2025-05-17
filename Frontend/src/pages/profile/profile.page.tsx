@@ -1,11 +1,11 @@
 import { HeaderProfile } from 'components/profile/header/header';
 import styles from './profile.module.scss';
-import { MyCollection } from 'components/profile';
 import { Catalog } from 'components/catalog/catalog';
 import { useSelector } from 'store/store';
 import { selectUserCollections, selectUserRecipes } from 'store/user.slice';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ReactComponent as PlusIcon } from '../../assets/svg/button_plus.svg';
+import { MyCollection } from 'components/profile/my-collections/my-collection';
 
 export function ProfilePage() {
     const myRecipes = useSelector(selectUserRecipes);

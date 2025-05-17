@@ -5,12 +5,18 @@ import fav from '../../../assets/svg/coll_fav_dark.svg';
 import edit from '../../../assets/svg/edit.svg';
 import { Collection } from 'types/collections.type';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { deleteCollectionApi, updateCollectionApi } from 'store/api';
+import { useEffect, useState } from 'react';
+import {
+    deleteCollectionApi,
+    getCollectionRateApi,
+    putRateCollectionApi,
+    updateCollectionApi,
+} from 'store/api';
 import { EditHeader } from './edit-coll-header';
 import { COLORS } from 'mocks/colors';
 import { useDispatch, useSelector } from 'store/store';
 import { fetchUsersCollections, selectUser } from 'store/user.slice';
+import { Ratings } from 'components/receipt';
 
 type props = {
     collection: Collection;
@@ -34,6 +40,33 @@ export function MyCollHeader(props: props) {
         color: collection.color,
         isPrivate: collection.isPrivate,
     });
+    const [userRating, setUserRating] = useState(0);
+    const [isRatingLoading, setIsRatingLoading] = useState(false);
+
+    useEffect(() => {
+        const loadUserRating = async () => {
+            try {
+                const ratingData = await getCollectionRateApi(collection.id);
+                setUserRating(ratingData.rate);
+            } catch (error) {
+                console.error('Ошибка загрузки оценки:', error);
+            }
+        };
+
+        loadUserRating();
+    }, [collection.id]);
+
+    const handleRateCollection = async (rating: number) => {
+        try {
+            setIsRatingLoading(true);
+            await putRateCollectionApi(collection.id, rating);
+            setUserRating(rating);
+        } catch (error) {
+            console.error('Ошибка при сохранении оценки:', error);
+        } finally {
+            setIsRatingLoading(false);
+        }
+    };
 
     const handleShare = () => {
         const shareData = {
@@ -119,7 +152,7 @@ export function MyCollHeader(props: props) {
                             onSave={handleSave}
                         />
                     ) : (
-                        <>
+                        <div className={styles.header}>
                             <div className={styles.info}>
                                 <div className={styles.name}>
                                     <p className={styles.title}>
@@ -136,6 +169,7 @@ export function MyCollHeader(props: props) {
                                         }}
                                     ></div>
                                 </div>
+
                                 <div className={styles.buttons}>
                                     {collection.title !== 'Избранное' ? (
                                         <>
@@ -173,7 +207,12 @@ export function MyCollHeader(props: props) {
                                     )}
                                 </div>
                             </div>
-
+                            <Ratings
+                                currentRating={userRating}
+                                onRate={handleRateCollection}
+                                disabled={isRatingLoading}
+                                title={'подборку'}
+                            />
                             <div className={styles.shareContainer}>
                                 <button
                                     className='button'
@@ -199,7 +238,7 @@ export function MyCollHeader(props: props) {
                                     <></>
                                 )}
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             </LayoutHeader>

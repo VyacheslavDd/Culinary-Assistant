@@ -6,7 +6,7 @@ import ScrollToTop from 'components/common/scrollToTop';
 import { useSelector } from 'store/store';
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getCollectionByIdApi } from 'store/api';
+import { deleteRecipesCollectionApi, getCollectionByIdApi } from 'store/api';
 import { Collection } from 'types/collections.type';
 import { Preloader } from 'components/preloader';
 import { selectUser } from 'store/user.slice';
@@ -26,6 +26,17 @@ export function CollectionPage() {
             console.error('Error fetching collection:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleOnDeleteRecipe = async (recipeId: string) => {
+        try {
+            await deleteRecipesCollectionApi(id!, {
+                receipts: [recipeId],
+            });
+            loadCollection(id!);
+        } catch (error) {
+            console.error('Error deleting recipe:', error);
         }
     };
 
@@ -50,7 +61,11 @@ export function CollectionPage() {
                 )}
                 <div className={styles.catalogContainer}>
                     <h2 className={styles.title}> Рецепты</h2>
-                    <Catalog recipes={collection?.receipts || []} />
+                    <Catalog
+                        recipes={collection?.receipts || []}
+                        isEdit={user?.id === collection?.user.id} 
+                        onDelete={handleOnDeleteRecipe}
+                    />
                 </div>
             </div>
         </>

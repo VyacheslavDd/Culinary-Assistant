@@ -45,7 +45,7 @@ export const getCollectionsApi = async (
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                withCredentials: true
+                withCredentials: true,
             }
         );
 
@@ -76,7 +76,7 @@ export const getCollectionByIdApi = async (id: string): Promise<Collection> => {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                withCredentials: true
+                withCredentials: true,
             }
         );
 
@@ -87,23 +87,30 @@ export const getCollectionByIdApi = async (id: string): Promise<Collection> => {
             receipts: data.receipts.map((receipt) => {
                 return {
                     ...receipt,
-                    category: typeof receipt.category === 'string'
-                        ? getEnumValueByString(Category, receipt.category) ?? Category.mainCourse
-                        : Category.mainCourse,
-                    cookingDifficulty: typeof receipt.cookingDifficulty === 'string'
-                        ? getEnumValueByString(CookingDifficulty, receipt.cookingDifficulty) ?? CookingDifficulty.easy
-                        : CookingDifficulty.easy,
+                    category:
+                        typeof receipt.category === 'string'
+                            ? getEnumValueByString(
+                                  Category,
+                                  receipt.category
+                              ) ?? Category.mainCourse
+                            : Category.mainCourse,
+                    cookingDifficulty:
+                        typeof receipt.cookingDifficulty === 'string'
+                            ? getEnumValueByString(
+                                  CookingDifficulty,
+                                  receipt.cookingDifficulty
+                              ) ?? CookingDifficulty.easy
+                            : CookingDifficulty.easy,
                     tags: Array.isArray(receipt.tags)
                         ? (receipt.tags
-                            .map((tag) => getEnumValueByString(Tag, tag))
-                            .filter(Boolean) as Tag[])
+                              .map((tag) => getEnumValueByString(Tag, tag))
+                              .filter(Boolean) as Tag[])
                         : [],
                 };
             }),
         };
 
         return collection;
-
     } catch (error) {
         if (axios.isAxiosError(error)) {
             if (typeof error.response?.data === 'string') {
@@ -121,7 +128,6 @@ export const getCollectionByIdApi = async (id: string): Promise<Collection> => {
     }
 };
 
-
 //Получение списка коллекций у пользователя
 export const getCollectionsByUserApi = async (data: {
     userId: string;
@@ -137,7 +143,7 @@ export const getCollectionsByUserApi = async (data: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
                 },
-                withCredentials: true
+                withCredentials: true,
             }
         );
 
@@ -167,7 +173,7 @@ export const deleteCollectionApi = async (id: string): Promise<string> => {
                 headers: {
                     Accept: '*/*',
                 },
-                withCredentials: true
+                withCredentials: true,
             }
         );
 
@@ -206,7 +212,7 @@ export const updateCollectionApi = async (
                 Accept: '*/*',
                 'Content-Type': 'application/json',
             },
-            withCredentials: true
+            withCredentials: true,
         });
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -219,36 +225,6 @@ export const updateCollectionApi = async (
             }
 
             throw new Error('Updating collection failed');
-        }
-
-        throw new Error('Unknown error occurred');
-    }
-};
-
-// Поставить лайк коллекции
-export const likeCollectionApi = async (id: string): Promise<void> => {
-    try {
-        await axios.post(
-            `${apiUrl}api/receipt-collections/${id}/likes`,
-            {},
-            {
-                headers: {
-                    Accept: '*/*',
-                },
-                withCredentials: true
-            }
-        );
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            if (typeof error.response?.data === 'string') {
-                throw new Error(error.response.data);
-            }
-
-            if (error.response?.data?.message) {
-                throw new Error(error.response.data.message);
-            }
-
-            throw new Error('Adding to favorites failed');
         }
 
         throw new Error('Unknown error occurred');
@@ -275,7 +251,7 @@ export const createCollectionApi = async (
                     Accept: '*/*',
                     'Content-Type': 'application/json',
                 },
-                withCredentials: true
+                withCredentials: true,
             }
         );
 
@@ -291,6 +267,203 @@ export const createCollectionApi = async (
             }
 
             throw new Error('Failed to create collection');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+export type rateCollectionType = {
+    rate: number;
+}
+
+//Получение оценки пользователя подборки
+export const getCollectionRateApi = async (id: string): Promise<rateCollectionType> => {
+    try {
+        const response = await axios.get<rateCollectionType>(
+            `${apiUrl}api/receipt-collections/${id}/rate`,
+            {
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Getting rate of collection going wrong');
+        }
+        throw new Error('Unknown error occurred');
+    }
+};
+
+// Поставить оценку коллекции
+export const putRateCollectionApi = async (
+    id: string,
+    rate: number
+): Promise<void> => {
+    try {
+        await axios.post(
+            `${apiUrl}api/receipt-collections/${id}/rate`,
+            { rate: rate },
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Putting rate get failed');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+// Добавить подборку в избранное
+export const CollectionFavoriteApi = async (id: string): Promise<void> => {
+    try {
+        await axios.post(
+            `${apiUrl}api/receipt-collections/${id}/favourite`,
+            {},
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Adding to favourites failed');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+// Удалить подборку из избранного
+export const CollectionUnfavoriteApi = async (id: string): Promise<void> => {
+    try {
+        await axios.delete(
+            `${apiUrl}api/receipt-collections/${id}/unfavourite`,
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Deleting from favourites failed');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+type addRecipesDto = {
+    receipts: string[];
+};
+
+// Добавить рецепты в подборку
+export const addRecipesCollectionApi = async (
+    id: string,
+    data: addRecipesDto
+): Promise<void> => {
+    try {
+        await axios.patch(
+            `${apiUrl}api/receipt-collections/${id}/add-receipts`,
+            data,
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Adding recipes getting failed');
+        }
+
+        throw new Error('Unknown error occurred');
+    }
+};
+
+// Удалить рецепты из подборки
+export const deleteRecipesCollectionApi = async (
+    id: string,
+    data: addRecipesDto
+): Promise<void> => {
+    try {
+        await axios.patch(
+            `${apiUrl}api/receipt-collections/${id}/remove-receipts`,
+            data,
+            {
+                headers: {
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (typeof error.response?.data === 'string') {
+                throw new Error(error.response.data);
+            }
+
+            if (error.response?.data?.message) {
+                throw new Error(error.response.data.message);
+            }
+
+            throw new Error('Deleting recipes getting failed');
         }
 
         throw new Error('Unknown error occurred');
