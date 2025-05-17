@@ -21,6 +21,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		private readonly List<ReceiptCollectionLike> _receiptCollectionLikes = [];
 		private readonly List<ReceiptRate> _receiptRates = [];
 		private readonly List<ReceiptCollectionRate> _collectionRates = [];
+		private readonly List<Feedback> _feedbacks = [];
 
 		public Login Login { get; private set; }
 		public Phone Phone { get; private set; }
@@ -34,6 +35,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public IReadOnlyCollection<ReceiptCollectionLike> ReceiptCollectionLikes => _receiptCollectionLikes;
 		public IReadOnlyCollection<ReceiptRate> ReceiptRates => _receiptRates;
 		public IReadOnlyCollection<ReceiptCollectionRate> CollectionRates => _collectionRates;
+		public IReadOnlyCollection<Feedback> Feedbacks => _feedbacks;
 
 		public static Result<User> Create(UserInDTO userInDTO)
 		{

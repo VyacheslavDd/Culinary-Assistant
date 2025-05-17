@@ -22,6 +22,11 @@ namespace Core.Base
 			return _dbSet;
 		}
 
+		public virtual async Task<int> GetEntitiesCountAsync(CancellationToken cancellationToken = default)
+		{
+			return await _dbSet.CountAsync(cancellationToken);
+		}
+
 		public virtual async Task<T?> GetBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default)
 		{
 			return await _dbSet.Where(selector).FirstOrDefaultAsync(cancellationToken);

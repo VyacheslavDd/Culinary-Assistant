@@ -19,7 +19,7 @@ namespace Culinary_Assistant_Main.Services.Seed
 		public async Task<Guid> CreateAdministratorUserAsync()
 		{
 			var adminLogin = "Culinary_Perfecto";
-			var existingAdmin = await _usersRepository.GetBySelectorAsync(u => u.Login.Value == adminLogin);
+			var existingAdmin = await _usersRepository.GetBySelectorAsync(u => u.IsAdmin);
 			if (existingAdmin != null)
 			{
 				_logger.Information("Администратор уже создан. Дополнительных действий не требуется");

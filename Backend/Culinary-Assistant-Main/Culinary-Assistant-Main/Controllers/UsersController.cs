@@ -112,7 +112,14 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> UpdateAsync([FromRoute] Guid id, [FromBody] UpdateUserDTO updateUserDTO)
 		{
 			var updateResult = await _usersService.NotBulkUpdateAsync(id, updateUserDTO);
-			if (updateResult.IsSuccess) return Ok();
+			if (updateResult.IsSuccess)
+			{
+				var updatedUser = await _usersService.GetByGuidAsync(id);
+				var mappedUser = _mapper.Map<AuthUserOutDTO>(updatedUser);
+				using var minioClient = _minioClientFactory.CreateClient();
+				await _usersService.SetPresignedUrlPictureAsync(minioClient, [mappedUser]);
+				return Ok(mappedUser);
+			}
 			return BadRequest(updateResult.Error);
 		}
 

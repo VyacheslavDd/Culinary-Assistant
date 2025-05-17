@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO.ReceiptRate;
+using Culinary_Assistant_Main.Domain.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

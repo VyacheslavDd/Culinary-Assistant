@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.Const;
 using Culinary_Assistant.Core.DTO;
 using Culinary_Assistant.Core.DTO.Favourite;
+using Culinary_Assistant.Core.DTO.Feedback;
 using Culinary_Assistant.Core.DTO.Like;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.ReceiptRate;
@@ -13,6 +14,7 @@ using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
 using Culinary_Assistant_Main.Infrastructure.Filters;
+using Culinary_Assistant_Main.Services.Feedbacks;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant_Main.Services.ReceiptCollections;
 using Culinary_Assistant_Main.Services.ReceiptRates;
@@ -25,13 +27,15 @@ namespace Culinary_Assistant_Main.Controllers
 {
 	[Route("api/receipts")]
 	[ApiController]
-	public class ReceiptsController(IReceiptsService receiptsService, IReceiptCollectionsService receiptCollectionsService, ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService,
-		IRateService<ReceiptRate, Receipt> receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory) : ControllerBase
+	public class ReceiptsController(IReceiptsService receiptsService, IReceiptCollectionsService receiptCollectionsService, IFeedbacksService feedbacksService,
+		ILikesService<ReceiptLike, Receipt> likesService, IUsersService usersService, IRateService<ReceiptRate, Receipt> receiptRateService, IMapper mapper, IMinioClientFactory minioClientFactory)
+		: ControllerBase
 	{
 		private readonly IReceiptsService _receiptsService = receiptsService;
 		private readonly IReceiptCollectionsService _receiptCollectionsService = receiptCollectionsService;
 		private readonly ILikesService<ReceiptLike, Receipt> _likesService = likesService;
 		private readonly IRateService<ReceiptRate, Receipt> _receiptRateService = receiptRateService;
+		private readonly IFeedbacksService _feedbacksService = feedbacksService;
 		private readonly IMinioClientFactory _minioClientFactory = minioClientFactory;
 		private readonly IUsersService _usersService = usersService;
 		private readonly IMapper _mapper = mapper;
@@ -94,6 +98,23 @@ namespace Culinary_Assistant_Main.Controllers
 			var rate = await _receiptRateService.GetAsync(userId, id, cancellationToken);
 			if (rate == null) return Ok(new RateOutDTO(0));
 			return Ok(new RateOutDTO(rate.Rating));
+		}
+
+		/// <summary>
+		/// Получить отзывы рецепта
+		/// </summary>
+		/// <param name="id">Guid рецепта</param>
+		/// <param name="feedbacksFilter">Фильтр и сортировка отзывов</param>
+		/// <param name="cancellationToken"></param>
+		/// <returns></returns>
+		/// <response code="200">Ответ с отзывами на рецепт</response>
+		[HttpGet]
+		[Route("{id}/feedbacks")]
+		public async Task<IActionResult> GetFeedbacksAsync([FromRoute] Guid id, [FromQuery] FeedbacksFilter feedbacksFilter, CancellationToken cancellationToken)
+		{
+			var feedbacks = await _feedbacksService.GetAllAsync(id, feedbacksFilter, cancellationToken);
+			var mappedFeedbacks = _mapper.Map<List<FeedbackOutDTO>>(feedbacks.Data);
+			return Ok(new EntitiesResponseWithCountAndPages<FeedbackOutDTO>(mappedFeedbacks, feedbacks.EntitiesCount, feedbacks.PagesCount));
 		}
 
 		/// <summary>

@@ -12,6 +12,7 @@ namespace Core.Base.Interfaces
 	public interface IRepository<T>
 	{
 		IQueryable<T> GetAll();
+		Task<int> GetEntitiesCountAsync(CancellationToken cancellationToken = default);
 		Task<T?> GetBySelectorAsync(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
 		IQueryable<T> GetAllBySelector(Expression<Func<T, bool>> selector, CancellationToken cancellationToken = default);
 		IQueryable<T> GetAllWithInclude<TProperty>(Expression<Func<T, TProperty>> includeExpression);

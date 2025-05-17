@@ -16,11 +16,11 @@ namespace Culinary_Assistant.Core.ValueTypes
 			throw new NotImplementedException();
 		}
 
-		public static Result<Text> Create(string text, int maxLength)
+		public static Result<Text> Create(string text, int maxLength, int minLength = 0)
 		{
-			if (string.IsNullOrWhiteSpace(text) || text.Length > maxLength)
+			if (string.IsNullOrWhiteSpace(text) || text.Length > maxLength || text.Length < minLength)
 			{
-				return Result.Failure<Text>($"Текст пустой или превышает длину: {maxLength}");
+				return Result.Failure<Text>($"Текст пустой или не соответствует длине: от {minLength} до {maxLength} символа(-ов)");
 			}
 			return Result.Success(new Text() { Value =  text });
 		}

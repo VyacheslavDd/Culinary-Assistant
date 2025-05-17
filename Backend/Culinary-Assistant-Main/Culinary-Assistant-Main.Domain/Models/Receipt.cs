@@ -19,11 +19,12 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Domain.Models
 {
-    public class Receipt : Core.Base.Entity<Guid>, IRateable
+    public class Receipt : Core.Base.Entity<Guid>, IRateable, IHasUserId
 	{
 		private readonly List<ReceiptCollection> _receiptCollections = [];
 		private readonly List<ReceiptLike> _likes = [];
 		private readonly List<ReceiptRate> _rates = [];
+		private readonly List<Feedback> _feedbacks = [];
 
 		public Text Title { get; private set; }
 		public Text Description { get; private set; }
@@ -44,6 +45,7 @@ namespace Culinary_Assistant_Main.Domain.Models
 		public IReadOnlyCollection<ReceiptCollection> ReceiptCollections => _receiptCollections;
 		public IReadOnlyCollection<ReceiptLike> Likes => _likes;
 		public IReadOnlyCollection<ReceiptRate> Rates => _rates;
+		public IReadOnlyCollection<Feedback> Feedbacks => _feedbacks;
 
 		public static Result<Receipt> Create(ReceiptInDTO receiptInDTO)
 		{
