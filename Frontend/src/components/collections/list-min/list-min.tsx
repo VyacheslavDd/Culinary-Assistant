@@ -1,4 +1,4 @@
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 import { CardCollMin } from '..';
 import styles from './list-min.module.scss';
 

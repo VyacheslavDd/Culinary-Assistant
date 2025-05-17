@@ -19,6 +19,13 @@
     margin: 0 auto;
 }
 
+.title {
+    display: flex;
+    flex-direction: row;
+    gap: 0.52vw;
+    align-items: center;
+}
+
 .catalog {
     display: flex;
     flex-direction: column;
@@ -31,6 +38,24 @@
     line-height: 100%;
     color: black;
     font-family: 'Bree CYR';
+}
+
+.button {
+    width: 1.7vw;
+    height: 1.7vw;
+    cursor: pointer;
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 50%;
+    border: none;
+    background-color: transparent;
+    object-fit: cover;
+    object-position: center;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
 }
 
 .header {

@@ -5,7 +5,6 @@ import { Tag } from './tags.enum';
 export type ShortRecipe = {
     id: string;
     title: string;
-    // description: string;
     mainPictureUrl: string;
     cookingTime: number;
     cookingDifficulty: CookingDifficulty;
@@ -15,4 +14,5 @@ export type ShortRecipe = {
     rating: number;
     category: Category;
     isLiked: boolean;
+    isFavourited: boolean;
 };

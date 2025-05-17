@@ -12,8 +12,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ScrollToTop from 'components/common/scrollToTop';
 import { useEffect, useState } from 'react';
 import { Recipe } from 'types';
-import { getRecipeByIdApi } from 'store/api';
+import { getRecipeByIdApi, getRecipeRateApi, putRateRecipeApi } from 'store/api';
 import { Preloader } from 'components/preloader';
+import { useSelector } from 'store/store';
+import { selectIsAuthenticated } from 'store/user.slice';
 
 function ReceiptPage() {
     const { id } = useParams<{ id: string }>();
@@ -21,6 +23,40 @@ function ReceiptPage() {
     const [recipe, setRecipe] = useState<Recipe | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isAuth = useSelector(selectIsAuthenticated);
+    const [currentRating, setCurrentRating] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (!isAuth) return;
+        if (!recipe?.id) return;
+
+        const loadUserRating = async () => {
+            try {
+                const rating = await getRecipeRateApi(recipe.id);
+                setCurrentRating(rating.rate);
+                console.log(currentRating);
+            } catch (error) {
+                console.error('Ошибка загрузки оценки:', error);
+            }
+        };
+
+        loadUserRating();
+    }, [recipe, isAuth]);
+
+    const handleRate = async (rating: number) => {
+        if (!isAuth || isLoading || !recipe?.id) return;
+        
+        try {
+            setIsLoading(true);
+            await putRateRecipeApi(recipe.id, rating);
+            setCurrentRating(rating);
+        } catch (error) {
+            console.error('Ошибка сохранения оценки:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         const fetchRecipe = async () => {
@@ -62,7 +98,7 @@ function ReceiptPage() {
 
     return (
         <>
-            <ScrollToTop />{' '}
+            <ScrollToTop />
             <div className={styles.background}>
                 <div className={styles.mainContainer}>
                     <div className={styles.backContainer}>
@@ -77,8 +113,12 @@ function ReceiptPage() {
                             <Ingredients ingredients={recipe.ingredients} />
                         </div>
                         <div className={styles.reviewContainer}>
-                            <ButtonsReceipt name={recipe.title} />
-                            <Ratings />
+                            <ButtonsReceipt
+                                name={recipe.title}
+                                recipeId={recipe.id}
+                                isFavourite={recipe.isFavourited}
+                            />
+                            <Ratings currentRating={currentRating} onRate={handleRate} />
                             <Review />
                             <Reviews />
                         </div>

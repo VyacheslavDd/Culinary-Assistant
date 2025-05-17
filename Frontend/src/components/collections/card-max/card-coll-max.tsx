@@ -1,8 +1,9 @@
 import styles from './card-coll-max.module.scss';
 import favIcon from '../../../assets/svg/coll_fav_dark.svg';
 import { useNavigate } from 'react-router-dom';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 import { transformCreatedAt } from 'utils/transform';
+import { COLORS } from 'mocks/colors';
 
 type props = {
     data: ShortCollection;
@@ -25,12 +26,22 @@ export function CardCollMax(props: props) {
     const displayedRecipes = combinedRecipes.slice(0, MAX_RECIPES_DISPLAY);
     const remainingCount = combinedRecipes.length - MAX_RECIPES_DISPLAY;
     const placeholdersCount = MAX_RECIPES_DISPLAY - displayedRecipes.length;
+    console.log(data.title, displayedRecipes, placeholdersCount);
 
     return (
         <div className={styles.mainContainer} onClick={handleClick}>
             <div className={styles.info}>
                 <div className={styles.title}>
-                    <div className={styles.name}>{data.title}</div>
+                    <div
+                        className={styles.name}
+                        style={{
+                            backgroundColor: COLORS.find(
+                                (item) => item.value === data.color
+                            )?.color,
+                        }}
+                    >
+                        {data.title}
+                    </div>
                     <p>от {data.userLogin}</p>
                 </div>
 

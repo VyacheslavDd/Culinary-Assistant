@@ -1,12 +1,14 @@
-import { Category, CookingDifficulty, Ingredient, Tag } from 'types';
+import { Category, CookingDifficulty, Tag } from 'types';
 
 export type Filter = {
     SearchByTitle?: string;
-    // SearchByIngredients: Ingredient[];
-    SearchByIngredients: string;
+    SearchByIngredients: string[];
+    StrictIngredientsSearch: boolean;
     CookingTimeFrom?: number;
     CookingTimeTo?: number;
     CookingDifficulties?: CookingDifficulty[];
     Categories?: Category[];
     Tags?: Tag[];
+    SortOption: 'byCookingTime' | 'byPopularity' | 'byCalories';
+    IsAscendingSorting: boolean;
 };

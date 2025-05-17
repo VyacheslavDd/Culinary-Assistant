@@ -24,6 +24,7 @@ export type Recipe = {
     picturesUrls: { url: string }[];
     user: ShortUser;
     isLiked: boolean;
+    isFavourited: boolean;
 };
 
 export type CookingStep = {

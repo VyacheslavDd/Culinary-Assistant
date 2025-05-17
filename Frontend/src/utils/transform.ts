@@ -40,20 +40,30 @@ export function transformCategory(category: Category): string {
     switch (category) {
         case Category.breakfast:
             return 'Завтрак';
-        case Category.dessert:
-            return 'Десерт';
-        case Category.dinner:
+        case Category.lunch:
             return 'Обед';
-        case Category.drinks:
-            return 'Напиток';
-        case Category.hot:
-            return 'Горячее';
+        case Category.dinner:
+            return 'Ужин';
+        case Category.mainCourse:
+            return 'Основное блюдо';
+        case Category.soup:
+            return 'Суп';
+        case Category.pasta:
+            return 'Паста';
+        case Category.sideDish:
+            return 'Гарнир';
         case Category.salad:
             return 'Салат';
+        case Category.dessert:
+            return 'Десерт';
+        case Category.drink:
+            return 'Напиток';
+        case Category.pastry:
+            return 'Выпечка';
         case Category.sauce:
             return 'Соус';
-        case Category.soups:
-            return 'Суп';
+        case Category.appetizer:
+            return 'Закуска';
         default:
             return 'Блюдо';
     }
@@ -71,6 +81,14 @@ export function transformMeasure(measure: Measure): string {
             return 'мл';
         case Measure.piece:
             return 'шт';
+        case Measure.pinch:
+            return 'щепотка';
+        case Measure.teaspoon:
+            return 'ч.л.';
+        case Measure.tablespoon:
+            return 'ст.л.';
+        case Measure.glass:
+            return 'стакан';
         default:
             return '';
     }
@@ -83,4 +101,14 @@ export function transformCreatedAt(dateString: string): string {
 
     const date = parseISO(dateString);
     return `Опубликована ${format(date, 'd MMMM yyyy', { locale: ru })}`;
+}
+
+// Универсальная функция для преобразования строки в значение enum
+export function getEnumValueByString<T extends Record<string, string>>(
+    enumObj: T,
+    value: string
+): T[keyof T] | undefined {
+    return (Object.values(enumObj) as string[]).includes(value)
+        ? (value as T[keyof T])
+        : undefined;
 }

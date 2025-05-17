@@ -4,6 +4,8 @@ import {
     IngredientsContent,
     Search,
     SortContent,
+    SortDirection,
+    SortFieldRecipe,
 } from 'components/filter';
 import styles from './filter.module.scss';
 import { useDispatch, useSelector } from 'store/store';
@@ -16,6 +18,18 @@ import {
 export function Filter() {
     const filter = useSelector(selectFilter);
     const dispatch = useDispatch();
+
+    const handleSortChange = (
+        field: SortFieldRecipe,
+        direction: SortDirection
+    ) => {
+        dispatch(
+            updateFilter({
+                SortOption: field,
+                IsAscendingSorting: direction === 'asc',
+            })
+        );
+    };
 
     return (
         <div className={styles.mainContainer}>
@@ -58,7 +72,14 @@ export function Filter() {
                         dispatch(fetchRecipes());
                     }}
                 >
-                    <SortContent />
+                    <SortContent
+                        selectedField={filter.SortOption as SortFieldRecipe}
+                        selectedDirection={
+                            filter.IsAscendingSorting ? 'asc' : 'desc'
+                        }
+                        onChange={handleSortChange}
+                        isCollection={false}
+                    />
                 </ButtonLayout>
             </div>
         </div>

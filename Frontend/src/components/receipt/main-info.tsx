@@ -2,11 +2,19 @@ import styles from './main-info.module.scss';
 import star from '../../assets/svg/star.svg';
 import clock from '../../assets/svg/clock_pink.svg';
 import chef from '../../assets/svg/chef_pink.svg';
-// import receipt from '../../assets/img/receipt.png';
+import edit from '../../assets/svg/edit.svg';
 import { useState } from 'react';
 import { Modal } from 'components/common';
 import { Recipe } from 'types';
-import { transformCategory, transformCookingTime, transformDifficulty, transformRating } from 'utils/transform';
+import {
+    transformCategory,
+    transformCookingTime,
+    transformDifficulty,
+    transformRating,
+} from 'utils/transform';
+import { useSelector } from 'store/store';
+import { selectUser } from 'store/user.slice';
+import { useNavigate } from 'react-router';
 
 type props = {
     recipe: Recipe;
@@ -26,8 +34,11 @@ export function MainInfo(props: props) {
         mainPictureUrl,
         rating,
         cookingDifficulty,
+        user,
     } = recipe;
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const userId = useSelector(selectUser);
+    const navigate = useNavigate();
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -47,7 +58,25 @@ export function MainInfo(props: props) {
             </button>
             <div className={styles.container}>
                 <div className={styles.title}>
-                    <p className={styles.tag}>{transformCategory(category)}</p>
+                    <div className={styles.category}>
+                        <p className={styles.tag}>
+                            {transformCategory(category)}
+                        </p>
+                        {userId?.id === user.id ? (
+                            <button
+                                className={styles.button}
+                                onClick={() => {
+                                    navigate(`/recipe/${recipe.id}/edit`);
+                                }}
+                            >
+                                <img src={edit} alt='edit' />
+                                Редактировать
+                            </button>
+                        ) : (
+                            <></>
+                        )}
+                    </div>
+
                     <h2 className={styles.name}>{title}</h2>
                 </div>
                 <div className={styles.descriptionContainer}>
@@ -59,7 +88,9 @@ export function MainInfo(props: props) {
                                 alt='star'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>{transformRating(rating)}</p>
+                            <p className={styles.text}>
+                                {transformRating(rating)}
+                            </p>
                         </div>
                         <div className={styles.info}>
                             <p className={styles.title}>Время приготовления</p>
@@ -68,7 +99,9 @@ export function MainInfo(props: props) {
                                 alt='clock'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>{transformCookingTime(cookingTime)}</p>
+                            <p className={styles.text}>
+                                {transformCookingTime(cookingTime)}
+                            </p>
                         </div>
                         <div className={styles.info}>
                             <p className={styles.title}>Сложность</p>
@@ -77,7 +110,9 @@ export function MainInfo(props: props) {
                                 alt='chef'
                                 className={styles.img}
                             ></img>
-                            <p className={styles.text}>{transformDifficulty(cookingDifficulty)}</p>
+                            <p className={styles.text}>
+                                {transformDifficulty(cookingDifficulty)}
+                            </p>
                         </div>
                     </div>
                     <p className={styles.description}>{description}</p>
@@ -86,7 +121,8 @@ export function MainInfo(props: props) {
                         <p>
                             На 100 г:{' '}
                             <span className={styles.text}>
-                                {calories} / {proteins} / {fats} / {carbohydrates}
+                                {calories} / {proteins} / {fats} /{' '}
+                                {carbohydrates}
                             </span>
                         </p>
                     </div>

@@ -1,10 +1,15 @@
 export enum Category {
     breakfast = 'breakfast',
+    lunch = 'lunch',
     dinner = 'dinner',
-    soups = 'soups',
+    mainCourse = 'mainCourse',
+    soup = 'soup',
+    pasta = 'pasta',
+    sideDish = 'sideDish',
     salad = 'salad',
     dessert = 'dessert',
-    drinks = 'drinks',
-    hot = 'hot',
+    drink = 'drink',
+    pastry = 'pastry',
     sauce = 'sauce',
+    appetizer = 'appetizer'
 }

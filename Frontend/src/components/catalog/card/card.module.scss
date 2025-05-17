@@ -69,20 +69,40 @@
 
     .icon {
         display: inline-block;
+        position: relative;
         background-color: transparent;
         border: none;
-        background-image: url('../../../assets/svg/unfav.svg');
-        background-size: cover;
-        background-repeat: no-repeat;
         cursor: pointer;
         width: clamp(30px, 2.5vw, 40px);
         height: clamp(30px, 2.5vw, 40px);
         object-fit: cover;
-        transition: all 0.2s ease;
+        padding: 0;
+    }
 
-        &:hover {
-            background-image: url('../../../assets/svg/fav.svg');
-        }
+    .iconImage {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .visible {
+        opacity: 1;
+    }
+
+    .hidden {
+        opacity: 0;
+    }
+
+    .fadeIn {
+        opacity: 1;
+    }
+
+    .fadeOut {
+        opacity: 0;
     }
 }
 
@@ -106,5 +126,32 @@
         min-height: 15px;
         width: 1.4vw;
         height: 1.4vw;
+    }
+}
+
+.deleteButton {
+    position: absolute;
+    top: 2%;
+    right: 2%;
+    background: rgba(227, 101, 136, 0.35);
+    display: inline-flex;
+    padding: 0.57vw 0.78vw;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.41vw;
+    border: 0.05vw solid #9a275a;
+    cursor: pointer;
+    color: #9a275a;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: #9a275a;
+        color: white;
+    }
+
+    .close {
+        width: 1vw;
+        height: 1vw;
+        fill: #9a275a;
     }
 }

@@ -28,6 +28,22 @@ export function ButtonLayout(props: Props) {
     const toggleMenu = () => setOpen(!open);
 
     useEffect(() => {
+        if (open && dropdownRef.current) {
+            const dropdownBottom = dropdownRef.current.getBoundingClientRect().bottom;
+            const docBottom = document.documentElement.getBoundingClientRect().bottom;
+    
+            if (dropdownBottom > docBottom) {
+                const spaceNeeded = dropdownBottom - docBottom;
+                document.body.style.paddingBottom = `${spaceNeeded + 20}px`;
+            }
+        }
+    
+        return () => {
+            document.body.style.paddingBottom = '';
+        };
+    }, [open]);
+
+    useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
@@ -68,6 +84,7 @@ export function ButtonLayout(props: Props) {
                         Применить
                     </button>
                 </div>
+                
             )}
         </div>
     );

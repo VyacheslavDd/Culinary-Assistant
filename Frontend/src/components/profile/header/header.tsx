@@ -1,17 +1,25 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { LayoutHeader } from 'components/layout';
 import styles from './header.module.scss';
-import profile_photo from '../../../assets/img/profile_photo.png';
 import edit from '../../../assets/svg/edit.svg';
 import exit from '../../../assets/svg/exit.svg';
 import { logoutUser, selectUser } from 'store/user.slice';
 import { useDispatch, useSelector } from 'store/store';
 import { useNavigate } from 'react-router-dom';
+import default_user from '../../../assets/img/default-user.png';
+import { EditProfile } from '../edit-profile/edit-profile';
+import { useState } from 'react';
 
 export function HeaderProfile() {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const [open, setOpen] = useState(false);
+
+    const handleCloseModal = () => {
+        setOpen(false);
+    };
+
     const { login, email, phone, pictureUrl } = user!;
 
     const handleLogout = () => {
@@ -24,7 +32,7 @@ export function HeaderProfile() {
             <LayoutHeader>
                 <div className={styles.container}>
                     <img
-                        src={profile_photo}
+                        src={pictureUrl === 'none' ? default_user : pictureUrl}
                         alt='profile'
                         className={styles.img}
                     />
@@ -32,7 +40,10 @@ export function HeaderProfile() {
                         <div className={styles.name}>
                             <h2 className={styles.title}>{login}</h2>
                             <div className={styles.buttons}>
-                                <button className={styles.button}>
+                                <button
+                                    className={styles.button}
+                                    onClick={() => setOpen(true)}
+                                >
                                     <img src={edit} alt='edit' />
                                     Изм.
                                 </button>
@@ -78,6 +89,11 @@ export function HeaderProfile() {
                     </div>
                 </div>
             </LayoutHeader>
+            {open ? (
+                <EditProfile onClose={handleCloseModal} user={user!} />
+            ) : (
+                <></>
+            )}
         </div>
     );
 }
