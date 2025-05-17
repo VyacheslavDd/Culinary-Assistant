@@ -25,6 +25,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 		public virtual DbSet<ReceiptCollectionLike> ReceiptCollectionLikes { get; set; }
 		public virtual DbSet<ReceiptRate> ReceiptRates { get; set; }
 		public virtual DbSet<ReceiptCollectionRate> ReceiptCollectionRates { get; set; }
+		public virtual DbSet<Feedback> Feedbacks { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -36,6 +37,7 @@ namespace Culinary_Assistant_Main.Infrastructure
 			new ReceiptLikeConfiguration().Configure(modelBuilder.Entity<ReceiptLike>());
 			new ReceiptRateConfiguration().Configure(modelBuilder.Entity<ReceiptRate>());
 			new ReceiptCollectionRateConfiguration().Configure(modelBuilder.Entity<ReceiptCollectionRate>());
+			new FeedbackConfiguration().Configure(modelBuilder.Entity<Feedback>());
 			base.OnModelCreating(modelBuilder);
 		}
 

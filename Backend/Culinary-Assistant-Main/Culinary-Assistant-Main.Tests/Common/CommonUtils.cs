@@ -25,6 +25,7 @@ using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant.Core.Redis;
 using CSharpFunctionalExtensions;
+using Minio.DataModel.Args;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -91,6 +92,15 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var mapperMock = new Mock<IMapper>();
 			mapperMock.Setup(m => m.Map<AuthUserOutDTO>(It.IsAny<User>())).Returns(new AuthUserOutDTO());
 			return mapperMock.Object;
+		}
+
+		public static IMinioClientFactory MockMinioClientFactory()
+		{
+			var minioClientMock = new Mock<IMinioClient>();
+			minioClientMock.Setup(m => m.PresignedGetObjectAsync(It.IsAny<PresignedGetObjectArgs>())).Returns(Task.FromResult("none"));
+			var minioClientFactory = new Mock<IMinioClientFactory>();
+			minioClientFactory.Setup(mcf => mcf.CreateClient()).Returns(minioClientMock.Object);
+			return minioClientFactory.Object;
 		}
 
 		public static async Task<Guid> GetUserGuidByLoginAsync(CulinaryAppContext context, string login)
