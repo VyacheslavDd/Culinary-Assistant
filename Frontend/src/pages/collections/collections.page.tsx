@@ -10,6 +10,7 @@ import {
     updateFilter,
 } from 'store/collections-page.slice';
 import { useEffect } from 'react';
+import { SortFieldCollection, SortDirection } from 'components/filter';
 
 function CollectionsPage() {
     const popularCollections = useSelector(selectPopularCollections);
@@ -33,6 +34,14 @@ function CollectionsPage() {
                 }
                 value={filter.Title}
                 onClick={() => dispatch(fetchCollections())}
+                selectedField={'byPopularity'}
+                selectedDirection={'asc'}
+                onSortChange={function (
+                    field: SortFieldCollection,
+                    direction: SortDirection
+                ): void {
+                    throw new Error('Function not implemented.');
+                }}
             />
         </div>
     );

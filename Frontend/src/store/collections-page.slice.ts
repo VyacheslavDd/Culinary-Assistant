@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { getCollectionsApi } from './api';
 import { RootState } from './store';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 import { FilterCollection } from 'types/filter-collections.type';
 
 type TCollectionsPageState = {

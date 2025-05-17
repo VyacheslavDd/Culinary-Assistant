@@ -1,3 +1,5 @@
+import { Color } from './color.enum';
+
 export type ShortCollection = {
     id: string;
     title: string;
@@ -8,4 +10,5 @@ export type ShortCollection = {
     receiptNames: string[];
     userLogin: string;
     createdAt: string;
+    color: Color;
 };

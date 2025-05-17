@@ -9,8 +9,10 @@ import {
     logoutUserApi,
     registerUserApi,
     RegisterUserData,
+    updateUserApi,
+    UpdateUserDto,
 } from './api';
-import { ShortCollection } from 'types/short-collections.type';
+import { ShortCollection } from 'types/short-collection.type';
 
 type TUserState = {
     user: User | null;
@@ -135,6 +137,24 @@ export const fetchUsersRecipes = createAsyncThunk(
         }
     }
 );
+
+// Обновление пользователя
+export const updateUser = createAsyncThunk<
+    UpdateUserDto,
+    { id: string; data: UpdateUserDto },
+    { rejectValue: string }
+>('user/update', async ({ id, data }, { rejectWithValue }) => {
+    try {
+        await updateUserApi(id, data);
+        return data;
+    } catch (error) {
+        if (error instanceof Error) {
+            return rejectWithValue(error.message);
+        }
+        return rejectWithValue('Failed to update user');
+    }
+});
+
 export const userSlice = createSlice({
     name: 'user',
     initialState,
@@ -146,6 +166,8 @@ export const userSlice = createSlice({
         selectIsAuthChecked: (state) => state.isAuthChecked,
         selectUserError: (state) => state.error,
         selectUserLoading: (state) => state.isLoading,
+        selectRecipeById: (state, id) =>
+            state.recipes.find((item) => item.id === id),
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -243,6 +265,25 @@ export const userSlice = createSlice({
             .addCase(fetchUsersRecipes.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
+            })
+
+            // Обновление пользователя
+            .addCase(updateUser.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (state.user) {
+                    state.user = {
+                        ...state.user,
+                        ...action.payload,
+                    };
+                }
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
             });
     },
 });
@@ -255,6 +296,7 @@ export const {
     selectIsAuthChecked,
     selectUserError,
     selectUserLoading,
+    selectRecipeById,
 } = userSlice.selectors;
 
 export default userSlice.reducer;

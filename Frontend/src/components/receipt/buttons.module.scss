@@ -1,7 +1,7 @@
 .mainContainer {
     width: 100%;
     padding-bottom: 1.6vw;
-    border-bottom: 0.08vw solid #E5E0D6;
+    border-bottom: 0.08vw solid #e5e0d6;
     color: white;
     font-size: var(--font-size-20);
     font-family: 'TildaSans';
@@ -32,8 +32,8 @@
 //     }
 
 //     &:active {
-//         background-color: var(--blue-active); 
-//         transform: translateY(1px); 
+//         background-color: var(--blue-active);
+//         transform: translateY(1px);
 //     }
 // }
 
@@ -69,6 +69,7 @@
 }
 
 .buttonAdd {
+    position: relative;
     font-family: 'TildaSans';
     font-size: var(--font-size-20);
     border: 0.05vw solid var(--pink);
@@ -93,4 +94,26 @@
         color: var(--pink-active);
         transform: translateY(1px);
     }
+}
+
+.favIcon {
+    width: 1.25vw;
+    height: 1.25vw;
+    min-width: 20px;
+    min-height: 20px;
+    vertical-align: middle;
+}
+
+.buttonShare:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.buttonShare {
+    height: auto;
+}
+
+.addToCollectionWrapper {
+    position: relative;
+    display: inline-block;
 }
