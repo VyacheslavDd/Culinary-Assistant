@@ -291,7 +291,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		{
 			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName);
 			if (collection != null) return Result.Success(collection.Id);
-			var collectionInDTO = new ReceiptCollectionInModelDTO(MiscellaneousConstants.FavouriteReceiptsCollectionName, true, Color.Yellow, userId, null);
+			var collectionInDTO = new ReceiptCollectionInModelDTO(MiscellaneousConstants.FavouriteReceiptsCollectionName, true, Color.Pink, userId, null);
 			var res = await CreateAsync(collectionInDTO);
 			return res;
 		}
