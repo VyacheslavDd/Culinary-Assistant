@@ -22,6 +22,7 @@ import {
 import { Preloader } from 'components/preloader';
 import { useSelector } from 'store/store';
 import { selectIsAuthenticated } from 'store/user.slice';
+import { Helmet } from 'react-helmet-async';
 
 function ReceiptPage() {
     const { id } = useParams<{ id: string }>();
@@ -67,7 +68,6 @@ function ReceiptPage() {
             try {
                 const rating = await getRecipeRateApi(recipe.id);
                 setCurrentRating(rating.rate);
-                console.log(currentRating);
             } catch (error) {
                 console.error('Ошибка загрузки оценки:', error);
             }
@@ -149,6 +149,9 @@ function ReceiptPage() {
     return (
         <>
             <ScrollToTop />
+            <Helmet>
+                <title>{recipe.title}</title>
+            </Helmet>
             <div className={styles.background}>
                 <div className={styles.mainContainer}>
                     <div className={styles.backContainer}>

@@ -5,6 +5,7 @@ import { selectUserCollections } from 'store/user.slice';
 import ScrollToTop from 'components/common/scrollToTop';
 import { useState } from 'react';
 import { SortDirection, SortFieldCollection } from 'components/filter';
+import { Helmet } from 'react-helmet-async';
 
 function MyCollectionsPage() {
     const myCollections = useSelector(selectUserCollections);
@@ -45,6 +46,9 @@ function MyCollectionsPage() {
     return (
         <>
             <ScrollToTop />
+            <Helmet>
+                <title>Мои подборки</title>
+            </Helmet>
             <div className={styles.mainContainer}>
                 <CollList
                     title='Мои подборки'

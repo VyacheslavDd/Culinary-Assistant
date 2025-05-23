@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import styles from './my-collection.module.scss';
 import { ReactComponent as PlusIcon } from '../../../assets/svg/button_plus.svg';
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { CardCollMin } from '../card-min/card-coll-min';
 import { CardNew } from '../card-new/card-new';
 import { ShortCollection } from 'types/short-collection.type';

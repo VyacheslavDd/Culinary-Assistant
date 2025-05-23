@@ -10,6 +10,7 @@ import { deleteRecipesCollectionApi, getCollectionByIdApi } from 'store/api';
 import { Collection } from 'types/collections.type';
 import { Preloader } from 'components/preloader';
 import { selectUser } from 'store/user.slice';
+import { Helmet } from 'react-helmet-async';
 
 export function CollectionPage() {
     const { id } = useParams<{ id: string }>();
@@ -53,6 +54,9 @@ export function CollectionPage() {
     return (
         <>
             <ScrollToTop />
+            <Helmet>
+                <title>Подборка &ldquo;{collection?.title}&rdquo;</title>
+            </Helmet>
             <div className={styles.mainContainer}>
                 {user?.id === collection?.user.id ? (
                     <MyCollHeader collection={collection!} />
@@ -63,7 +67,7 @@ export function CollectionPage() {
                     <h2 className={styles.title}> Рецепты</h2>
                     <Catalog
                         recipes={collection?.receipts || []}
-                        isEdit={user?.id === collection?.user.id} 
+                        isEdit={user?.id === collection?.user.id}
                         onDelete={handleOnDeleteRecipe}
                     />
                 </div>

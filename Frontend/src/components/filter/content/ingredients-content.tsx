@@ -47,7 +47,7 @@ export function IngredientsContent() {
                 {filteredIngredients.length > 0 ? (
                     filteredIngredients.map((ingredient, index) => (
                         <li
-                            key={index}
+                            key={ingredient}
                             className={`${styles.li} ${
                                 selectedIngredients.includes(ingredient)
                                     ? styles.selected

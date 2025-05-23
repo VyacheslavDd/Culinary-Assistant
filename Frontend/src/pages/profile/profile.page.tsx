@@ -6,6 +6,7 @@ import { selectUserCollections, selectUserRecipes } from 'store/user.slice';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { ReactComponent as PlusIcon } from '../../assets/svg/button_plus.svg';
 import { MyCollection } from 'components/profile/my-collections/my-collection';
+import { Helmet } from 'react-helmet-async';
 
 export function ProfilePage() {
     const myRecipes = useSelector(selectUserRecipes);
@@ -18,6 +19,9 @@ export function ProfilePage() {
 
     return (
         <div className={styles.mainContainer}>
+            <Helmet>
+                <title>Личный кабинет</title>
+            </Helmet>
             <HeaderProfile />
             <div className={styles.container}>
                 <MyCollection items={myCollections} />

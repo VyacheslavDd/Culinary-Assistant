@@ -18,6 +18,7 @@ import {
 } from 'store/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ScrollToTop from 'components/common/scrollToTop';
+import { Helmet } from 'react-helmet-async';
 
 export function EditRecipePage() {
     const { id } = useParams<{ id: string }>();
@@ -44,6 +45,8 @@ export function EditRecipePage() {
     const difficultyRef = useRef<HTMLInputElement[]>([]);
     const photoRef = useRef<HTMLInputElement>(null);
 
+    const [title, setTitle] = useState('');
+
     const user = useSelector(selectUser);
 
     useEffect(() => {
@@ -53,11 +56,13 @@ export function EditRecipePage() {
                 setIngredients(fetchedRecipe.ingredients);
                 setSteps(fetchedRecipe.cookingSteps);
             });
+            setTitle('Редактирование рецепта');
         } else {
             setIngredients([
                 { name: '', numericValue: 0, measure: Measure.gram },
             ]);
             setSteps([{ title: '', description: '', step: 1 }]);
+            setTitle('Создание рецепта');
         }
     }, [id, dispatch]);
 
@@ -85,7 +90,6 @@ export function EditRecipePage() {
                 if (option) option.selected = true;
             });
 
-            // Устанавливаем сложности
             difficultyRef.current.forEach((input) => {
                 if (input.value === recipe.cookingDifficulty) {
                     input.checked = true;
@@ -234,7 +238,10 @@ export function EditRecipePage() {
 
     return (
         <>
-            <ScrollToTop />{' '}
+            <ScrollToTop />
+            <Helmet>
+                <title>{title}</title>
+            </Helmet>
             <div className={styles.background}>
                 <div className={styles.mainContainer}>
                     <div className={styles.backContainer}>

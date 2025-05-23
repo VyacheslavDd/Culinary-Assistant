@@ -140,8 +140,6 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
             user: data.user as ShortUser,
         };
 
-        console.log(recipe);
-
         return recipe;
     } catch (error) {
         if (axios.isAxiosError(error)) {

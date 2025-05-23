@@ -11,6 +11,7 @@ import {
 } from 'store/collections-page.slice';
 import { useEffect } from 'react';
 import { SortFieldCollection, SortDirection } from 'components/filter';
+import { Helmet } from 'react-helmet-async';
 
 function CollectionsPage() {
     const popularCollections = useSelector(selectPopularCollections);
@@ -25,6 +26,9 @@ function CollectionsPage() {
 
     return (
         <div className={styles.mainContainer}>
+            <Helmet>
+                <title>Все подборки</title>
+            </Helmet>
             <Best collections={popularCollections} />
             <CollList
                 title='Все подборки'
