@@ -5,8 +5,9 @@ import { Category, CookingDifficulty, Tag } from 'types';
 import { Collection } from 'types/collections.type';
 import { ShortCollection } from 'types/short-collection.type';
 import { getEnumValueByString } from 'utils/transform';
+import { API_URL } from '../../../env';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL || 'http://localhost:5000/';
 
 export type TCollectionsData = {
     Page: number;
@@ -278,10 +279,12 @@ export const createCollectionApi = async (
 
 export type rateCollectionType = {
     rate: number;
-}
+};
 
 //Получение оценки пользователя подборки
-export const getCollectionRateApi = async (id: string): Promise<rateCollectionType> => {
+export const getCollectionRateApi = async (
+    id: string
+): Promise<rateCollectionType> => {
     try {
         const response = await axios.get<rateCollectionType>(
             `${apiUrl}api/receipt-collections/${id}/rate`,

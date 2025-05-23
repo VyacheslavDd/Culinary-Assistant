@@ -12,6 +12,7 @@ import {
     Tag,
 } from 'types';
 import { getEnumValueByString } from 'utils/transform';
+import { API_URL } from '../../../env';
 
 export type TRecipesData = {
     Page: number;
@@ -34,7 +35,7 @@ export type TRecipesResponse = {
     pagesCount: number;
 };
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL || 'http://localhost:5000/';
 
 // Получение списка рецептов
 export const getRecipesApi = async (

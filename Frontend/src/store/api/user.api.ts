@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { User } from 'types';
+import { API_URL } from '../../../env';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL || 'http://localhost:5000/';
 
 export type RegisterUserData = {
     login: string;
