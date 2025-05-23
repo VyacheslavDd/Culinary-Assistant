@@ -33,7 +33,7 @@ builder.Services.AddCors(setup =>
 	setup.AddPolicy(ConfigurationConstants.FrontendPolicy, config =>
 	{
 		config
-	   .WithOrigins(builder.Configuration[ConfigurationConstants.FrontendHost]!)
+	   .WithOrigins(builder.Configuration[ConfigurationConstants.FrontendHost]!, builder.Configuration[ConfigurationConstants.FrontendVMHost]!)
 	   .AllowAnyHeader()
 	   .AllowAnyMethod()
 	   .AllowCredentials();

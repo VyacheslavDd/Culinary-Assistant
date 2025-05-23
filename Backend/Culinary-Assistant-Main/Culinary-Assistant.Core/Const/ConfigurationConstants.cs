@@ -13,6 +13,7 @@ namespace Culinary_Assistant.Core.Constants
 		public const string RabbitMQ = "RabbitMQ";
 		public const string MinioLocalHost = "MinioLocalHost";
 		public const string FrontendHost = "FrontendHost";
+		public const string FrontendVMHost = "FrontendVMHost";
 		public const string ElasticSearchOptions = "ElasticSearchOptions";
 		public const string FrontendPolicy = "FrontendPolicy";
 		public const string JWTSecretKey = "JWTSecretKey";

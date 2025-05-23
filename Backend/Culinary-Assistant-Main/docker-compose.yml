@@ -41,6 +41,22 @@ services:
         context: .
         dockerfile: Culinary-Assistant-Images/Dockerfile
 
+  culinary-assistant-frontend:
+    networks:
+        - culinary-network
+    image: culinarfrontend:latest
+    container_name: CulinaryAssistantFrontend
+    restart: always
+    ports:
+        - "3003:80"
+    build:
+        context: ../../frontend
+        dockerfile: Dockerfile
+    env_file: ../../frontend/.env
+    depends_on:
+        culinary-assistant-main:
+            condition: service_started
+
   culinarydb:
     networks:
         - culinary-network
