@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { User } from 'types';
+import { API_URL } from 'utils/variables';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL || 'http://localhost:5000/';
 
 export type RegisterUserData = {
     login: string;
@@ -147,22 +148,28 @@ export type UpdateUserDto = {
     login?: string;
     email?: string;
     phone?: string;
-    pictureUrl?: string;
+    profilePictureUrl?: string;
 };
 
 // Редактировать пользователя
 export const updateUserApi = async (
     id: string,
     data: UpdateUserDto
-): Promise<void> => {
+): Promise<User> => {
     try {
-        await axios.put(`${apiUrl}api/users/${id}`, data, {
-            headers: {
-                Accept: '*/*',
-                'Content-Type': 'application/json',
-            },
-            withCredentials: true,
-        });
+        const response = await axios.put<User>(
+            `${apiUrl}api/users/${id}`,
+            data,
+            {
+                headers: {
+                    Accept: '*/*',
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
+            }
+        );
+
+        return response.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             if (typeof error.response?.data === 'string') {
@@ -228,7 +235,7 @@ export const deleteUserApi = async (id: string): Promise<string> => {
             headers: {
                 Accept: '*/*',
             },
-            withCredentials: true
+            withCredentials: true,
         });
 
         return response.data;

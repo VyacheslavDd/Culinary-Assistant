@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './review.module.scss';
 
-export function Review() {
+type props = {
+    onClick: (text: string) => void;
+};
+
+export function Review(props: props) {
+    const { onClick } = props;
     const [review, setReview] = useState('');
-    const [isSubmitted, setIsSubmitted] = useState(false);
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     useEffect(() => {
@@ -21,8 +26,12 @@ export function Review() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (isValidReview()) {
-            setIsSubmitted(true);
-            console.log('Отзыв отправлен:', review);
+            try {
+                onClick(review);
+                setReview('');
+            } catch (error) {
+                console.error('Произошла ошибка в отправке отзыва');
+            }
         }
     };
 
@@ -50,7 +59,11 @@ export function Review() {
                 <div className={styles.buttonContainer}>
                     <p>{review.length}/200</p>
                     {isValidReview() && (
-                        <button type='submit' className={styles.button}>
+                        <button
+                            type='submit'
+                            className={styles.button}
+                            onClick={handleSubmit}
+                        >
                             <span className={styles.icon}></span>
                             Отправить отзыв
                         </button>

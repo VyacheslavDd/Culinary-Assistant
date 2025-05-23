@@ -7,6 +7,7 @@ import { selectUserLoading, selectUserRecipes } from 'store/user.slice';
 import { useMemo, useState } from 'react';
 import ScrollToTop from 'components/common/scrollToTop';
 import { SortDirection, SortFieldRecipe } from 'components/filter';
+import { Helmet } from 'react-helmet-async';
 
 function MyRecipesPage() {
     const isLoading = useSelector(selectUserLoading);
@@ -53,6 +54,9 @@ function MyRecipesPage() {
     return (
         <>
             <ScrollToTop />
+            <Helmet>
+                <title>Мои рецепты</title>
+            </Helmet>
             <main className={styles.main}>
                 <h1 className={styles.title}>Мои рецепты</h1>
                 <FilterShort

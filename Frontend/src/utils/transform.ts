@@ -103,6 +103,15 @@ export function transformCreatedAt(dateString: string): string {
     return `Опубликована ${format(date, 'd MMMM yyyy', { locale: ru })}`;
 }
 
+export function transformUpdatedAt(dateString: string): string {
+    if (!dateString || dateString.startsWith('0001-01-01')) {
+        return 'Дата не указана';
+    }
+
+    const date = parseISO(dateString);
+    return format(date, 'd MMM yyyy', { locale: ru });
+}
+
 // Универсальная функция для преобразования строки в значение enum
 export function getEnumValueByString<T extends Record<string, string>>(
     enumObj: T,

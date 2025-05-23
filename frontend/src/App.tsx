@@ -6,7 +6,6 @@ import MainPage from 'pages/main/main.page';
 import ReceiptPage from 'pages/receipt/receipt.page';
 import CollectionsPage from 'pages/collections/collections.page';
 import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
-// import { ProtectedRoute } from 'utils/protected-route';
 import { CollectionPage } from 'pages/collection/collection.page';
 import RegisterPage from 'pages/register/register.page';
 import PassRecoveryPage from 'pages/pass-recovery/pass-recovery.page';
@@ -14,7 +13,6 @@ import { ProfilePage } from 'pages/profile/profile.page';
 import MyCollectionsPage from 'pages/my-collections/my-collections.page';
 import { useEffect } from 'react';
 import { useDispatch } from 'store/store';
-import { fetchRecipes } from 'store/main-page.slice';
 import { ProtectedRoute } from 'utils/protected-route';
 import { checkUser } from 'store/user.slice';
 import MyRecipesPage from 'pages/my-recipes/my-recipes.page';
@@ -38,8 +36,22 @@ function App() {
             <Routes location={location}>
                 <Route path='/' element={<MainPage />} />
                 <Route path='/recipe/:id' element={<ReceiptPage />} />
-                <Route path='/recipe/new' element={<EditRecipePage />} />
-                <Route path='/recipe/:id/edit' element={<EditRecipePage />} />
+                <Route
+                    path='/recipe/new'
+                    element={
+                        <ProtectedRoute>
+                            <EditRecipePage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path='/recipe/:id/edit'
+                    element={
+                        <ProtectedRoute>
+                            <EditRecipePage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path='/collections' element={<CollectionsPage />} />
                 <Route path='/collection/:id' element={<CollectionPage />} />
                 <Route
@@ -50,11 +62,29 @@ function App() {
                         </ProtectedRoute>
                     }
                 >
-                    <Route index element={<ProfilePage />} />
-                    <Route path='my-recipes' element={<MyRecipesPage />} />
+                    <Route
+                        index
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path='my-recipes'
+                        element={
+                            <ProtectedRoute>
+                                <MyRecipesPage />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path='my-collections'
-                        element={<MyCollectionsPage />}
+                        element={
+                            <ProtectedRoute>
+                                <MyCollectionsPage />
+                            </ProtectedRoute>
+                        }
                     />
                 </Route>
                 <Route

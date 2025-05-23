@@ -21,7 +21,9 @@ export const initialState: TCollectionsPageState = {
     popularCollections: [],
     filter: {
         Title: '',
-        Limit: 15,
+        Page: 1,
+        SortOption: 'byPopularity',
+        IsAscendingSorting: false,
     },
     error: null,
     isLoading: false,
@@ -53,7 +55,12 @@ export const fetchPopularCollections = createAsyncThunk(
         try {
             const state = getState() as RootState;
             const { page } = state.collectionsPage;
-            return await getCollectionsApi({ Page: page, Limit: 10 });
+            return await getCollectionsApi({
+                Page: page,
+                Limit: 10,
+                SortOption: 'byPopularity',
+                IsAscendingSorting: false,
+            });
         } catch (error) {
             if (error instanceof Error) {
                 return rejectWithValue(error.message);

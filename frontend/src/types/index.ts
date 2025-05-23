@@ -8,3 +8,4 @@ export * from "./tags.enum";
 export * from "./category.enum";
 export * from "./cookingDifficulty.enum";
 export * from "./filter.type";
+export * from "./feedback.type";

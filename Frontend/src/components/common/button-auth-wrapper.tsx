@@ -24,5 +24,12 @@ export function ButtonWrapper({
         }
     };
 
-    return <div onClick={handleClick}>{children}</div>;
+    return (
+        <button
+            style={{ backgroundColor: 'transparent', border: 'none' }}
+            onClick={handleClick}
+        >
+            {children}
+        </button>
+    );
 }

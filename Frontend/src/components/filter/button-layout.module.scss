@@ -83,7 +83,7 @@
 
 .dropdown {
     position: absolute;
-    top: 130%;
+    top: 110%;
     left: 50%;
     transform: translateX(-50%);
     background: white;
@@ -93,7 +93,7 @@
     padding-bottom: 1.04vw;
     z-index: 3;
     width: 12.24vw;
-    height: fit-content;
+    height: max-content;
     display: flex;
     flex-direction: column;
     gap: 1.05vw;

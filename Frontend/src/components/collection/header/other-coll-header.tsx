@@ -133,12 +133,15 @@ export function OtherCollHeader(props: props) {
                             </div>
                         </div>
                     </div>
-                    <Ratings
-                        currentRating={userRating}
-                        onRate={handleRateCollection}
-                        disabled={isRatingLoading}
-                        title={'подборку'}
-                    />
+                    {isAuth && (
+                        <Ratings
+                            currentRating={userRating}
+                            onRate={handleRateCollection}
+                            disabled={isRatingLoading}
+                            title={'подборку'}
+                        />
+                    )}
+
                     <div className={styles.description}>
                         <div className={styles.shareContainer}>
                             <ButtonWrapper

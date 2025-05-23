@@ -15,7 +15,8 @@ export function SortContent<T extends SortField>(props: props<T>) {
     const sortOptions = isCollection
         ? [
               { id: 'byPopularity', label: 'По популярности' },
-              { id: 'byCreated', label: 'Сначала новые' },
+              { id: 'byDate', label: 'По дате' },
+              { id: 'byRating', label: 'По рейтингу' },
           ]
         : [
               { id: 'byPopularity', label: 'По популярности' },

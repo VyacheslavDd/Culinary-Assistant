@@ -5,12 +5,13 @@ import { selectUserCollections } from 'store/user.slice';
 import ScrollToTop from 'components/common/scrollToTop';
 import { useState } from 'react';
 import { SortDirection, SortFieldCollection } from 'components/filter';
+import { Helmet } from 'react-helmet-async';
 
 function MyCollectionsPage() {
     const myCollections = useSelector(selectUserCollections);
     const [filter, setFilter] = useState('');
-    const [sortField, setSortField] = useState<SortFieldCollection>('byCreated');
-    const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+    const [sortField, setSortField] = useState<SortFieldCollection>('byDate');
+    const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilter(e.target.value);
@@ -29,10 +30,12 @@ function MyCollectionsPage() {
 
         if (sortField === 'byPopularity') {
             comparison = a.popularity - b.popularity;
-        } else if (sortField === 'byCreated') {
+        } else if (sortField === 'byDate') {
             comparison =
                 new Date(a.createdAt).getTime() -
                 new Date(b.createdAt).getTime();
+        } else if (sortField === 'byRating') {
+            comparison = a.rating - b.rating;
         }
 
         return sortDirection === 'asc' ? comparison : -comparison;
@@ -45,6 +48,9 @@ function MyCollectionsPage() {
     return (
         <>
             <ScrollToTop />
+            <Helmet>
+                <title>Мои подборки</title>
+            </Helmet>
             <div className={styles.mainContainer}>
                 <CollList
                     title='Мои подборки'

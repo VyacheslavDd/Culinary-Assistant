@@ -123,7 +123,7 @@ export function ButtonsReceipt(props: props) {
                         Добавить в подборку
                         {showCollectionOverlay && (
                             <AddToCollectionOverlay
-                                collections={collections}
+                                collections={collections.filter((item) => item.title !== 'Избранное')}
                                 onSelectCollection={handleSelectCollection}
                             />
                         )}

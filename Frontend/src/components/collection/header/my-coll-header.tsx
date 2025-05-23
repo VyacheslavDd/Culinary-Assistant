@@ -207,12 +207,15 @@ export function MyCollHeader(props: props) {
                                     )}
                                 </div>
                             </div>
-                            <Ratings
-                                currentRating={userRating}
-                                onRate={handleRateCollection}
-                                disabled={isRatingLoading}
-                                title={'подборку'}
-                            />
+                            {collection.title !== 'Избранное' && (
+                                <Ratings
+                                    currentRating={userRating}
+                                    onRate={handleRateCollection}
+                                    disabled={isRatingLoading}
+                                    title={'подборку'}
+                                />
+                            )}
+
                             <div className={styles.shareContainer}>
                                 <button
                                     className='button'

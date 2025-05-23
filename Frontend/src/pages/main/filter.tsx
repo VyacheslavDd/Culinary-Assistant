@@ -11,6 +11,7 @@ import styles from './filter.module.scss';
 import { useDispatch, useSelector } from 'store/store';
 import {
     fetchRecipes,
+    resetFilters,
     selectFilter,
     updateFilter,
 } from 'store/main-page.slice';
@@ -43,7 +44,6 @@ export function Filter() {
                 value={filter.SearchByTitle || ''}
             />
             <div className={styles.buttons}>
-                {' '}
                 <ButtonLayout
                     icon='ingredients'
                     name='Ингредиенты'
@@ -81,6 +81,15 @@ export function Filter() {
                         isCollection={false}
                     />
                 </ButtonLayout>
+                <button
+                    className={styles.reset}
+                    onClick={() => {
+                        dispatch(resetFilters());
+                        dispatch(fetchRecipes());
+                    }}
+                >
+                    Сбросить
+                </button>
             </div>
         </div>
     );

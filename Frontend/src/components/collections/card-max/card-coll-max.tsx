@@ -26,7 +26,6 @@ export function CardCollMax(props: props) {
     const displayedRecipes = combinedRecipes.slice(0, MAX_RECIPES_DISPLAY);
     const remainingCount = combinedRecipes.length - MAX_RECIPES_DISPLAY;
     const placeholdersCount = MAX_RECIPES_DISPLAY - displayedRecipes.length;
-    console.log(data.title, displayedRecipes, placeholdersCount);
 
     return (
         <div className={styles.mainContainer} onClick={handleClick}>
@@ -56,7 +55,7 @@ export function CardCollMax(props: props) {
 
             <ul className={styles.list}>
                 {displayedRecipes.map((recipe, index) => (
-                    <li className={styles.item} key={recipe.title || index}>
+                    <li className={styles.item} key={recipe.url || index}>
                         <div className={styles.title}>{recipe.title}</div>
                         <img
                             src={recipe.url}

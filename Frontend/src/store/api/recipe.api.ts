@@ -12,6 +12,7 @@ import {
     Tag,
 } from 'types';
 import { getEnumValueByString } from 'utils/transform';
+import { API_URL } from 'utils/variables';
 
 export type TRecipesData = {
     Page: number;
@@ -34,7 +35,7 @@ export type TRecipesResponse = {
     pagesCount: number;
 };
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL || 'http://localhost:5000/';
 
 // Получение списка рецептов
 export const getRecipesApi = async (
@@ -140,8 +141,6 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
             user: data.user as ShortUser,
         };
 
-        console.log(recipe);
-
         return recipe;
     } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -159,36 +158,6 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
         throw new Error('Unknown error occurred');
     }
 };
-
-// Поставить лайк рецепту
-// export const likeRecipeApi = async (id: string): Promise<void> => {
-//     try {
-//         await axios.post(
-//             `${apiUrl}api/receipts/${id}/likes`,
-//             {},
-//             {
-//                 headers: {
-//                     Accept: '*/*',
-//                 },
-//                 withCredentials: true,
-//             }
-//         );
-//     } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//             if (typeof error.response?.data === 'string') {
-//                 throw new Error(error.response.data);
-//             }
-
-//             if (error.response?.data?.message) {
-//                 throw new Error(error.response.data.message);
-//             }
-
-//             throw new Error('Adding to favorites failed');
-//         }
-
-//         throw new Error('Unknown error occurred');
-//     }
-//};
 
 // Добавить рецепт в избранное
 export const favoriteRecipeApi = async (id: string): Promise<void> => {
@@ -404,6 +373,62 @@ export const createRecipe = async (
             );
         }
         throw new Error('Unknown error during recipe creation');
+    }
+};
+
+export interface UpdateRecipeDto {
+    title?: string;
+    description?: string;
+    tags?: string[];
+    category?: string;
+    cookingDifficulty?: string;
+    cookingTime?: number;
+    ingredients?: Ingredient[];
+    cookingSteps?: CookingStep[];
+    picturesUrls?: {
+        url: string;
+    }[];
+    userId: string;
+}
+
+// Редактировать рецепт
+export const updateRecipe = async (
+    id: string,
+    updatedRecipe: UpdateRecipeDto,
+    imageFile?: File
+): Promise<void> => {
+    try {
+        let picturesUrls = updatedRecipe.picturesUrls;
+
+        // Если выбрано новое изображение — загружаем и подменяем URL
+        if (imageFile) {
+            const uploadedUrl = await uploadRecipeImage(imageFile);
+            picturesUrls = uploadedUrl ? [{ url: uploadedUrl }] : picturesUrls;
+        }
+
+        const payload: UpdateRecipeDto = {
+            ...updatedRecipe,
+            picturesUrls,
+        };
+
+        await axios.put(
+            `${apiUrl}api/receipts/${id}`,
+            payload,
+            {
+                headers: {
+                    'Content-Type': 'application/json-patch+json',
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(
+                error.response?.data?.message || 'Failed to update recipe'
+            );
+        }
+        throw new Error('Unknown error during recipe update');
     }
 };
 

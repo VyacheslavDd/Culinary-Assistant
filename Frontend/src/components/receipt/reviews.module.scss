@@ -38,7 +38,7 @@
     flex-wrap: wrap;
     background-color: white;
     border-radius: 0.52vw;
-    padding: 0.63vw 0.52vw;
+    padding: 0.7vw 0.9vw;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
@@ -73,7 +73,9 @@
     }
 
     .info {
+        width: 100%;
         display: flex;
+        justify-content: space-between;
         flex-direction: row;
         gap: 0.6vw;
         align-items: center;
