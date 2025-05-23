@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SortFieldCollection } from 'components/filter';
 import qs from 'qs';
 import { Category, CookingDifficulty, Tag } from 'types';
 import { Collection } from 'types/collections.type';
@@ -11,6 +12,8 @@ export type TCollectionsData = {
     Page: number;
     Limit?: number;
     Title?: string;
+    SortOption?: SortFieldCollection;
+    IsAscendingSorting?: boolean;
 };
 
 export type TCollectionsResponse = {

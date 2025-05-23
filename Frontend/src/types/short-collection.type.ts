@@ -4,11 +4,12 @@ export type ShortCollection = {
     id: string;
     title: string;
     isPrivate: boolean;
-    isLiked: false;
-    popularity: 0;
+    isFavourited: boolean;
+    popularity: number;
     covers: { url: string }[];
     receiptNames: string[];
-    userLogin: string;
     createdAt: string;
+    rating: number;
     color: Color;
+    userLogin: string;
 };

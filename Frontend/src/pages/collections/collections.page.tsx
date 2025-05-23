@@ -10,7 +10,6 @@ import {
     updateFilter,
 } from 'store/collections-page.slice';
 import { useEffect } from 'react';
-import { SortFieldCollection, SortDirection } from 'components/filter';
 import { Helmet } from 'react-helmet-async';
 
 function CollectionsPage() {
@@ -38,13 +37,16 @@ function CollectionsPage() {
                 }
                 value={filter.Title}
                 onClick={() => dispatch(fetchCollections())}
-                selectedField={'byPopularity'}
-                selectedDirection={'asc'}
-                onSortChange={function (
-                    field: SortFieldCollection,
-                    direction: SortDirection
-                ): void {
-                    throw new Error('Function not implemented.');
+                selectedField={filter.SortOption}
+                selectedDirection={filter.IsAscendingSorting ? 'asc' : 'desc'}
+                onSortChange={(sortField, sortDirection) => {
+                    dispatch(
+                        updateFilter({
+                            SortOption: sortField,
+                            IsAscendingSorting: sortDirection === 'asc',
+                        })
+                    );
+                    dispatch(fetchCollections());
                 }}
             />
         </div>

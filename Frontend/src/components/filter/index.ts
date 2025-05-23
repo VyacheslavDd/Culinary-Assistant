@@ -5,6 +5,6 @@ export * from './content/sort-content';
 export * from './content/filter-content';
 
 export type SortFieldRecipe = 'byPopularity' | 'byCookingTime' | 'byCalories';
-export type SortFieldCollection = 'byPopularity' | 'byCreated';
+export type SortFieldCollection = 'byPopularity' | 'byDate' | 'byRating';
 export type SortField = SortFieldRecipe | SortFieldCollection;
 export type SortDirection = 'asc' | 'desc';

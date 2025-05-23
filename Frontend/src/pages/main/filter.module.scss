@@ -12,3 +12,63 @@
     flex-direction: row;
     gap: 0.7vw;
 }
+
+.reset {
+    cursor: pointer;
+    box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
+    border-radius: 0.52vw;
+    padding: 0.52vw 1.15vw 0.52vw 0.95vw;
+    border: none;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 500;
+    color: white;
+    background-color: var(--blue);
+    height: min-content;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+        background-color: var(--blue-hover);
+    }
+
+    &:active {
+        transform: translateY(1px);
+        background-color: var(--blue-active);
+    }
+}
+
+.button {
+    cursor: pointer;
+    box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
+    border-radius: 0.52vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25vw;
+    padding: 0.52vw 1.15vw 0.52vw 0.95vw;
+    border: none;
+    background-color: transparent;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 500;
+    line-height: 100%;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+
+    &:active {
+        transform: translateY(1px);
+    }
+
+    .icon {
+        width: 1.18vw;
+        height: 1.18vw;
+        min-width: 20px;
+        min-height: 20px;
+        object-fit: cover;
+        object-position: center;
+    }
+}

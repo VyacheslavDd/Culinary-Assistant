@@ -158,36 +158,6 @@ export const getRecipeByIdApi = async (id: string): Promise<Recipe> => {
     }
 };
 
-// Поставить лайк рецепту
-// export const likeRecipeApi = async (id: string): Promise<void> => {
-//     try {
-//         await axios.post(
-//             `${apiUrl}api/receipts/${id}/likes`,
-//             {},
-//             {
-//                 headers: {
-//                     Accept: '*/*',
-//                 },
-//                 withCredentials: true,
-//             }
-//         );
-//     } catch (error) {
-//         if (axios.isAxiosError(error)) {
-//             if (typeof error.response?.data === 'string') {
-//                 throw new Error(error.response.data);
-//             }
-
-//             if (error.response?.data?.message) {
-//                 throw new Error(error.response.data.message);
-//             }
-
-//             throw new Error('Adding to favorites failed');
-//         }
-
-//         throw new Error('Unknown error occurred');
-//     }
-//};
-
 // Добавить рецепт в избранное
 export const favoriteRecipeApi = async (id: string): Promise<void> => {
     try {
