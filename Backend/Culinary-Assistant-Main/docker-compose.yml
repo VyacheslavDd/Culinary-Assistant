@@ -110,17 +110,6 @@ services:
         - "9001:9001"
     command: server --console-address ":9001" /data
 
-  nginx:
-    networks:
-        - culinary-network
-    container_name: Nginx
-    image: nginx:latest
-    restart: always
-    volumes:
-        - "./nginx.conf:/etc/nginx/nginx.conf"
-    ports:
-        - "80:80"
-
   elasticsearch:
     restart: always
     networks:
