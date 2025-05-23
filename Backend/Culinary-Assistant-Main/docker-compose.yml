@@ -4,6 +4,10 @@ networks:
   culinary-network:
     driver: bridge
 
+volumes:
+  esdata:
+    driver: local
+
 services:
   culinary-assistant-main:
     networks:
@@ -126,7 +130,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - "./volumes/elasticsearch:/usr/share/elasticsearch/data"
+      - "esdata:/usr/share/elasticsearch/data"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200"]
       interval: 5s
