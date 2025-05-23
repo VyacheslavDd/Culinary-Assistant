@@ -3,6 +3,8 @@ import { ShortRecipe, User } from '../types';
 import {
     AuthUserData,
     checkUserApi,
+    createRecipe,
+    CreateRecipeDto,
     getCollectionsByUserApi,
     getRecipesByUserApi,
     loginUserApi,
@@ -140,13 +142,13 @@ export const fetchUsersRecipes = createAsyncThunk(
 
 // Обновление пользователя
 export const updateUser = createAsyncThunk<
-    UpdateUserDto,
+    User,
     { id: string; data: UpdateUserDto },
     { rejectValue: string }
 >('user/update', async ({ id, data }, { rejectWithValue }) => {
     try {
-        await updateUserApi(id, data);
-        return data;
+        const user = await updateUserApi(id, data);
+        return user;
     } catch (error) {
         if (error instanceof Error) {
             return rejectWithValue(error.message);
@@ -154,6 +156,7 @@ export const updateUser = createAsyncThunk<
         return rejectWithValue('Failed to update user');
     }
 });
+
 
 export const userSlice = createSlice({
     name: 'user',

@@ -86,14 +86,10 @@ export function CatalogCard(props: CatalogCardProps) {
                 <div className={styles.name}>
                     <p className={styles.title}>{title}</p>
                     <ButtonWrapper onAuthenticatedAction={handleButtonClick}>
-                        <button
+                        <div
                             className={styles.icon}
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleButtonClick();
-                            }}
                         >
                             <img
                                 src={fav}
@@ -121,7 +117,7 @@ export function CatalogCard(props: CatalogCardProps) {
                                         : styles.hidden
                                 }`}
                             />
-                        </button>
+                        </div>
                     </ButtonWrapper>
                 </div>
                 <div className={styles.infoContainer}>

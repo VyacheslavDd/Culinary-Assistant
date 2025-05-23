@@ -8,6 +8,7 @@
     font-weight: 400;
     font-size: var(--font-size-20);
     color: black;
+    background-color: var(--white);
 }
 
 .photoContainer {
@@ -119,4 +120,14 @@
             color: var(--pink-active);
         }
     }
+}
+
+.uploadButton {
+  display: inline-block;
+  padding: 0.3vw 1.25vw !important;
+  transition: all 0.2s ease;
+}
+
+.inputFileHidden {
+  display: none;
 }

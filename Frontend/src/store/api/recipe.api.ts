@@ -407,6 +407,62 @@ export const createRecipe = async (
     }
 };
 
+export interface UpdateRecipeDto {
+    title?: string;
+    description?: string;
+    tags?: string[];
+    category?: string;
+    cookingDifficulty?: string;
+    cookingTime?: number;
+    ingredients?: Ingredient[];
+    cookingSteps?: CookingStep[];
+    picturesUrls?: {
+        url: string;
+    }[];
+    userId: string;
+}
+
+// Редактировать рецепт
+export const updateRecipe = async (
+    id: string,
+    updatedRecipe: UpdateRecipeDto,
+    imageFile?: File
+): Promise<void> => {
+    try {
+        let picturesUrls = updatedRecipe.picturesUrls;
+
+        // Если выбрано новое изображение — загружаем и подменяем URL
+        if (imageFile) {
+            const uploadedUrl = await uploadRecipeImage(imageFile);
+            picturesUrls = uploadedUrl ? [{ url: uploadedUrl }] : picturesUrls;
+        }
+
+        const payload: UpdateRecipeDto = {
+            ...updatedRecipe,
+            picturesUrls,
+        };
+
+        await axios.put(
+            `${apiUrl}api/receipts/${id}`,
+            payload,
+            {
+                headers: {
+                    'Content-Type': 'application/json-patch+json',
+                    Accept: '*/*',
+                },
+                withCredentials: true,
+            }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(
+                error.response?.data?.message || 'Failed to update recipe'
+            );
+        }
+        throw new Error('Unknown error during recipe update');
+    }
+};
+
 // Поставить оценку рецепту
 export const putRateRecipeApi = async (
     id: string,

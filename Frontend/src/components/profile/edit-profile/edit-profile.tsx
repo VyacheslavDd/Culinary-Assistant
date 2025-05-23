@@ -45,7 +45,7 @@ export function EditProfile(props: props) {
             }
 
             if (pictureUrl) {
-                data.pictureUrl = pictureUrl;
+                data.profilePictureUrl = pictureUrl;
             }
 
             if (Object.keys(data).length === 0) {
@@ -85,11 +85,15 @@ export function EditProfile(props: props) {
                         }
                         alt='Фото профиля'
                     />
-                    <input
-                        type='file'
-                        className={styles.input}
-                        onChange={handleFileChange}
-                    />
+                    <label className={`button ${styles.uploadButton}`}>
+                        Загрузить фото
+                        <input
+                            type='file'
+                            accept='image/*'
+                            className={styles.inputFileHidden}
+                            onChange={handleFileChange}
+                        />
+                    </label>
                 </div>
 
                 <div className={styles.info}>
@@ -101,6 +105,7 @@ export function EditProfile(props: props) {
                             className={styles.input}
                             value={login}
                             onChange={(e) => setLogin(e.target.value)}
+                            maxLength={25}
                         />
                     </div>
                     <div className={styles.inputContainer}>

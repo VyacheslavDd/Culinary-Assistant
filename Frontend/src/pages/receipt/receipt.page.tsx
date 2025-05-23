@@ -11,8 +11,14 @@ import styles from './receipt.module.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import ScrollToTop from 'components/common/scrollToTop';
 import { useEffect, useState } from 'react';
-import { Recipe } from 'types';
-import { getRecipeByIdApi, getRecipeRateApi, putRateRecipeApi } from 'store/api';
+import { Feedback, Recipe } from 'types';
+import {
+    createFeedbackApi,
+    getFeedbacksApi,
+    getRecipeByIdApi,
+    getRecipeRateApi,
+    putRateRecipeApi,
+} from 'store/api';
 import { Preloader } from 'components/preloader';
 import { useSelector } from 'store/store';
 import { selectIsAuthenticated } from 'store/user.slice';
@@ -26,6 +32,32 @@ function ReceiptPage() {
     const isAuth = useSelector(selectIsAuthenticated);
     const [currentRating, setCurrentRating] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
+    const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+    const [feedbacksLoading, setFeedbacksLoading] = useState(false);
+    const [feedbacksError, setFeedbacksError] = useState<string | null>(null);
+
+    const fetchFeedbacks = async () => {
+        if (!recipe?.id) return;
+
+        try {
+            setFeedbacksLoading(true);
+            const response = await getFeedbacksApi(recipe.id, {
+                Page: 1,
+            });
+            setFeedbacks(response.data);
+        } catch (err) {
+            setFeedbacksError(
+                err instanceof Error ? err.message : 'Unknown error'
+            );
+        } finally {
+            setFeedbacksLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFeedbacks();
+    }, [recipe]);
 
     useEffect(() => {
         if (!isAuth) return;
@@ -42,11 +74,11 @@ function ReceiptPage() {
         };
 
         loadUserRating();
-    }, [recipe, isAuth]);
+    }, [recipe, isAuth, currentRating]);
 
     const handleRate = async (rating: number) => {
         if (!isAuth || isLoading || !recipe?.id) return;
-        
+
         try {
             setIsLoading(true);
             await putRateRecipeApi(recipe.id, rating);
@@ -55,6 +87,24 @@ function ReceiptPage() {
             console.error('Ошибка сохранения оценки:', error);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleNewFeedback = async (text: string) => {
+        if (!recipe?.id) return;
+
+        try {
+            await createFeedbackApi({
+                receiptId: recipe.id,
+                text,
+            });
+            fetchFeedbacks();
+        } catch (error) {
+            alert(
+                error instanceof Error
+                    ? `Ошибка добавления отзыва: ${error.message}`
+                    : 'Ошибка добавления отзыва'
+            );
         }
     };
 
@@ -118,9 +168,18 @@ function ReceiptPage() {
                                 recipeId={recipe.id}
                                 isFavourite={recipe.isFavourited}
                             />
-                            <Ratings currentRating={currentRating} onRate={handleRate} />
-                            <Review />
-                            <Reviews />
+                            {isAuth && (
+                                <Ratings
+                                    currentRating={currentRating}
+                                    onRate={handleRate}
+                                />
+                            )}
+                            {isAuth && <Review onClick={handleNewFeedback} />}
+                            <Reviews
+                                feedbacks={feedbacks}
+                                loading={feedbacksLoading}
+                                error={feedbacksError}
+                            />
                         </div>
                     </div>
                 </div>

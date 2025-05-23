@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CATEGORY, DIFFICULTY, MEASURE, TAG } from 'mocks/filter';
 import styles from './edit-recipe.module.scss';
-import close from '../../assets/svg/ingredient_close.svg';
+import { ReactComponent as CloseIcon } from '../../assets/svg/ingredient_close.svg';
 import plus from '../../assets/svg/ingredient_plus.svg';
 import stars from '../../assets/svg/ingredient_stars.svg';
 import { useEffect, useState } from 'react';
@@ -9,7 +9,13 @@ import { CookingStep, Ingredient, Measure, Recipe } from 'types';
 import { useRef } from 'react';
 import { useDispatch, useSelector } from 'store/store';
 import { selectUser } from 'store/user.slice';
-import { createRecipe, CreateRecipeDto, getRecipeByIdApi } from 'store/api';
+import {
+    createRecipe,
+    CreateRecipeDto,
+    getRecipeByIdApi,
+    updateRecipe,
+    UpdateRecipeDto,
+} from 'store/api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ScrollToTop from 'components/common/scrollToTop';
 
@@ -28,6 +34,7 @@ export function EditRecipePage() {
     const [existingPhoto, setExistingPhoto] = useState<{ url: string } | null>(
         null
     );
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const titleRef = useRef<HTMLInputElement>(null);
     const descriptionRef = useRef<HTMLTextAreaElement>(null);
@@ -57,6 +64,9 @@ export function EditRecipePage() {
     useEffect(() => {
         if (recipe) {
             setExistingPhoto(recipe.picturesUrls[0]);
+            if (recipe.picturesUrls[0]?.url) {
+                setImagePreview(recipe.picturesUrls[0].url);
+            }
         }
     }, [recipe]);
 
@@ -143,7 +153,7 @@ export function EditRecipePage() {
                 throw new Error('Не выбрано изображение для рецепта');
             }
 
-            const recipe: CreateRecipeDto = {
+            const baseRecipe: CreateRecipeDto = {
                 title: titleRef.current?.value || '',
                 description: descriptionRef.current?.value || '',
                 tags: Array.from(tagRef.current?.selectedOptions || []).map(
@@ -162,17 +172,65 @@ export function EditRecipePage() {
                     title: s.title,
                     description: s.description,
                 })),
-                userId: user!.id,
+                userId: user!.id || '',
                 picturesUrls: existingPhoto ? [existingPhoto] : [],
             };
 
-            const recipeId = await createRecipe(recipe, file);
+            if (id === 'new') {
+                const recipeId = await createRecipe(baseRecipe, file);
+                navigate(`/recipe/${recipeId}`);
+            } else {
+                if (!recipe) return;
 
-            navigate(`/recipe/${recipeId}`);
+                const changedFields = getChangedFields(recipe, baseRecipe);
+                await updateRecipe(recipe.id, changedFields, file);
+                navigate(`/recipe/${id}`);
+            }
         } catch (err) {
             alert((err as Error).message);
         }
     };
+
+    function getChangedFields(
+        original: Recipe,
+        updated: CreateRecipeDto
+    ): UpdateRecipeDto {
+        const changed: UpdateRecipeDto = { userId: '' };
+
+        if (original.title !== updated.title) changed.title = updated.title;
+        if (original.description !== updated.description)
+            changed.description = updated.description;
+        if (original.category !== updated.category)
+            changed.category = updated.category;
+        if (original.cookingDifficulty !== updated.cookingDifficulty)
+            changed.cookingDifficulty = updated.cookingDifficulty;
+        if (original.cookingTime !== updated.cookingTime)
+            changed.cookingTime = updated.cookingTime;
+
+        if (JSON.stringify(original.tags) !== JSON.stringify(updated.tags)) {
+            changed.tags = updated.tags;
+        }
+
+        if (
+            JSON.stringify(original.ingredients) !==
+            JSON.stringify(updated.ingredients)
+        ) {
+            changed.ingredients = updated.ingredients;
+        }
+
+        if (
+            JSON.stringify(original.cookingSteps) !==
+            JSON.stringify(updated.cookingSteps)
+        ) {
+            changed.cookingSteps = updated.cookingSteps;
+        }
+
+        if (updated.userId) {
+            changed.userId = updated.userId;
+        }
+
+        return changed;
+    }
 
     return (
         <>
@@ -208,22 +266,48 @@ export function EditRecipePage() {
                                         className={styles.input}
                                         placeholder='Шарлотка'
                                         defaultValue={recipe?.title}
+                                        maxLength={50}
                                     />
                                 </div>
                                 <div className={styles.inputContainer}>
-                                    <label
-                                        className={styles.label}
-                                        htmlFor='photo'
-                                    >
+                                    <label className={styles.label}>
                                         Фотография
                                     </label>
-                                    <input
-                                        ref={photoRef}
-                                        type='file'
-                                        id='photo'
-                                        className={styles.input}
-                                        accept='image/*'
-                                    />
+
+                                    <div
+                                        className={`${styles.input} ${styles.photo}`}
+                                    >
+                                        {imagePreview && (
+                                            <img
+                                                src={imagePreview}
+                                                alt='Превью рецепта'
+                                                className={styles.imagePreview}
+                                            />
+                                        )}
+
+                                        <label
+                                            className={`button ${styles.uploadButton}`}
+                                        >
+                                            Загрузить фото
+                                            <input
+                                                type='file'
+                                                accept='image/*'
+                                                className={styles.hiddenInput}
+                                                ref={photoRef}
+                                                onChange={(e) => {
+                                                    const file =
+                                                        e.target.files?.[0];
+                                                    if (file) {
+                                                        setImagePreview(
+                                                            URL.createObjectURL(
+                                                                file
+                                                            )
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                                 <div className={styles.inputContainer}>
                                     <label
@@ -328,6 +412,8 @@ export function EditRecipePage() {
                                         id='time'
                                         className={styles.input}
                                         placeholder='20'
+                                        min={1}
+                                        max={9999}
                                     />
                                 </div>
                                 {/* <div className={styles.inputContainer}>
@@ -386,6 +472,7 @@ export function EditRecipePage() {
                                                     e.target.value
                                                 )
                                             }
+                                            maxLength={30}
                                         />
                                         <input
                                             type='number'
@@ -428,9 +515,8 @@ export function EditRecipePage() {
                                                 removeIngredient(index)
                                             }
                                         >
-                                            <img
-                                                src={close}
-                                                alt='delete ingredient'
+                                            <CloseIcon
+                                                className={styles.icon}
                                             />
                                         </button>
                                     </div>
@@ -476,9 +562,8 @@ export function EditRecipePage() {
                                                     removeStep(index)
                                                 }
                                             >
-                                                <img
-                                                    src={close}
-                                                    alt='delete step'
+                                                <CloseIcon
+                                                    className={styles.icon}
                                                 />
                                             </button>
                                         </div>
