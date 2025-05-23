@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 import { Feedback } from 'types/feedback.type';
-import { API_URL } from '../../../env';
+import { API_URL } from 'utils/variables';
 
 const apiUrl = API_URL || 'http://localhost:5000/';
 

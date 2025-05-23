@@ -5,7 +5,7 @@ import { Category, CookingDifficulty, Tag } from 'types';
 import { Collection } from 'types/collections.type';
 import { ShortCollection } from 'types/short-collection.type';
 import { getEnumValueByString } from 'utils/transform';
-import { API_URL } from '../../../env';
+import { API_URL } from 'utils/variables';
 
 const apiUrl = API_URL || 'http://localhost:5000/';
 

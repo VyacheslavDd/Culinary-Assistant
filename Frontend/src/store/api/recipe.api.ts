@@ -12,7 +12,7 @@ import {
     Tag,
 } from 'types';
 import { getEnumValueByString } from 'utils/transform';
-import { API_URL } from '../../../env';
+import { API_URL } from 'utils/variables';
 
 export type TRecipesData = {
     Page: number;
