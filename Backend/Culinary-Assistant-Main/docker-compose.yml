@@ -49,6 +49,7 @@ services:
     restart: always
     ports:
         - "3003:80"
+        - "3004:443"
     build:
         context: ../../frontend
         dockerfile: Dockerfile
