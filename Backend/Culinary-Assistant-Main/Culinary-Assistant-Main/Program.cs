@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Text;
 using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant_Main.Services.RabbitMQ.Consumers;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(ConfigurationConstants.FrontendPolicy);
+
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();

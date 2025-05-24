@@ -7,6 +7,11 @@ networks:
 volumes:
   esdata:
     driver: local
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
 
 services:
   culinary-assistant-main:
@@ -153,6 +158,30 @@ services:
         interval: 5s
         timeout: 5s
         retries: 30
+
+  grafana:
+    restart: always
+    networks:
+        - culinary-network
+    container_name: Grafana
+    image: grafana/grafana-enterprise
+    ports:
+        - "3005:3000"
+    volumes:
+        - "grafana-data:/var/lib/grafana"
+
+  prometheus:
+    restart: always
+    networks:
+        - culinary-network
+    container_name: Prometheus
+    image: prom/prometheus
+    ports:
+        - "9090:9090"
+    volumes:
+        - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+        - "prometheus-data:/prometheus"
+
 
   miniobucketscreator:
     container_name: BucketsCreator
