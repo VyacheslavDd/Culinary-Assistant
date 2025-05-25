@@ -13,7 +13,7 @@ export function FilterContent() {
             <div className={styles.time}>
                 <p className={styles.title}>Время приготовления</p>
                 <p className={styles.filter}>
-                    От{' '}
+                    От
                     <input
                         type='text'
                         className={styles.input_filter}
