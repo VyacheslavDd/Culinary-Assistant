@@ -41,7 +41,7 @@ export const fetchRecipes = createAsyncThunk(
         try {
             const state = getState() as RootState;
             const { page, filter } = state.mainPage;
-            return await getRecipesApi({ Page: page, ...filter });
+            return await getRecipesApi({ Page: page, Limit: 50, ...filter });
         } catch (error) {
             if (error instanceof Error) {
                 return rejectWithValue(error.message);

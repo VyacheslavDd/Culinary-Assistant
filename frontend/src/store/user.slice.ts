@@ -130,7 +130,7 @@ export const fetchUsersRecipes = createAsyncThunk(
     'user/fetchRecipes',
     async (userId: string, { rejectWithValue }) => {
         try {
-            return await getRecipesByUserApi({ userId });
+            return await getRecipesByUserApi({ userId, Limit: 100 });
         } catch (error) {
             if (error instanceof Error) {
                 return rejectWithValue(error.message);

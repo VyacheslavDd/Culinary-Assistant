@@ -2,7 +2,7 @@ import axios from 'axios';
 import { User } from 'types';
 import { API_URL } from 'utils/variables';
 
-const apiUrl = API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL === 'undefined/' ? 'http://localhost:5000/' : API_URL;
 
 export type RegisterUserData = {
     login: string;
