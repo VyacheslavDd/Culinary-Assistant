@@ -64,7 +64,6 @@ export function EditRecipePage() {
             setSteps([{ title: '', description: '', step: 1 }]);
             setTitle('Создание рецепта');
         }
-        console.log(id);
     }, [id, dispatch]);
 
     useEffect(() => {
@@ -180,7 +179,6 @@ export function EditRecipePage() {
                 userId: user!.id || '',
                 picturesUrls: existingPhoto ? [existingPhoto] : [],
             };
-
             if (!id) {
                 const recipeId = await createRecipe(baseRecipe, file);
                 navigate(`/recipe/${recipeId}`);

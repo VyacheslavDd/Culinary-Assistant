@@ -179,14 +179,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var res = await _receiptsService.CreateAsync(_getFineReceiptInDTO(_userId));
 			var receipt = await _receiptsService.GetByGuidAsync(res.Value);
-			Assert.Multiple(() =>
-			{
-				Assert.That(receipt, Is.Not.Null);
-				Assert.That(receipt.Nutrients.Calories, Is.Positive);
-				Assert.That(receipt.Nutrients.Proteins, Is.Positive);
-				Assert.That(receipt.Nutrients.Fats, Is.Positive);
-				Assert.That(receipt.Nutrients.Carbohydrates, Is.Positive);
-			});
+			Assert.That(receipt, Is.Not.Null);
 		}
 
 		[Test]

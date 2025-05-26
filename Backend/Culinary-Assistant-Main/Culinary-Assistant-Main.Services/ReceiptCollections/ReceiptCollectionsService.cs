@@ -289,7 +289,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 
 		private async Task<Result<Guid>> CreateOrGetFavouriteReceiptsCollectionGuidAsync(Guid userId)
 		{
-			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName);
+			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && rc.UserId == userId);
 			if (collection != null) return Result.Success(collection.Id);
 			var collectionInDTO = new ReceiptCollectionInModelDTO(MiscellaneousConstants.FavouriteReceiptsCollectionName, true, Color.Pink, userId, null);
 			var res = await CreateAsync(collectionInDTO);
