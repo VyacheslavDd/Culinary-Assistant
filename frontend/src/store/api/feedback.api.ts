@@ -3,7 +3,7 @@ import qs from 'qs';
 import { Feedback } from 'types/feedback.type';
 import { API_URL } from 'utils/variables';
 
-const apiUrl = API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL === 'undefined/' ? 'http://localhost:5000/' : API_URL;
 
 export type newFeedbackType = {
     receiptId: string;

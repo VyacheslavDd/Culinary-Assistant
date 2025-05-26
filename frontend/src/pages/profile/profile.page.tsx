@@ -25,29 +25,29 @@ export function ProfilePage() {
             <HeaderProfile />
             <div className={styles.container}>
                 <MyCollection items={myCollections} />
-                {myRecipes.length > 0 && (
-                    <div className={styles.catalog}>
-                        <div className={styles.header}>
-                            <div className={styles.title}>
-                                <h3 className={styles.h3}>Мои рецепты</h3>
-                                <button
-                                    className={styles.button}
-                                    onClick={handleNewRecipe}
-                                >
-                                    <PlusIcon />
-                                </button>
-                            </div>
-
-                            <NavLink
-                                to='/profile/my-recipes'
-                                className={styles.link}
+                <div className={styles.catalog}>
+                    <div className={styles.header}>
+                        <div className={styles.title}>
+                            <h3 className={styles.h3}>Мои рецепты</h3>
+                            <button
+                                className={styles.button}
+                                onClick={handleNewRecipe}
                             >
-                                Смотреть все
-                            </NavLink>
+                                <PlusIcon />
+                            </button>
                         </div>
-                        <Catalog limit={4} recipes={myRecipes} />
+
+                        <NavLink
+                            to='/profile/my-recipes'
+                            className={styles.link}
+                        >
+                            Смотреть все
+                        </NavLink>
                     </div>
-                )}
+                    {myRecipes.length > 0 && (
+                        <Catalog limit={4} recipes={myRecipes} />
+                    )}
+                </div>
 
                 {/* <div className={styles.catalog}>
                     <h3 className={styles.h3}>Недавно просмотренные</h3>
