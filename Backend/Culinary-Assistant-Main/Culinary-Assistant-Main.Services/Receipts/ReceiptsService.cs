@@ -177,22 +177,17 @@ namespace Culinary_Assistant_Main.Services.Receipts
 		{
 			List<double> nutrientsData = [0, 0, 0, 0];
 			var receiptWeight = 0.0;
-			ingredients
-				.Where(i => i.Measure == Measure.Gram || i.Measure == Measure.Kilogram || i.Measure == Measure.Liter || i.Measure == Measure.Milliliter)
-				.ToList()
-				.ForEach(i =>
+			foreach (var i in ingredients)
 			{
 				var ingredientName = i.Name.ToLower();
 				var ingredientFound = IngredientsData.Data.TryGetValue(ingredientName, out var nutrients);
-				if (ingredientFound)
-				{
-					var ingredientWeight = (i.Measure == Measure.Kilogram || i.Measure == Measure.Liter) ? i.NumericValue * 1000 : i.NumericValue;
-					receiptWeight += ingredientWeight;
-					nutrientsData[0] += ingredientWeight / 100 * nutrients.Calories;
-					nutrientsData[1] += ingredientWeight / 100 * nutrients.Proteins;
-					nutrientsData[2] += ingredientWeight / 100 * nutrients.Fats;
-					nutrientsData[3] += ingredientWeight / 100 * nutrients.Carbohydrates;
-				}
+				if (!ingredientFound) continue;
+				var ingredientWeight = ReceiptsUtils.GetIngredientWeight(i);
+				receiptWeight += ingredientWeight;
+				nutrientsData[0] += ingredientWeight / 100 * nutrients.Calories;
+				nutrientsData[1] += ingredientWeight / 100 * nutrients.Proteins;
+				nutrientsData[2] += ingredientWeight / 100 * nutrients.Fats;
+				nutrientsData[3] += ingredientWeight / 100 * nutrients.Carbohydrates;
 			});
 			if (receiptWeight > 0)
 				nutrientsData = nutrientsData.Select(n => n / receiptWeight * 100).ToList();
