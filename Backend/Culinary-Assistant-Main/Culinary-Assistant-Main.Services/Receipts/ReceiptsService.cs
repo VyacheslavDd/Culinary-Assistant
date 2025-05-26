@@ -188,7 +188,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 				nutrientsData[1] += ingredientWeight / 100 * nutrients.Proteins;
 				nutrientsData[2] += ingredientWeight / 100 * nutrients.Fats;
 				nutrientsData[3] += ingredientWeight / 100 * nutrients.Carbohydrates;
-			});
+			};
 			if (receiptWeight > 0)
 				nutrientsData = nutrientsData.Select(n => n / receiptWeight * 100).ToList();
 			var nutrientsResult = receipt.SetNutrients(nutrientsData[0], nutrientsData[1], nutrientsData[2], nutrientsData[3]);
