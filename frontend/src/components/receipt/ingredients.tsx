@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from './ingredients.module.scss';
 import { Ingredient } from 'types';
-import { transformMeasure } from 'utils/transform';
+import { transformMeasure, transformName } from 'utils/transform';
 
 type props = {
     ingredients: Ingredient[];
@@ -53,7 +53,7 @@ export function Ingredients(props: props) {
                             getAdjustedIngredient(ingredient);
                         return (
                             <li className={styles.li} key={ingredient.name}>
-                                <span>{ingredient.name}</span>
+                                <span>{transformName(ingredient.name)}</span>
                                 <span>
                                     {adjustedIngredient.numericValue}{' '}
                                     {transformMeasure(

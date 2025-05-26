@@ -35,7 +35,7 @@ export type TRecipesResponse = {
     pagesCount: number;
 };
 
-const apiUrl = API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL === 'undefined/' ? 'http://localhost:5000/' : API_URL;
 
 // Получение списка рецептов
 export const getRecipesApi = async (
@@ -246,6 +246,7 @@ export const deleteRecipeApi = async (id: string): Promise<string> => {
 // Получение списка рецептов пользователя
 export const getRecipesByUserApi = async (data: {
     userId: string;
+    Limit?: number;
 }): Promise<TRecipesResponse> => {
     try {
         const response = await axios.get<TRecipesResponse>(

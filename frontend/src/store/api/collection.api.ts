@@ -7,7 +7,7 @@ import { ShortCollection } from 'types/short-collection.type';
 import { getEnumValueByString } from 'utils/transform';
 import { API_URL } from 'utils/variables';
 
-const apiUrl = API_URL || 'http://localhost:5000/';
+const apiUrl = API_URL === 'undefined/' ? 'http://localhost:5000/' : API_URL;
 
 export type TCollectionsData = {
     Page: number;

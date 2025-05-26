@@ -112,6 +112,11 @@ export function transformUpdatedAt(dateString: string): string {
     return format(date, 'd MMM yyyy', { locale: ru });
 }
 
+export function transformName(str: string): string {
+  if (!str) return str; 
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 // Универсальная функция для преобразования строки в значение enum
 export function getEnumValueByString<T extends Record<string, string>>(
     enumObj: T,
