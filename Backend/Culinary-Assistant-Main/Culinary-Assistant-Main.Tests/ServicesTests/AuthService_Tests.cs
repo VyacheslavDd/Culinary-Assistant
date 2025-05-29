@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Culinary_Assistant.Core.DTO.Auth;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant.Core.Tests;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Repositories;
@@ -29,7 +30,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_dbContext = DbContextMocker.CreateInMemoryAppContext();
+			_dbContext = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			_httpResponse = CommonUtils.MockHttpResponse();
 			var logger = CommonUtils.MockLogger();
 			var usersRepository = new UsersRepository(_dbContext);

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Culinary_Assistant_Notifications_Services</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Culinary-Assistant-Notifications-Domain\Culinary-Assistant-Notifications-Domain.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant-Notifications-Infrastructure\Culinary-Assistant-Notifications-Infrastructure.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant.Core\Culinary-Assistant.Core.csproj" />
+  </ItemGroup>
+
+</Project>

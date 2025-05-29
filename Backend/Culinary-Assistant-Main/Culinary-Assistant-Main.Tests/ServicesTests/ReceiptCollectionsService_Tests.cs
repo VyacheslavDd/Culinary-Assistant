@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant.Core.DTO.Like;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -30,7 +31,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_context = DbContextMocker.CreateInMemoryAppContext();
+			_context = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var logger = CommonUtils.MockLogger();
 			var usersRepository = new UsersRepository(_context);
 			var receiptsService = CommonUtils.MockReceiptsService(_context, usersRepository, logger);

@@ -5,9 +5,9 @@ name: .NET
 
 on:
   push:
-    branches: [ "main", "Slava-collections" ]
+    branches: [ "main", "cd" ]
   pull_request:
-    branches: [ "main", "Slava-collections" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -25,4 +25,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.Tests/Culinary-Assistant-Main.Tests.csproj
+      run: |
+	    dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.Tests/Culinary-Assistant-Main.Tests.csproj
+            dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Notifications.Tests/Culinary-Assistant-Notifications.Tests.csproj

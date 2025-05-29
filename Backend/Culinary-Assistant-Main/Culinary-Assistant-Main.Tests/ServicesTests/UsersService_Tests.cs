@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Culinary_Assistant.Core.Enums;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -28,7 +29,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_dbContext = DbContextMocker.CreateInMemoryAppContext();
+			_dbContext = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var logger = CommonUtils.MockLogger();
 			var usersRepository = new UsersRepository(_dbContext);
 			var configuration = CommonUtils.MockConfiguration();

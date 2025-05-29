@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using Culinary_Assistant.Core.Options;
 using Minio;
 using Elastic.Clients.Elasticsearch;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -42,7 +43,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext();
+			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			var seedService = new SeedService(usersRepository, logger);
