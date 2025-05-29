@@ -24,5 +24,7 @@ jobs:
       run: dotnet restore Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.sln
     - name: Build
       run: dotnet build --no-restore Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.sln
-    - name: Test
+    - name: Test Main Service
       run: dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Main.Tests/Culinary-Assistant-Main.Tests.csproj
+    - name: Test Notifications Service
+      run: dotnet test --no-build --verbosity normal Backend/Culinary-Assistant-Main/Culinary-Assistant-Notifications.Tests/Culinary-Assistant-Notifications.Tests.csproj
