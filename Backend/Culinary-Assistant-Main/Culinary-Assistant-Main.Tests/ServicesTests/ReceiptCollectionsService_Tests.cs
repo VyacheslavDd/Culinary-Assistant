@@ -40,7 +40,9 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var elasticService = new Mock<IElasticReceiptsCollectionsService>();
 			elasticService.Setup(es => es.GetReceiptsCollectionsIdsAsync(It.IsAny<string>()))
 				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
-			var usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			var configuration = CommonUtils.MockConfiguration();
+			var usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 			var redisService = CommonUtils.MockRedisService();
 			_collectionsLikesService = new ReceiptCollectionLikesService(receiptCollectionLikesRepository, usersRepository, receiptCollectionsRepository);
 			_receiptCollectionsService = new ReceiptCollectionsService(receiptCollectionsRepository, elasticService.Object, redisService, _collectionsLikesService, receiptsService, usersService, logger);

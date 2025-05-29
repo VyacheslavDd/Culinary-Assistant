@@ -37,5 +37,7 @@ namespace Culinary_Assistant.Core.Const
 		public const int PasswordRecoveryActiveTimeMinutes = 10;
 		public const int TimeMinutesBetweenPasswordRecoverMessagesSending = 2;
 		public const int TimeMinutesDifferenceRequiredToOutdatePasswordRecoveryMessage = 30;
+
+		public const int HttpTimeoutSeconds = 30;
 	}
 }

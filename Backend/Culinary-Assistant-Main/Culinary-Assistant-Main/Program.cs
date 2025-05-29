@@ -1,6 +1,7 @@
 using Core.Minio;
 using Core.Serilog;
 using Culinary_Assistant.Core.Constants;
+using Culinary_Assistant.Core.Http;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.Middlewares;
 using Culinary_Assistant_Main.Infrastructure;
@@ -42,6 +43,7 @@ builder.Services.AddCors(setup =>
 });
 
 builder.Host.AddSerilog();
+builder.Services.AddHttpClientWithService(builder.Configuration[ConfigurationConstants.NotificationsHttpClientName]!, builder.Configuration[ConfigurationConstants.NotificationsHttpClientBaseAddress]!);
 builder.Services.AddHostedService<ReceiptRatingMessagesConsumer>();
 builder.Services.AddHostedService<CollectionRatingMessagesConsumer>();
 builder.Services.AddDbContext<CulinaryAppContext>();

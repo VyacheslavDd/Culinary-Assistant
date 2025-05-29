@@ -39,7 +39,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			await seedService.CreateAdministratorUserAsync();
 			var mapper = CommonUtils.MockMapper();
 			_authService = new AuthService(usersRepository, configuration, mapper);
-			_usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			_usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 		}
 
 		[TearDown]

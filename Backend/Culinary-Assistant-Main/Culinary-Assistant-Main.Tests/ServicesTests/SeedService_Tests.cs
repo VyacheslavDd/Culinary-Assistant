@@ -29,7 +29,9 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			_seedService = new SeedService(usersRepository, logger);
-			_usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			var configuration = CommonUtils.MockConfiguration();
+			_usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 		}
 
 		[TearDown]

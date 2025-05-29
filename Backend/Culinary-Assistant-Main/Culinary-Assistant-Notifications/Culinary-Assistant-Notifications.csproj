@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Culinary-Assistant-Notifications-Domain\Culinary-Assistant-Notifications-Domain.csproj" />
     <ProjectReference Include="..\Culinary-Assistant-Notifications-Infrastructure\Culinary-Assistant-Notifications-Infrastructure.csproj" />
     <ProjectReference Include="..\Culinary-Assistant-Notifications-Services\Culinary-Assistant-Notifications-Services.csproj" />

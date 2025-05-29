@@ -34,7 +34,8 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var usersRepository = new UsersRepository(_dbContext);
 			var configuration = CommonUtils.MockConfiguration();
 			var mapper = CommonUtils.MockMapper();
-			_usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			_usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 			_authService = new AuthService(usersRepository, configuration, mapper);
 			await CreateSomeUsersAsync();
 		}
