@@ -20,5 +20,7 @@ namespace Culinary_Assistant.Core.Constants
 		public const string Redis = "Redis";
 		public const string NotificationsHttpClientName = "NotificationsHttpClientName";
 		public const string NotificationsHttpClientBaseAddress = "NotificationsHttpClientBaseAddress";
+		public const string EmailOptions = "EmailOptions";
+		public const string SMTPPassword = "SMTP_PASSWORD";
 	}
 }

@@ -56,6 +56,7 @@ services:
     container_name: CulinaryAssistantEmails
     restart: always
     image: culinaryassistantnotifications:latest
+    env_file: Culinary-Assistant-Notifications/.env
     ports:
         - "5003:5003"
     build:

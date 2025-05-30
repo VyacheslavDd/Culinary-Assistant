@@ -13,6 +13,7 @@
 logs
 volumes
 esdata
+.env
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

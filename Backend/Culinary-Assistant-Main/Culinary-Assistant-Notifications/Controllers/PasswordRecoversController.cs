@@ -1,4 +1,5 @@
 ﻿using Culinary_Assistant.Core.DTO.PasswordRecover;
+using Culinary_Assistant.Core.Email;
 using Culinary_Assistant_Notifications_Domain.Models;
 using Culinary_Assistant_Notifications_Services.PasswordRecoverService;
 using Microsoft.AspNetCore.Http;
@@ -8,9 +9,10 @@ namespace Culinary_Assistant_Notifications.Controllers
 {
 	[Route("api/password-recovers")]
 	[ApiController]
-	public class PasswordRecoversController(IPasswordRecoversService passwordRecoversService) : ControllerBase
+	public class PasswordRecoversController(IPasswordRecoversService passwordRecoversService, IEmailService emailService) : ControllerBase
 	{
 		private readonly IPasswordRecoversService _passwordRecoversService = passwordRecoversService;
+		private readonly IEmailService _emailService = emailService;
 
 		/// <summary>
 		/// Проверить, что по данному Guid лежит самый свежий запрос на смену пароля и получить email пользователя 
@@ -39,6 +41,7 @@ namespace Culinary_Assistant_Notifications.Controllers
 		{
 			var res = await _passwordRecoversService.AddAsync(passwordRecoverInDTO);
 			if (res.IsFailure) return BadRequest(res.Error);
+			await _emailService.SendPasswordRecoveryEmailAsync(passwordRecoverInDTO.Email, res.Value);
 			return Created();
 		}
 	}

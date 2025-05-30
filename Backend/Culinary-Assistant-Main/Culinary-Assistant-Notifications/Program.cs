@@ -1,16 +1,27 @@
 using Core.Serilog;
 using Culinary_Assistant.Core.Constants;
+using Culinary_Assistant.Core.Email;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.Middlewares;
+using Culinary_Assistant_Notifications.Startups;
 using Culinary_Assistant_Notifications_Infrastructure;
 using Culinary_Assistant_Notifications_Services.PasswordRecoverService;
 using Culinary_Assistant_Notifications_Services.PasswordRecoversService;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using Quartz.AspNetCore;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<ConnectionOptions>(builder.Configuration.GetSection(ConfigurationConstants.PostgreSQL));
+builder.Services.Configure<EmailOptions>(builder.Configuration.GetSection(ConfigurationConstants.EmailOptions));
+builder.Services.AddQuartzAndJobs();
+builder.Services.AddQuartzHostedService(c =>
+{
+	c.AwaitApplicationStarted = true;
+	c.WaitForJobsToComplete = true;
+});
 builder.Services.AddCors(s =>
 {
 	s.AddPolicy(ConfigurationConstants.FrontendPolicy, c =>
@@ -24,6 +35,7 @@ builder.Services.AddCors(s =>
 
 builder.Services.AddDbContext<NotificationsContext>();
 builder.Services.AddScoped<IPasswordRecoversService, PasswordRecoversService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddControllers();
 builder.Host.AddSerilog();
 builder.Services.AddEndpointsApiExplorer();
