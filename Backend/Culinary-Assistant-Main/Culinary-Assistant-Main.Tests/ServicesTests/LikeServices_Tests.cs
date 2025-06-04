@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.DTO.Like;
+using Culinary_Assistant.Core.Tests;
 using Culinary_Assistant_Main.Domain.Fabrics;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Models.Abstract;
@@ -28,7 +29,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetupAsync()
 		{
-			_context = DbContextMocker.CreateInMemoryAppContext();
+			_context = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			await _context.Receipts.AddRangeAsync(ReceiptsData.Receipts);
 			await _context.Users.AddRangeAsync(UsersData.Users);
 			await _context.SaveChangesAsync();

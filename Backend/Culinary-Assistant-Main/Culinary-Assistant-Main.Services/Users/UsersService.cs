@@ -1,11 +1,16 @@
 ﻿using Core.Base;
 using CSharpFunctionalExtensions;
+using Culinary_Assistant.Core.Constants;
+using Culinary_Assistant.Core.DTO;
+using Culinary_Assistant.Core.DTO.PasswordRecover;
 using Culinary_Assistant.Core.DTO.User;
+using Culinary_Assistant.Core.Http.Service;
 using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Utils;
 using Culinary_Assistant.Core.ValueTypes;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Repositories;
+using Microsoft.Extensions.Configuration;
 using Minio;
 using Serilog;
 using System;
@@ -16,9 +21,12 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant_Main.Services.Users
 {
-	public class UsersService(IUsersRepository usersRepository, ILogger logger) :
+	public class UsersService(IUsersRepository usersRepository, ILogger logger, IHttpClientService httpClientService, IConfiguration configuration) :
 		BaseService<User, UserInDTO, UpdateUserDTO>(usersRepository, logger), IUsersService
 	{
+		private readonly IHttpClientService _httpClientService = httpClientService;
+		private readonly string _notificationsHttpClientName = configuration[ConfigurationConstants.NotificationsHttpClientName]!;
+
 		public override async Task<User?> GetByGuidAsync(Guid id, CancellationToken cancellationToken = default)
 		{
 			var user = await base.GetByGuidAsync(id, cancellationToken);
@@ -55,13 +63,7 @@ namespace Culinary_Assistant_Main.Services.Users
 			var isPasswordVerified = BCrypt.Net.BCrypt.Verify(updatePasswordDTO.OldPassword, user.PasswordHash);
 			if (!isPasswordVerified)
 				return Result.Failure("Некорректно введен старый пароль");
-			if (updatePasswordDTO.NewPassword != updatePasswordDTO.NewPasswordConfirmation)
-				return Result.Failure("Подтверждение нового пароля некорректно");
-			var res = user.SetPassword(updatePasswordDTO.NewPassword);
-			if (res.IsFailure)
-				return Result.Failure(res.Error);
-			await SaveChangesAsync();
-			return Result.Success();
+			return await SetNewPasswordAsync(user, updatePasswordDTO);
 		}
 
 		public async Task SetPresignedUrlPictureAsync<T>(IMinioClient minioClient, List<T> userOutDTO) where T: IUserOutDTO
@@ -75,6 +77,27 @@ namespace Culinary_Assistant_Main.Services.Users
 		public override Task<Result<Guid>> CreateAsync(UserInDTO entityCreateRequest, bool autoSave = true)
 		{
 			throw new NotSupportedException();
+		}
+
+		public async Task<Result> RecoverPasswordAsync(RecoverPasswordInDTO recoverPasswordInDTO)
+		{
+			var response = await _httpClientService.GetAsync(_notificationsHttpClientName, $"api/password-recovers/{recoverPasswordInDTO.RecoverId}");
+			if (response == null || !response.IsSuccessStatusCode) return Result.Failure("Срок смены пароля истек или используется неактуальный запрос. Запросите новую попытку.");
+			var emailValue = await response.Content.ReadAsStringAsync();
+			var user = await _repository.GetBySelectorAsync(u => u.Email.Value == emailValue);
+			if (user == null) return Result.Failure("Смена пароля осуществляется для несуществующего пользователя");
+			return await SetNewPasswordAsync(user, recoverPasswordInDTO);
+		}
+
+		private async Task<Result> SetNewPasswordAsync(User user, IUpdatePasswordDTO updatePasswordDTO)
+		{
+			if (updatePasswordDTO.NewPassword != updatePasswordDTO.NewPasswordConfirmation)
+				return Result.Failure("Подтверждение нового пароля некорректно");
+			var res = user.SetPassword(updatePasswordDTO.NewPassword);
+			if (res.IsFailure)
+				return Result.Failure(res.Error);
+			await SaveChangesAsync();
+			return Result.Success();
 		}
 	}
 }

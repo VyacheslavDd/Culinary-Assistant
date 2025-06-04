@@ -1,6 +1,7 @@
 using Core.Minio;
 using Core.Serilog;
 using Culinary_Assistant.Core.Constants;
+using Culinary_Assistant.Core.Http;
 using Culinary_Assistant.Core.Options;
 using Culinary_Assistant.Core.Shared.Middlewares;
 using Culinary_Assistant_Main.Infrastructure;
@@ -21,6 +22,7 @@ using System.Reflection;
 using System.Text;
 using Culinary_Assistant.Core.Redis;
 using Culinary_Assistant_Main.Services.RabbitMQ.Consumers;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,7 @@ builder.Services.AddCors(setup =>
 	setup.AddPolicy(ConfigurationConstants.FrontendPolicy, config =>
 	{
 		config
-	   .WithOrigins(builder.Configuration[ConfigurationConstants.FrontendHost]!)
+	   .WithOrigins(builder.Configuration[ConfigurationConstants.FrontendHost]!, builder.Configuration[ConfigurationConstants.FrontendVMHost]!)
 	   .AllowAnyHeader()
 	   .AllowAnyMethod()
 	   .AllowCredentials();
@@ -41,6 +43,7 @@ builder.Services.AddCors(setup =>
 });
 
 builder.Host.AddSerilog();
+builder.Services.AddHttpClientWithService(builder.Configuration[ConfigurationConstants.NotificationsHttpClientName]!, builder.Configuration[ConfigurationConstants.NotificationsHttpClientBaseAddress]!);
 builder.Services.AddHostedService<ReceiptRatingMessagesConsumer>();
 builder.Services.AddHostedService<CollectionRatingMessagesConsumer>();
 builder.Services.AddDbContext<CulinaryAppContext>();
@@ -88,6 +91,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(ConfigurationConstants.FrontendPolicy);
+
+app.UseMetricServer();
+app.UseHttpMetrics();
 
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();

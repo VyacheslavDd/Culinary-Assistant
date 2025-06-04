@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Culinary_Assistant.Core.DTO.User
 {
-	public record UpdatePasswordDTO(string OldPassword, string NewPassword, string NewPasswordConfirmation);
+	public record UpdatePasswordDTO(string OldPassword, string NewPassword, string NewPasswordConfirmation) : IUpdatePasswordDTO;
 }

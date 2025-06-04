@@ -26,6 +26,7 @@ using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant.Core.Redis;
 using CSharpFunctionalExtensions;
 using Minio.DataModel.Args;
+using Culinary_Assistant.Core.Http.Service;
 
 namespace Culinary_Assistant_Main.Tests.Common
 {
@@ -43,6 +44,7 @@ namespace Culinary_Assistant_Main.Tests.Common
 		{
 			var confMock = new Mock<IConfiguration>();
 			confMock.Setup(c => c[ConfigurationConstants.JWTSecretKey]).Returns("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+			confMock.Setup(c => c[ConfigurationConstants.NotificationsHttpClientName]).Returns("w");
 			return confMock.Object;
 		}
 
@@ -57,7 +59,9 @@ namespace Culinary_Assistant_Main.Tests.Common
 		public static IReceiptsService MockReceiptsService(CulinaryAppContext dbContext, IUsersRepository usersRepository, ILogger logger)
 		{
 			var receiptsRepository = new ReceiptsRepository(dbContext);
-			var usersService = new UsersService(usersRepository, logger);
+			var httpClientService = MockHttpClientService();
+			var configuration = MockConfiguration();
+			var usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 			var rabbitMqOptionsMock = new Mock<IOptions<RabbitMQOptions>>();
 			rabbitMqOptionsMock.Setup(o => o.Value).Returns(new RabbitMQOptions() { HostName = "" });
 			var producerService = new Mock<IFileMessagesProducerService>();
@@ -71,7 +75,9 @@ namespace Culinary_Assistant_Main.Tests.Common
 		public static IUsersService MockUsersService(IUsersRepository usersRepository)
 		{
 			var logger = MockLogger();
-			var usersService = new UsersService(usersRepository, logger);
+			var httpClientService = MockHttpClientService();
+			var configuration = MockConfiguration();
+			var usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 			return usersService;
 		}
 
@@ -101,6 +107,12 @@ namespace Culinary_Assistant_Main.Tests.Common
 			var minioClientFactory = new Mock<IMinioClientFactory>();
 			minioClientFactory.Setup(mcf => mcf.CreateClient()).Returns(minioClientMock.Object);
 			return minioClientFactory.Object;
+		}
+
+		public static IHttpClientService MockHttpClientService()
+		{
+			var httpClientServiceMock = new Mock<IHttpClientService>();
+			return httpClientServiceMock.Object;
 		}
 
 		public static async Task<Guid> GetUserGuidByLoginAsync(CulinaryAppContext context, string login)

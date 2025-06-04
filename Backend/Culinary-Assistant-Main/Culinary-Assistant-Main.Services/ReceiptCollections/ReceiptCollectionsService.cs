@@ -279,9 +279,9 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 				_logger.Error("Не удалось добавить рецепт в коллекцию избранных рецептов {@id}: {@error}", collectionRes.Value, addReceiptRes.Error);
 		}
 
-		public async Task RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(Guid receiptId)
+		public async Task RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(Guid receiptId, Guid userId)
 		{
-			var collectionGuid = (await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName))?.Id ?? Guid.Empty;
+			var collectionGuid = (await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && rc.UserId == userId))?.Id ?? Guid.Empty;
 			var removeReceiptRes = await RemoveReceiptsAsync(collectionGuid, [receiptId], true);
 			if (removeReceiptRes.IsFailure)
 				_logger.Error("Не удалось удалить рецепт из коллекции избранных рецептов {@id}: {@error}", collectionGuid, removeReceiptRes.Error);
@@ -289,7 +289,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 
 		private async Task<Result<Guid>> CreateOrGetFavouriteReceiptsCollectionGuidAsync(Guid userId)
 		{
-			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName);
+			var collection = await _repository.GetBySelectorAsync(rc => rc.Title.Value == MiscellaneousConstants.FavouriteReceiptsCollectionName && rc.UserId == userId);
 			if (collection != null) return Result.Success(collection.Id);
 			var collectionInDTO = new ReceiptCollectionInModelDTO(MiscellaneousConstants.FavouriteReceiptsCollectionName, true, Color.Pink, userId, null);
 			var res = await CreateAsync(collectionInDTO);

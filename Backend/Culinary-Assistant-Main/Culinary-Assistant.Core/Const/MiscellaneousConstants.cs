@@ -33,5 +33,12 @@ namespace Culinary_Assistant.Core.Const
 		public const string RefreshTokenCookie = "RefreshToken";
 
 		public const string FavouriteReceiptsCollectionName = "Избранное";
+
+		public const int PasswordRecoveryActiveTimeMinutes = 10;
+		public const int TimeMinutesBetweenPasswordRecoverMessagesSending = 2;
+		public const int TimeMinutesDifferenceRequiredToOutdatePasswordRecoveryMessage = 30;
+		public const int TimeMinutesDeletePasswordRecoversTriggerRepeat = 5;
+
+		public const int HttpTimeoutSeconds = 30;
 	}
 }

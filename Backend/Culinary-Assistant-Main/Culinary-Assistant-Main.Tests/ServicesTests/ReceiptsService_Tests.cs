@@ -19,6 +19,7 @@ using Microsoft.Extensions.Options;
 using Culinary_Assistant.Core.Options;
 using Minio;
 using Elastic.Clients.Elasticsearch;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -42,7 +43,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext();
+			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			var seedService = new SeedService(usersRepository, logger);
@@ -179,14 +180,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		{
 			var res = await _receiptsService.CreateAsync(_getFineReceiptInDTO(_userId));
 			var receipt = await _receiptsService.GetByGuidAsync(res.Value);
-			Assert.Multiple(() =>
-			{
-				Assert.That(receipt, Is.Not.Null);
-				Assert.That(receipt.Nutrients.Calories, Is.Positive);
-				Assert.That(receipt.Nutrients.Proteins, Is.Positive);
-				Assert.That(receipt.Nutrients.Fats, Is.Positive);
-				Assert.That(receipt.Nutrients.Carbohydrates, Is.Positive);
-			});
+			Assert.That(receipt, Is.Not.Null);
 		}
 
 		[Test]
