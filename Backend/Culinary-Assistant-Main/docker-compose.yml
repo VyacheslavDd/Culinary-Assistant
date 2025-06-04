@@ -66,22 +66,22 @@ services:
         culinarydb:
             condition: service_healthy
 
-  # culinary-assistant-frontend:
-  #   networks:
-  #       - culinary-network
-  #   image: culinarfrontend:latest
-  #   container_name: CulinaryAssistantFrontend
-  #   restart: always
-  #   ports:
-  #       - "3003:80"
-  #       - "3004:443"
-  #   build:
-  #       context: ../../frontend
-  #       dockerfile: Dockerfile
-  #   env_file: ../../frontend/.env
-  #   depends_on:
-  #       culinary-assistant-main:
-  #           condition: service_started
+  culinary-assistant-frontend:
+    networks:
+        - culinary-network
+    image: culinarfrontend:latest
+    container_name: CulinaryAssistantFrontend
+    restart: always
+    ports:
+        - "3003:80"
+        - "3004:443"
+    build:
+        context: ../../frontend
+        dockerfile: Dockerfile
+    env_file: ../../frontend/.env
+    depends_on:
+        culinary-assistant-main:
+            condition: service_started
 
   culinarydb:
     networks:
