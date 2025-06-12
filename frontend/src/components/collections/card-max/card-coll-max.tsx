@@ -1,8 +1,9 @@
 import styles from './card-coll-max.module.scss';
 import favIcon from '../../../assets/svg/coll_fav_dark.svg';
+import star from '../../../assets/svg/yellow_star.svg';
 import { useNavigate } from 'react-router-dom';
 import { ShortCollection } from 'types/short-collection.type';
-import { transformCreatedAt } from 'utils/transform';
+import { transformCreatedAt, transformRating } from 'utils/transform';
 import { COLORS } from 'mocks/colors';
 
 type props = {
@@ -44,12 +45,21 @@ export function CardCollMax(props: props) {
                     <p>от {data.userLogin}</p>
                 </div>
 
-                <div className={styles.rating}>
-                    <span
-                        className={styles.icon}
-                        style={{ backgroundImage: `url(${favIcon})` }}
-                    ></span>
-                    <span>{data.popularity}</span>
+                <div className={styles.ratingContainer}>
+                    <div className={styles.rating}>
+                        <span
+                            className={styles.icon}
+                            style={{ backgroundImage: `url(${star})` }}
+                        ></span>
+                        <span>{transformRating(data.rating)}</span>
+                    </div>
+                    <div className={styles.rating}>
+                        <span
+                            className={styles.icon}
+                            style={{ backgroundImage: `url(${favIcon})` }}
+                        ></span>
+                        <span>{data.popularity}</span>
+                    </div>
                 </div>
             </div>
 

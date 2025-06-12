@@ -13,4 +13,5 @@ export type Collection = {
     receipts: ShortRecipe[];
     createdAt: string;
     color: Color;
+    rating: number;
 };

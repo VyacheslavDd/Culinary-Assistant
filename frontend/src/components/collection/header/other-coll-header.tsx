@@ -1,8 +1,9 @@
 import { LayoutHeader } from 'components/layout';
 import styles from './coll-header.module.scss';
 import fav from '../../../assets/svg/coll_fav_dark.svg';
+import star from '../../../assets/svg/yellow_star.svg';
 import { Collection } from 'types/collections.type';
-import { transformCreatedAt } from 'utils/transform';
+import { transformCreatedAt, transformRating } from 'utils/transform';
 import { ButtonWrapper } from 'components/common';
 import default_user from '../../../assets/img/default-user.png';
 import { useEffect, useState } from 'react';
@@ -123,13 +124,25 @@ export function OtherCollHeader(props: props) {
                                 />
                                 {collection.user.login}
                             </div>
-                            <div className={styles.fav}>
-                                <img
-                                    src={fav}
-                                    alt='favorite'
-                                    className={styles.icon}
-                                />
-                                <span>{collection.popularity}</span>
+                            <div className={styles.ratingContainer}>
+                                <div className={styles.fav}>
+                                    <img
+                                        src={star}
+                                        alt='rating'
+                                        className={styles.icon}
+                                    />
+                                    <span>
+                                        {transformRating(collection.rating)}
+                                    </span>
+                                </div>
+                                <div className={styles.fav}>
+                                    <img
+                                        src={fav}
+                                        alt='favorite'
+                                        className={styles.icon}
+                                    />
+                                    <span>{collection.popularity}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
