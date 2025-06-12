@@ -82,7 +82,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			if (!response.IsValidResponse)
 			{
 				var message = "Ошибка выполнения запроса поиска рецептов";
-				_logger.Error(message);
+				_logger.Error(response.ElasticsearchServerError?.Error?.Reason);
 				return CSharpFunctionalExtensions.Result.Failure<List<Guid>>(message);
 			}
 			var guids = response.Documents.Select(r => r.Id).ToList();
