@@ -19,8 +19,12 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import ScrollToTop from 'components/common/scrollToTop';
 import { Helmet } from 'react-helmet-async';
+import { selectIngredients } from 'store/ingredients.slice';
+import { transformName } from 'utils/transform';
 
 export function EditRecipePage() {
+    const INGREDIENTS = useSelector(selectIngredients);
+
     const { id } = useParams<{ id: string }>();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -151,6 +155,15 @@ export function EditRecipePage() {
                 (input) => input.checked
             )?.value;
 
+            const selectedIngredients = ingredients.filter(
+                (ing) => ing.name !== ''
+            );
+
+            if (selectIngredients.length === 0) {
+                throw new Error('Не выбрано ни одного ингредиента');
+            }
+            console.log(selectedIngredients)
+
             const file = photoRef.current?.files?.[0];
 
             if (!file && !existingPhoto) {
@@ -166,7 +179,7 @@ export function EditRecipePage() {
                 category: categoryRef.current?.value || '',
                 cookingDifficulty: selectedDifficulty || '',
                 cookingTime: Number(timeRef.current?.value || 0),
-                ingredients: ingredients.map((i) => ({
+                ingredients: selectedIngredients.map((i) => ({
                     name: i.name,
                     numericValue: Number(i.numericValue),
                     measure: i.measure,
@@ -422,41 +435,6 @@ export function EditRecipePage() {
                                         max={9999}
                                     />
                                 </div>
-                                {/* <div className={styles.inputContainer}>
-                                <label
-                                    className={styles.label}
-                                    htmlFor='calories'
-                                >
-                                    КБЖУ на 100 г
-                                </label>
-                                <div className={styles.kbjuContainer}>
-                                    {[
-                                        'Калории',
-                                        'Белки',
-                                        'Жиры',
-                                        'Углеводы',
-                                    ].map((label, idx) => (
-                                        <div key={idx} className={styles.kbju}>
-                                            <input
-                                                ref={(el) => {
-                                                    if (el)
-                                                        caloriesRef.current[
-                                                            idx
-                                                        ] = el;
-                                                }}
-                                                type='number'
-                                                className={styles.input}
-                                                placeholder={label}
-                                            />
-                                            <span>
-                                                {label === 'Калории'
-                                                    ? 'ккал'
-                                                    : label[0].toLowerCase()}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div> */}
                             </div>
                             <div className={styles.infoContainer}>
                                 <h2 className={styles.h2}>Ингредиенты</h2>
@@ -466,9 +444,7 @@ export function EditRecipePage() {
                                         key={index}
                                         className={styles.ingredientContainer}
                                     >
-                                        <input
-                                            type='text'
-                                            placeholder='Название'
+                                        <select
                                             value={ingredient.name}
                                             className={styles.input}
                                             onChange={(e) =>
@@ -478,8 +454,16 @@ export function EditRecipePage() {
                                                     e.target.value
                                                 )
                                             }
-                                            maxLength={30}
-                                        />
+                                        >
+                                            <option value=''>
+                                                Выберите ингредиент
+                                            </option>
+                                            {INGREDIENTS.map((ing) => (
+                                                <option key={ing} value={ing}>
+                                                    {transformName(ing)}
+                                                </option>
+                                            ))}
+                                        </select>
                                         <input
                                             type='number'
                                             placeholder='Количество'

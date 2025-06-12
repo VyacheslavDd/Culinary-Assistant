@@ -12,15 +12,21 @@ import {
 import { useEffect } from 'react';
 import { Preloader } from 'components/preloader';
 import { Helmet } from 'react-helmet-async';
+import {
+    fetchIngredients,
+    selectIngredientsLoading,
+} from 'store/ingredients.slice';
 
 function MainPage() {
     const dispatch = useDispatch();
     const isLoading = useSelector(selectMainPageLoading);
+    const isLoadingIngredients = useSelector(selectIngredientsLoading);
     const page = useSelector(selectPage);
     const recipes = useSelector(selectRecipes);
 
     useEffect(() => {
         dispatch(fetchRecipes());
+        dispatch(fetchIngredients());
     }, [dispatch, page]);
 
     return (
@@ -31,7 +37,11 @@ function MainPage() {
             <MainBack />
             <main className={styles.main}>
                 <Filter />
-                {isLoading ? <Preloader /> : <Catalog recipes={recipes} />}
+                {isLoading && isLoadingIngredients ? (
+                    <Preloader />
+                ) : (
+                    <Catalog recipes={recipes} />
+                )}
             </main>
         </div>
     );

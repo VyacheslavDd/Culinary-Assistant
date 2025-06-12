@@ -1,13 +1,13 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { Ingredient } from '../types';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { getIngredientsApi } from './api';
 
-// export const fetchIngredients = createAsyncThunk(
-//   'ingredients/fetchIngredients',
-//   getIngredientsApi
-// );
+export const fetchIngredients = createAsyncThunk(
+    'ingredients/fetchIngredients',
+    getIngredientsApi
+);
 
 type TIngredientsState = {
-    items: Ingredient[];
+    items: string[];
     isLoading: boolean;
 };
 
@@ -24,25 +24,22 @@ export const ingredientsSlice = createSlice({
         selectIngredientsLoading: (state) => state.isLoading,
     },
     reducers: {},
-    // extraReducers: (builder) => {
-    //   builder
-    //   .addCase(fetchIngredients.pending, (state) => {
-    //     state.isLoading = true;
-    //   })
-    //   .addCase(fetchIngredients.fulfilled, (state, action) => {
-    //     state.isLoading = false;
-    //     state.items = action.payload;
-    //   })
-    //   .addCase(fetchIngredients.rejected, (state) => {
-    //     state.isLoading = false;
-    //   });
-    // }
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchIngredients.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchIngredients.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.items = action.payload.sort();
+            })
+            .addCase(fetchIngredients.rejected, (state) => {
+                state.isLoading = false;
+            });
+    },
 });
 
 export const { selectIngredients, selectIngredientsLoading } =
     ingredientsSlice.selectors;
-
-// export const selectIngredientById = (id: string) => (state: RootState) =>
-//   state.ingredients.items.find((item) => item._id === id);
 
 export default ingredientsSlice.reducer;
