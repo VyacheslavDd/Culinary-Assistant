@@ -29,12 +29,13 @@ namespace Culinary_Assistant.Core.ValueTypes
 			{
 				return Result.Failure<Nutrients>("Ни один нутриент не может быть меньше 0");
 			}
+			var roundedNutrients = nutrients.Select(n => Math.Round(n, 1)).ToList();
 			var nutrientsObj = new Nutrients()
 			{
-				Calories = calories,
-				Proteins = proteins,
-				Fats = fats,
-				Carbohydrates = carbohydrates
+				Calories = roundedNutrients[0],
+				Proteins = roundedNutrients[1],
+				Fats = roundedNutrients[2],
+				Carbohydrates = roundedNutrients[3]
 			};
 			return Result.Success(nutrientsObj);
 		}

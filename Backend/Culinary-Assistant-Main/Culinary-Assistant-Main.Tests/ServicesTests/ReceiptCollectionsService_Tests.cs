@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Culinary_Assistant.Core.Enums;
 using Culinary_Assistant_Main.Services.Likes;
 using Culinary_Assistant.Core.DTO.Like;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -30,7 +31,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_context = DbContextMocker.CreateInMemoryAppContext();
+			_context = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var logger = CommonUtils.MockLogger();
 			var usersRepository = new UsersRepository(_context);
 			var receiptsService = CommonUtils.MockReceiptsService(_context, usersRepository, logger);
@@ -39,7 +40,9 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 			var elasticService = new Mock<IElasticReceiptsCollectionsService>();
 			elasticService.Setup(es => es.GetReceiptsCollectionsIdsAsync(It.IsAny<string>()))
 				.Returns(Task.FromResult(Result.Success<List<Guid>>([Guid.Empty])));
-			var usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			var configuration = CommonUtils.MockConfiguration();
+			var usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 			var redisService = CommonUtils.MockRedisService();
 			_collectionsLikesService = new ReceiptCollectionLikesService(receiptCollectionLikesRepository, usersRepository, receiptCollectionsRepository);
 			_receiptCollectionsService = new ReceiptCollectionsService(receiptCollectionsRepository, elasticService.Object, redisService, _collectionsLikesService, receiptsService, usersService, logger);

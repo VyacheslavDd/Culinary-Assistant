@@ -50,7 +50,7 @@ export function EditRecipePage() {
     const user = useSelector(selectUser);
 
     useEffect(() => {
-        if (id !== 'new' && id) {
+        if (id) {
             getRecipeByIdApi(id).then((fetchedRecipe) => {
                 setRecipe(fetchedRecipe);
                 setIngredients(fetchedRecipe.ingredients);
@@ -179,8 +179,7 @@ export function EditRecipePage() {
                 userId: user!.id || '',
                 picturesUrls: existingPhoto ? [existingPhoto] : [],
             };
-
-            if (id === 'new') {
+            if (!id) {
                 const recipeId = await createRecipe(baseRecipe, file);
                 navigate(`/recipe/${recipeId}`);
             } else {

@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Fabrics;
 using Culinary_Assistant.Core.Enums;
+using Culinary_Assistant.Core.Tests;
 
 namespace Culinary_Assistant_Main.Tests.ServicesTests
 {
@@ -30,7 +31,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task SetUp()
 		{
-			_context = DbContextMocker.CreateInMemoryAppContext();
+			_context = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			await PrepareTestDataAsync();
 			var minioClientFactory = CommonUtils.MockMinioClientFactory();
 			var ratesRepository = new ReceiptRatesRepository(_context);

@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Culinary_Assistant.Core.DTO.ReceiptRate;
+using Culinary_Assistant.Core.Tests;
 using Culinary_Assistant_Main.Domain.Models;
 using Culinary_Assistant_Main.Domain.Models.Abstract;
 using Culinary_Assistant_Main.Infrastructure;
@@ -29,7 +30,7 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public async Task Setup()
 		{
-			_context = DbContextMocker.CreateInMemoryAppContext();
+			_context = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			_context.Users.AddRange(UsersData.Users);
 			_context.Receipts.AddRange(ReceiptsData.Receipts);
 			_context.ReceiptCollections.AddRange(ReceiptCollectionsData.ReceiptCollections);

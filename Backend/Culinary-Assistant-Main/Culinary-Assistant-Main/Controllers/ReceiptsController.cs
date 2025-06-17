@@ -190,7 +190,7 @@ namespace Culinary_Assistant_Main.Controllers
 			var userId = Miscellaneous.RetrieveUserIdFromHttpContextUser(HttpContext.User);
 			var res = await _likesService.RemoveAsync(userId, id);
 			if (res.IsFailure) return BadRequest(res.Error);
-			await _receiptCollectionsService.RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(id);
+			await _receiptCollectionsService.RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(id, userId);
 			return NoContent();
 		}
 

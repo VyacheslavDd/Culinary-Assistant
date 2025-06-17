@@ -23,7 +23,7 @@ namespace Culinary_Assistant_Main.Services.ReceiptCollections
 		Task<Result> AddReceiptsAsyncUsingReceiptCollectionId(Guid receiptCollectionId, List<Guid> receiptIds, bool allowFavouriteReceiptsCollection = false);
 		Task<Result> RemoveReceiptsAsync(Guid receiptCollectionId, List<Guid> receiptIds, bool allowFavouriteReceiptsCollection = false);
 		Task AddFavouritedReceiptToFavouriteReceiptsCollectionAsync(Guid receiptId, Guid userId);
-		Task RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(Guid receiptId);
+		Task RemoveFavouritedReceiptFromFavouriteReceiptsCollectionAsync(Guid receiptId, Guid userId);
 		Task<Result<Guid>> CreateWithNameCheckAsync(ReceiptCollectionInModelDTO entityCreateRequest, bool autoSave = true, bool allowFavouriteName = false);
 		Task<Result<List<Guid>>> GetReceiptIdsAsync(Guid receiptCollectionId, CancellationToken cancellationToken = default);
 		void SetReceiptNamesWithCovers(List<ReceiptCollection> originals, List<ReceiptCollectionShortOutDTO> mappedCollections);

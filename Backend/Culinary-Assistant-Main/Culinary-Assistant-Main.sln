@@ -17,9 +17,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Main.Inf
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant.Core", "Culinary-Assistant.Core\Culinary-Assistant.Core.csproj", "{E9788FC1-06BF-4ACC-99F1-9F9FB2EE6413}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Images", "Culinary-Assistant-Images\Culinary-Assistant-Images.csproj", "{A9D23496-9143-466C-87E2-BB36C47F631B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Images", "Culinary-Assistant-Images\Culinary-Assistant-Images.csproj", "{A9D23496-9143-466C-87E2-BB36C47F631B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Images.Services", "Culinary-Assistant-Images.Services\Culinary-Assistant-Images.Services.csproj", "{E3E129FA-F8EE-4171-9F13-2B6054AA6365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Culinary-Assistant-Images.Services", "Culinary-Assistant-Images.Services\Culinary-Assistant-Images.Services.csproj", "{E3E129FA-F8EE-4171-9F13-2B6054AA6365}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Notifications", "Culinary-Assistant-Notifications\Culinary-Assistant-Notifications.csproj", "{28B19C00-8220-46A9-926B-9F71409F9D7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Notifications-Domain", "Culinary-Assistant-Notifications-Domain\Culinary-Assistant-Notifications-Domain.csproj", "{E0E0E0C8-8D65-4A1F-9CCD-23DBCCEBE129}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Notifications-Infrastructure", "Culinary-Assistant-Notifications-Infrastructure\Culinary-Assistant-Notifications-Infrastructure.csproj", "{C78EACB6-E4DF-4ADB-AF36-4BB7C43F0CDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Notifications-Services", "Culinary-Assistant-Notifications-Services\Culinary-Assistant-Notifications-Services.csproj", "{15A5094D-02D2-4B7C-A0BB-7936EF20FE63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Culinary-Assistant-Notifications.Tests", "Culinary-Assistant-Notifications.Tests\Culinary-Assistant-Notifications.Tests.csproj", "{DEAE6350-E467-4C89-8DE2-375146AF8ACF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +73,26 @@ Global
 		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3E129FA-F8EE-4171-9F13-2B6054AA6365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28B19C00-8220-46A9-926B-9F71409F9D7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28B19C00-8220-46A9-926B-9F71409F9D7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28B19C00-8220-46A9-926B-9F71409F9D7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28B19C00-8220-46A9-926B-9F71409F9D7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E0E0C8-8D65-4A1F-9CCD-23DBCCEBE129}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E0E0C8-8D65-4A1F-9CCD-23DBCCEBE129}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E0E0C8-8D65-4A1F-9CCD-23DBCCEBE129}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E0E0C8-8D65-4A1F-9CCD-23DBCCEBE129}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C78EACB6-E4DF-4ADB-AF36-4BB7C43F0CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C78EACB6-E4DF-4ADB-AF36-4BB7C43F0CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C78EACB6-E4DF-4ADB-AF36-4BB7C43F0CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C78EACB6-E4DF-4ADB-AF36-4BB7C43F0CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15A5094D-02D2-4B7C-A0BB-7936EF20FE63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15A5094D-02D2-4B7C-A0BB-7936EF20FE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15A5094D-02D2-4B7C-A0BB-7936EF20FE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15A5094D-02D2-4B7C-A0BB-7936EF20FE63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEAE6350-E467-4C89-8DE2-375146AF8ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEAE6350-E467-4C89-8DE2-375146AF8ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEAE6350-E467-4C89-8DE2-375146AF8ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEAE6350-E467-4C89-8DE2-375146AF8ACF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

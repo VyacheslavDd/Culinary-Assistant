@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Culinary_Assistant_Notifications_Services</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Quartz" Version="3.14.0" />
+    <PackageReference Include="Quartz.AspNetCore" Version="3.14.0" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Culinary-Assistant-Notifications-Domain\Culinary-Assistant-Notifications-Domain.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant-Notifications-Infrastructure\Culinary-Assistant-Notifications-Infrastructure.csproj" />
+    <ProjectReference Include="..\Culinary-Assistant.Core\Culinary-Assistant.Core.csproj" />
+  </ItemGroup>
+
+</Project>

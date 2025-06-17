@@ -21,6 +21,7 @@ using Culinary_Assistant.Core.Shared.Serializable;
 using Culinary_Assistant.Core.Const;
 using Minio;
 using Culinary_Assistant.Core.Redis;
+using Culinary_Assistant.Core.Base.Data;
 
 namespace Culinary_Assistant_Main.Services.Receipts
 {
@@ -77,8 +78,11 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			results[1] = existingReceipt.SetDescription(updateRequest.Description ?? existingReceipt.Description.Value);
 			results[2] = existingReceipt.SetCookingTime(updateRequest.CookingTime ?? existingReceipt.CookingTime);
 			if (updateRequest.Ingredients != null)
+			{
 				results[3] = existingReceipt.SetIngredients(updateRequest.Ingredients);
-
+				var nutrientsResult = CalculateNutrients(existingReceipt, updateRequest.Ingredients);
+				if (nutrientsResult.IsFailure) return Result.Failure(nutrientsResult.Error);
+			}
 			if (updateRequest.CookingSteps != null)
 				results[4] = existingReceipt.SetCookingSteps(updateRequest.CookingSteps);
 			if (updateRequest.PicturesUrls != null)
@@ -98,7 +102,7 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			var receiptResult = Receipt.Create(entityCreateRequest);
 			if (!receiptResult.IsSuccess)
 				return Result.Failure<Guid>(receiptResult.Error);
-			var nutrientsResult = receiptResult.Value.SetNutrients(20, 15, 20, 30);
+			var nutrientsResult = CalculateNutrients(receiptResult.Value, entityCreateRequest.Ingredients);
 			if (!nutrientsResult.IsSuccess)
 				return Result.Failure<Guid>(nutrientsResult.Error);
 			var res = await AddToRepositoryAsync(receiptResult);
@@ -167,6 +171,28 @@ namespace Culinary_Assistant_Main.Services.Receipts
 			receipt.SetRating(rating);
 			await _repository.SaveChangesAsync();
 			return Result.Success();
+		}
+
+		private Result CalculateNutrients(Receipt receipt, List<Ingredient> ingredients)
+		{
+			List<double> nutrientsData = [0, 0, 0, 0];
+			var receiptWeight = 0.0;
+			foreach (var i in ingredients)
+			{
+				var ingredientName = i.Name.ToLower();
+				var ingredientFound = IngredientsData.Data.TryGetValue(ingredientName, out var nutrients);
+				if (!ingredientFound) continue;
+				var ingredientWeight = ReceiptsUtils.GetIngredientWeight(i);
+				receiptWeight += ingredientWeight;
+				nutrientsData[0] += ingredientWeight / 100 * nutrients.Calories;
+				nutrientsData[1] += ingredientWeight / 100 * nutrients.Proteins;
+				nutrientsData[2] += ingredientWeight / 100 * nutrients.Fats;
+				nutrientsData[3] += ingredientWeight / 100 * nutrients.Carbohydrates;
+			};
+			if (receiptWeight > 0)
+				nutrientsData = nutrientsData.Select(n => n / receiptWeight * 100).ToList();
+			var nutrientsResult = receipt.SetNutrients(nutrientsData[0], nutrientsData[1], nutrientsData[2], nutrientsData[3]);
+			return nutrientsResult;
 		}
 	}
 }
