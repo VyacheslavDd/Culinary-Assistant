@@ -124,7 +124,7 @@
         display: inline-block;
         width: 1.05vw;
         height: 1.05vw;
-        background-size: cover;
+        background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
         min-width: 20px;
@@ -135,4 +135,9 @@
 .date {
     padding-right: 1.05vw;
     text-align: right;
+}
+
+.ratingContainer {
+    display: flex;
+    gap: 0.7vw;
 }

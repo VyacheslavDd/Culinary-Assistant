@@ -3,11 +3,12 @@ import styles from './content.module.scss';
 import { selectFilter, updateFilter } from 'store/main-page.slice';
 import { useDispatch } from 'store/store';
 import { useSelector } from 'react-redux';
-import { INGREDIENTS } from 'mocks/filter';
-
+import { selectIngredients } from 'store/ingredients.slice';
+import { transformName } from 'utils/transform';
 
 export function IngredientsContent() {
     const dispatch = useDispatch();
+    const INGREDIENTS = useSelector(selectIngredients);
     const [query, setQuery] = useState('');
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>(
         useSelector(selectFilter).SearchByIngredients
@@ -55,7 +56,7 @@ export function IngredientsContent() {
                             }`}
                             onClick={() => toggleIngredient(ingredient)}
                         >
-                            {ingredient}
+                            {transformName(ingredient)}
                         </li>
                     ))
                 ) : (

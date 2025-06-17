@@ -22,6 +22,9 @@ export function transformRating(rating: number | string): string {
         return '0.0';
     }
     const rounded = Math.round(num * 10) / 10;
+    if (rounded === 10) {
+        return '10';
+    }
     return rounded.toFixed(1);
 }
 
@@ -113,8 +116,8 @@ export function transformUpdatedAt(dateString: string): string {
 }
 
 export function transformName(str: string): string {
-  if (!str) return str; 
-  return str.charAt(0).toUpperCase() + str.slice(1);
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 // Универсальная функция для преобразования строки в значение enum
