@@ -14,3 +14,10 @@ services:
       - ASPNETCORE_HTTP_PORTS=5002
     ports:
       - "5002:5002"
+
+  culinary-assistant-notifications:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5003
+    ports:
+      - "5003:5003"

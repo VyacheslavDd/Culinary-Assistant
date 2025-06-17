@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Culinary_Assistant.Core.DTO.PasswordRecover;
 using Culinary_Assistant.Core.DTO.Receipt;
 using Culinary_Assistant.Core.DTO.User;
 using Culinary_Assistant.Core.Utils;
@@ -135,6 +136,21 @@ namespace Culinary_Assistant_Main.Controllers
 		public async Task<IActionResult> UpdatePasswordAsync([FromRoute] Guid id, [FromBody] UpdatePasswordDTO updatePasswordDTO)
 		{
 			var response = await _usersService.UpdatePasswordAsync(id, updatePasswordDTO);
+			if (response.IsSuccess) return Ok();
+			return BadRequest(response.Error);
+		}
+
+		/// <summary>
+		/// Восстановить пароль пользователя
+		/// </summary>
+		/// <param name="recoverPasswordInDTO"></param>
+		/// <response code="200">Успешное восстановление пароля</response>
+		/// <response code="400">Некорректные данные или неактуальный запрос/его отсутствие</response>
+		[HttpPatch]
+		[Route("")]
+		public async Task<IActionResult> RecoverPasswordAsync([FromBody] RecoverPasswordInDTO recoverPasswordInDTO)
+		{
+			var response = await _usersService.RecoverPasswordAsync(recoverPasswordInDTO);
 			if (response.IsSuccess) return Ok();
 			return BadRequest(response.Error);
 		}

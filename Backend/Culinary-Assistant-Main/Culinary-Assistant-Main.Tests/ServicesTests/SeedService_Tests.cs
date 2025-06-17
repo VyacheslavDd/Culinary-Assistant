@@ -1,4 +1,5 @@
-﻿using Culinary_Assistant_Main.Infrastructure;
+﻿using Culinary_Assistant.Core.Tests;
+using Culinary_Assistant_Main.Infrastructure;
 using Culinary_Assistant_Main.Infrastructure.Repositories;
 using Culinary_Assistant_Main.Services.Seed;
 using Culinary_Assistant_Main.Services.Users;
@@ -24,11 +25,13 @@ namespace Culinary_Assistant_Main.Tests.ServicesTests
 		[SetUp]
 		public void SetUp()
 		{
-			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext();
+			_culinaryAppContext = DbContextMocker.CreateInMemoryAppContext<CulinaryAppContext>();
 			var usersRepository = new UsersRepository(_culinaryAppContext);
 			var logger = CommonUtils.MockLogger();
 			_seedService = new SeedService(usersRepository, logger);
-			_usersService = new UsersService(usersRepository, logger);
+			var httpClientService = CommonUtils.MockHttpClientService();
+			var configuration = CommonUtils.MockConfiguration();
+			_usersService = new UsersService(usersRepository, logger, httpClientService, configuration);
 		}
 
 		[TearDown]
