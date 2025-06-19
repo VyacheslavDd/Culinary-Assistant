@@ -1,0 +1,22 @@
+.mainContainer {
+    flex: 1 0 auto;
+}
+
+.main {
+    width: 100%;
+    margin-top: 20px;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.h1 {
+    color: #000;
+    font-family: 'TildaSans';
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 30px;
+    margin: 0;
+}

@@ -1,0 +1,40 @@
+.mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.buttons {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.reset {
+    cursor: pointer;
+    box-shadow: 0.2vw 0.2vw 0.52vw 0px rgba(214, 214, 214, 0.25);
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+    font-family: 'TildaSans';
+    font-size: 18px;
+    font-weight: 500;
+    color: white;
+    background-color: var(--blue);
+    height: min-content;
+    transition: all 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+        background-color: var(--blue-hover);
+    }
+
+    &:active {
+        transform: translateY(1px);
+        background-color: var(--blue-active);
+    }
+}

@@ -1,0 +1,24 @@
+.mainContainer {
+    width: 95%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 10px 0;
+    padding-bottom: 20px;
+}
+
+.title {
+    font-family: 'Bree CYR';
+    font-weight: 600;
+    font-size: var(--font-size-32);
+    line-height: 100%;
+    color: black;
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
