@@ -1,0 +1,166 @@
+.mainContainer {
+    width: 95vw;
+    height: 50vh;
+    min-height: max-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white);
+    font-size: var(--font-size-20);
+    font-family: 'TildaSans';
+    font-weight: 400;
+    color: var(--black);
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding: 5px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    font-weight: 500;
+    color: var(--black);
+
+    .title {
+        font-size: var(--font-size-38);
+        font-weight: 500;
+        color: #000;
+    }
+
+    .subtitle {
+        font-size: var(--font-size-24);
+        font-weight: 500;
+        text-align: center;
+    }
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+.inputContainer {
+    width: 100%;
+    position: relative;
+
+    .icon {
+        position: absolute;
+        top: 20px;
+        left: 2px;
+        transform: translateY(-50%);
+        width: 1.25vw;
+        height: 1.25vw;
+        min-width: 20px;
+        min-height: 20px;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .email {
+        background-image: url('../../../assets/svg/email.svg');
+    }
+
+    .lock {
+        background-image: url('../../../assets/svg/lock.svg');
+    }
+
+    .person {
+        background-image: url('../../../assets/svg/person.svg');
+    }
+}
+
+.error_text {
+    display: flex;
+    padding: 3px 5px;
+    font-size: var(--font-size-16);
+    color: var(--red);
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+
+    .error {
+        display: inline-block;
+        width: 0.63vw;
+        height: 0.63vw;
+        min-width: 10px;
+        min-height: 10px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-image: url('../../../assets/svg/error.svg');
+    }
+}
+
+.input {
+    width: 100%;
+    font-size: var(--font-size-20);
+    font-weight: 400;
+    color: var(--black);
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    padding-left: 25px;
+    background-color: #fff;
+
+    &:focus {
+        outline: none;
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+    -webkit-text-fill-color: #403d39 !important;
+    font-size: var(--font-size-20) !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    color: var(--grey);
+}
+
+.button {
+    justify-content: center;
+    width: 100%;
+    color: #fff;
+    font-family: 'TildaSans';
+    font-size: var(--font-size-24);
+    font-weight: 400;
+    padding: 5px 10px;
+    text-align: center;
+    background-color: var(--blue);
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: var(--blue-hover);
+    }
+}
+
+.link {
+    color: var(--blue);
+    cursor: pointer;
+}

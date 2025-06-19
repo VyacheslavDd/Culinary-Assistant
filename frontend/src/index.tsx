@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.scss';
-import App from './App';
+import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
+import './index.scss';
+import AppWrapper from './app-wrapper';
 import store from 'store/store';
-import { HelmetProvider } from 'react-helmet-async';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -15,7 +15,7 @@ root.render(
         <HelmetProvider>
             <Provider store={store}>
                 <BrowserRouter>
-                    <App />
+                    <AppWrapper />
                 </BrowserRouter>
             </Provider>
         </HelmetProvider>

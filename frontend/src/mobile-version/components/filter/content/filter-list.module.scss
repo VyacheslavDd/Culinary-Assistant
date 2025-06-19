@@ -1,0 +1,39 @@
+.mainContainer {
+    font-family: 'TildaSans';
+    font-size: var(--font-size-20);
+    font-weight: 400;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.title {
+    font-weight: 500;
+}
+
+.list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    .item {
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .checkbox {
+        width: 1.05vw;
+        height: 1.05vw;
+        min-width: 18px;
+        min-height: 18px;
+        color: #b1b1b1;
+        cursor: pointer;
+    }
+
+    
+}
