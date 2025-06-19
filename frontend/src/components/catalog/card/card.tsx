@@ -60,7 +60,7 @@ export function CatalogCard(props: CatalogCardProps) {
 
     return (
         <div className={styles.container} onClick={handleClick}>
-            {isEdit ? (
+            {/* {isEdit ? (
                 <button
                     className={styles.deleteButton}
                     onClick={(e) => {
@@ -72,7 +72,7 @@ export function CatalogCard(props: CatalogCardProps) {
                 </button>
             ) : (
                 <></>
-            )}
+            )} */}
 
             <div
                 className={`${styles.rate} 
